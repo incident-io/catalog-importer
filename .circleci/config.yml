@@ -1,0 +1,60 @@
+---
+version: 2.1
+
+orbs:
+  go: circleci/go@1.7.3
+
+references:
+  docker_golang: &docker_golang
+    image: cimg/go:1.20.3
+
+jobs:
+  unit-integration:
+    docker:
+      - *docker_golang
+    working_directory: ~/app
+    steps:
+      - checkout
+      - go/load-cache:
+          key: &golangCacheKey v3
+      - go/mod-download
+      - go/save-cache:
+          key: *golangCacheKey
+      - run:
+          name: Build
+          command: go run cmd/catalog-importer/main.go --help
+
+  release:
+    docker:
+      - *docker_golang
+    working_directory: ~/app
+    steps:
+      - checkout
+      # Add read-write deploy key, so we can tag the repo.
+      - add_ssh_keys:
+          fingerprints:
+            - "b5:e8:81:5b:98:b2:b5:3c:55:a2:89:eb:84:a7:03:c9"
+      - run:
+          name: Release
+          command: |
+            CURRENT_VERSION="v$(cat VERSION)"
+            if [[ $(git tag -l "${CURRENT_VERSION}") == "${CURRENT_VERSION}" ]]; then
+              echo "Version ${CURRENT_VERSION} is already released"
+              exit 0
+            fi
+            curl -L -o /tmp/goreleaser_Linux_x86_64.tar.gz https://github.com/goreleaser/goreleaser/releases/download/v1.17.2/goreleaser_Linux_x86_64.tar.gz
+            tar zxf /tmp/goreleaser_Linux_x86_64.tar.gz -C /tmp
+            git tag "${CURRENT_VERSION}"
+            git push --tags
+            /tmp/goreleaser --rm-dist
+
+workflows:
+  version: 2
+  build-integration:
+    jobs:
+      - unit-integration
+      - release:
+          requires:
+            - unit-integration
+          filters:
+            branches: {only: master}

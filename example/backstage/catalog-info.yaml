@@ -1,0 +1,50 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  description: The incident.io public API
+  name: api-incident-io
+  namespace: default
+spec:
+  definition:
+    $text: https://api.incident.io/v1/openapi.json
+  lifecycle: production
+  owner: engineering
+  type: openapi
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  description: The incident.io backend server
+  name: core-server
+  namespace: default
+  tags:
+    - language-go
+spec:
+  consumesApis: []
+  lifecycle: production
+  owner: engineering
+  providesApis: [api-incident-io]
+  type: service
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: engineering
+  namespace: default
+spec:
+  children: []
+  type: team
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  annotations:
+    github.com/user-login: lawrencejones
+  name: lawrence
+spec:
+  memberOf:
+    - engineering
+  profile:
+    displayName: Lawrence Jones
+    email: lawrence@incident.io

@@ -1,0 +1,27 @@
+# View goreleaser docs for configuration settings
+# https://goreleaser.com
+
+---
+project_name: catalog-importer
+
+builds:
+  - binary: catalog-importer
+    main: cmd/catalog-importer/main.go
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags: >
+      -X github.com/incident-io/catalog-importer/cmd/catalog-importer/cmd.Version={{.Version}}
+      -X github.com/incident-io/catalog-importer/cmd/catalog-importer/cmd.Commit={{.Commit}}
+      -X github.com/incident-io/catalog-importer/cmd/catalog-importer/cmd.Date={{.Date}}
+      -a
+      -installsuffix cgo
+    env:
+      # Ensure what we link is available even without libc.
+      - CGO_ENABLED=0
+      # Set this so we can run specific pre-flights for whenever goreleaser is
+      # active.
+      - GORELEASER=true
