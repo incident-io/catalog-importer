@@ -88,7 +88,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 			"catalog_type_name", catalogType.Name,
 		)
 
-		syncID, ok := catalogType.Annotations["incident.io/catalog-importer/sync-id"]
+		syncID, ok := catalogType.Annotations[AnnotationSyncID]
 		if !ok {
 			level.Debug(logger).Log("msg", "ignoring catalog type as it is not managed by an importer")
 		} else if syncID != cfg.SyncID {
@@ -161,9 +161,7 @@ createCatalogType:
 			Name:        model.Name,
 			Description: model.Description,
 			TypeName:    lo.ToPtr(model.TypeName),
-			Annotations: lo.ToPtr(map[string]string{
-				"incident.io/catalog-importer/sync-id": cfg.SyncID,
-			}),
+			Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 		})
 		if err != nil {
 			return errors.Wrap(err, "creating catalog type")
@@ -324,6 +322,20 @@ createCatalogType:
 	}
 
 	return nil
+}
+
+var (
+	AnnotationSyncID     = "incident.io/catalog-importer/sync-id"
+	AnnotationLastSyncAt = "incident.io/catalog-importer/last-sync-at"
+	AnnotationVersion    = "incident.io/catalog-importer/version"
+)
+
+func getAnnotations(syncID string) map[string]string {
+	return map[string]string{
+		AnnotationSyncID:     syncID,
+		AnnotationLastSyncAt: time.Now().Format(time.RFC3339),
+		AnnotationVersion:    Version,
+	}
 }
 
 func newProgressBar(total int64, opts ...progressbar.Option) *progressbar.ProgressBar {
