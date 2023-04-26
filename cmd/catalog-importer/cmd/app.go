@@ -22,7 +22,7 @@ var (
 
 	// Global flags
 	debug      = app.Flag("debug", "Enable debug logging").Default("false").Bool()
-	configFile = app.Flag("config", "Importer configuration file").String()
+	configFile = app.Flag("config", "Importer configuration file").Required().String()
 
 	// Sync
 	sync        = app.Command("sync", "Run a sync of the catalog")
