@@ -1,8 +1,4 @@
 # Release with goreleaser.
-#
-# While we'd prefer to do this in CircleCI alongside our tests, GitHub don't
-# permit use of personal access tokens (which is all our org allows) to produce
-# releases. So we're forced to use GitHub actions.
 name: Release
 
 # This GitHub action creates a release when a tag that matches the pattern
