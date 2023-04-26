@@ -24,6 +24,8 @@ jobs:
           name: Build
           command: go run cmd/catalog-importer/main.go --help
 
+  # All this step does is tag the repo, as GitHub actions performs the actual
+  # release.
   release:
     docker:
       - *docker_golang
@@ -46,7 +48,6 @@ jobs:
             tar zxf /tmp/goreleaser_Linux_x86_64.tar.gz -C /tmp
             git tag "${CURRENT_VERSION}"
             git push --tags
-            /tmp/goreleaser --rm-dist
 
 workflows:
   version: 2
