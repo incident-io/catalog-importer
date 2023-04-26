@@ -1,0 +1,37 @@
+name: Build
+
+on: [push]
+
+# We need this so we can tag our repo if the build succeeds and the version
+# doesn't match.
+permissions:
+  contents: write
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      -
+        name: Build
+        run: go run cmd/catalog-importer/main.go --help
+      -
+        name: Tag if new version
+        run: |
+          CURRENT_VERSION="v$(cat VERSION)"
+          if [[ $(git tag -l "${CURRENT_VERSION}") == "${CURRENT_VERSION}" ]]; then
+            echo "Version ${CURRENT_VERSION} is already released"
+            exit 0
+          fi
+
+          git tag "${CURRENT_VERSION}"
+          git push --tags
