@@ -25,3 +25,11 @@ builds:
       # Set this so we can run specific pre-flights for whenever goreleaser is
       # active.
       - GORELEASER=true
+
+brews:
+  - tap:
+      owner: incident-io
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: https://incident.io/
+    description: Official incident.io catalog importer, for syncing catalog entries.
