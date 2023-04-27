@@ -27,6 +27,12 @@ jobs:
         name: Build
         run: go run cmd/catalog-importer/main.go --help
       -
+        name: Install ginkgo
+        run: go install github.com/onsi/ginkgo/v2/ginkgo
+      -
+        name: Run tests
+        run: ginkgo -r .
+      -
         id: tag
         name: Tag if new version
         run: |

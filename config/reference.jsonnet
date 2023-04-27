@@ -45,6 +45,26 @@
             ],
           },
         },
+        // If you need to transform the catalog data, you can use the exec
+        // source to run a command.
+        //
+        // The output of the command must be either Jsonnet, JSON or YAML, and
+        // produce either:
+        //
+        // - map[string]any (an object with string keys)
+        // - []map[string]any (a list of object)
+        //
+        // If a list, we'll return an entry for each element in the list.
+        {
+          exec: {
+            // Use jq to turn an object of key to entry into a list of entries.
+            command: [
+              'jq',
+              'to_entries | map(.value)',
+              'catalog.json',
+            ],
+          },
+        },
       ],
 
       // List of outputs, corresponding to catalog types, that the importer will
