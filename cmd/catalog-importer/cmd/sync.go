@@ -193,6 +193,7 @@ createCatalogType:
 			Name:        model.Name,
 			Description: model.Description,
 			TypeName:    lo.ToPtr(model.TypeName),
+			Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 		})
 		if err != nil {
 			return errors.Wrap(err, "updating catalog type")
