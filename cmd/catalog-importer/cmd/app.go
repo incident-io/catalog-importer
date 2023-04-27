@@ -10,6 +10,8 @@ import (
 	"strings"
 	"syscall"
 
+	_ "embed"
+
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
@@ -77,11 +79,13 @@ func Run(ctx context.Context) (err error) {
 
 // Set via compiler flags
 var (
-	Version   = "dev"
 	Commit    = "none"
 	Date      = "unknown"
 	GoVersion = runtime.Version()
 )
+
+//go:embed VERSION
+var Version string
 
 func versionStanza() string {
 	return fmt.Sprintf(
