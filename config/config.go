@@ -31,7 +31,8 @@ type Config struct {
 
 func (c Config) Validate() error {
 	return validation.ValidateStruct(&c,
-		validation.Field(&c.SyncID, validation.Required),
+		validation.Field(&c.SyncID, validation.Required.
+			Error("must provide a sync_id to track which resources are managed by this config, and to support clean-up when an output is removed")),
 		validation.Field(&c.Pipelines),
 	)
 }

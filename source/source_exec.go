@@ -18,7 +18,8 @@ type SourceExec struct {
 
 func (s SourceExec) Validate() error {
 	return validation.ValidateStruct(&s,
-		validation.Field(&s.Command, validation.Length(1, 0)),
+		validation.Field(&s.Command, validation.Length(1, 0).
+			Error("must provide at least a command, if no args")),
 	)
 }
 

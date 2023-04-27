@@ -5,11 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/pkg/errors"
 )
 
 type SourceInline struct {
 	Entries []map[string]any `json:"entries"`
+}
+
+func (s SourceInline) Validate() error {
+	return validation.ValidateStruct(&s)
 }
 
 func (s SourceInline) Load(ctx context.Context) ([]*SourceEntry, error) {

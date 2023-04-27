@@ -6,11 +6,19 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/pkg/errors"
 )
 
 type SourceLocal struct {
 	Files []string `json:"files"`
+}
+
+func (s SourceLocal) Validate() error {
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.Files, validation.Length(1, 0).
+			Error("must provide at least one file when using local source")),
+	)
 }
 
 func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {

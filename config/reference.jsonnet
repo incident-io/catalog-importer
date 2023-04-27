@@ -101,7 +101,7 @@
             // output.
             filter: 'metadata.kind = "Service"',
 
-            // Optional mapping of entry field to the external ID of this entry.
+            // Required mapping of entry field to the external ID of this entry.
             //
             // If your entries are sourced from an external system or have a
             // stable identifier, you can use that ID as an external ID,
@@ -111,6 +111,10 @@
             // The uuid of the resource in the external catalog system would be
             // an ideal value.
             external_id: 'metadata.name',
+
+            // Required field in the source that will act as the name for this
+            // entry, where name is the human readable label.
+            name: 'metadata.name',
           },
 
           // Controls which attributes this type will have. Attributes are types

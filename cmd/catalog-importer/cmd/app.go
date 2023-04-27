@@ -101,12 +101,20 @@ func versionStanza() string {
 	)
 }
 
-func loadConfigOrError(ctx context.Context, configFile string) (*config.Config, error) {
-	OUT(`No config file set! (--config)
+func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Config, err error) {
+	defer func() {
+		if err == nil {
+			return
+		}
+		if configFile == "" {
+			OUT("No config file (--config) was provided, but is required.\n")
+		} else {
+			OUT("Failed to load config file!\n")
+		}
 
-We expect a config file in Jsonnet, JSON or YAML format that looks like:
+		OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
 `)
-	config.PrettyPrint(`// e.g. config.jsonnet
+		config.PrettyPrint(`// e.g. config.jsonnet
 {
   sync_id: 'unique-sync-id',
   pipelines: [
@@ -117,14 +125,20 @@ We expect a config file in Jsonnet, JSON or YAML format that looks like:
   ],
 }`)
 
-	OUT(`
+		OUT(`
 Run the docs command to see a reference config file:
 
 $ catalog-importer docs
 
 Or view it in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
 `)
-	cfg, err := config.FileLoader(configFile).Load(ctx)
+	}()
+
+	if configFile == "" {
+		return nil, errors.New("No config file set! (--config)")
+	}
+
+	cfg, err = config.FileLoader(configFile).Load(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "loading config")
 	}

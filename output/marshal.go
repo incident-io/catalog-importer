@@ -82,7 +82,13 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		attributePrograms = map[string]cel.Program{}
 	)
 	for idx, attr := range output.Attributes {
-		prg, err := expr.Compile(attr.Source)
+		// Use the attribute ID by default if source isn't explicitly provided.
+		source := attr.ID
+		if attr.Source.Valid {
+			source = attr.Source.String
+		}
+
+		prg, err := expr.Compile(source)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("attributes.%d (id = %s): compiling source", idx, attr.ID))
 		}
