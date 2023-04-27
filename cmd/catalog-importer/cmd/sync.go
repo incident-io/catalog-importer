@@ -20,20 +20,17 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-const SyncUsage = `Sync data from catalog sources into incident.io
-
-	catalog-importer sync \
-		--config config.yaml
-
-`
-
 type SyncOptions struct {
+	ConfigFile  string
 	APIEndpoint string
 	APIKey      string
 	Prune       bool
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
+	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
+		Required().
+		StringVar(&opt.ConfigFile)
 	cmd.Flag("api-endpoint", "Endpoint of the incident.io API").
 		Default("https://api.incident.io").
 		Envar("INCIDENT_ENDPOINT").
@@ -47,13 +44,9 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 	return opt
 }
 
-func OUT(msg string, args ...any) {
-	fmt.Fprintf(os.Stderr, msg+"\n", args...)
-}
-
 func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	// Load config
-	cfg, err := config.FileLoader(*configFile).Load(ctx)
+	cfg, err := config.FileLoader(opt.ConfigFile).Load(ctx)
 	if err != nil {
 		return errors.Wrap(err, "validating config")
 	}

@@ -12,34 +12,32 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 )
 
-const ValidateUsage = `Validate importer configuration
-
-	catalog-importer validate \
-		--config config.yaml
-
-`
-
 type ValidateOptions struct {
+	ConfigFile string
 }
 
 func (opt *ValidateOptions) Bind(cmd *kingpin.CmdClause) *ValidateOptions {
+	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
+		Required().
+		StringVar(&opt.ConfigFile)
+
 	return opt
 }
 
 func (opt *ValidateOptions) Run(ctx context.Context, logger kitlog.Logger) error {
-	cfg, err := config.FileLoader(*configFile).Load(ctx)
+	cfg, err := config.FileLoader(opt.ConfigFile).Load(ctx)
 	if err != nil {
 		return errors.Wrap(err, "loading config")
 	}
-	if err := config.Validate(cfg); err != nil {
-		banner("Config file is invalid!")
+	if err := cfg.Validate(); err != nil {
+		BANNER("Config file is invalid!")
 
 		// Print the validation error in JSON. Needs improving.
 		data, _ := json.MarshalIndent(err, "", "  ")
 		fmt.Println(string(data))
 	}
 
-	banner("Config printed below")
+	BANNER("Config printed below")
 	output, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return errors.Wrap(err, "marshalling config")
