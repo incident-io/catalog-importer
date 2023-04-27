@@ -8,8 +8,10 @@ permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      release: '${{ steps.tag.outputs.release }}'
     steps:
       -
         name: Checkout
@@ -25,6 +27,7 @@ jobs:
         name: Build
         run: go run cmd/catalog-importer/main.go --help
       -
+        id: tag
         name: Tag if new version
         run: |
           CURRENT_VERSION="v$(cat cmd/catalog-importer/cmd/VERSION)"
@@ -35,3 +38,29 @@ jobs:
 
           git tag "${CURRENT_VERSION}"
           git push --tags
+
+          echo "release=yes" >> "$GITHUB_OUTPUT"
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
