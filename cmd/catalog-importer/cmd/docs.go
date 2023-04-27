@@ -17,8 +17,7 @@ func (opt *DocsOptions) Bind(cmd *kingpin.CmdClause) *DocsOptions {
 
 func (opt *DocsOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	OUT(`
-If you want help using the catalog-importer, be sure to contact
-us via your Slack Connect channel or account manager.
+If you want help using the catalog-importer, be sure to contact us via your Slack Connect channel or account manager.
 
 But first, some quicklinks that can help you get started:
 

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	stdlog "log"
 	"os"
@@ -15,6 +16,8 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
+	"github.com/incident-io/catalog-importer/config"
+	"github.com/pkg/errors"
 )
 
 var logger kitlog.Logger
@@ -96,6 +99,43 @@ func versionStanza() string {
 		"Version: %v\nGit SHA: %v\nGo Version: %v\nGo OS/Arch: %v/%v\nBuilt at: %v",
 		Version(), Commit, GoVersion, runtime.GOOS, runtime.GOARCH, Date,
 	)
+}
+
+func loadConfigOrError(ctx context.Context, configFile string) (*config.Config, error) {
+	OUT(`No config file set! (--config)
+
+We expect a config file in Jsonnet, JSON or YAML format that looks like:
+`)
+	config.PrettyPrint(`// e.g. config.jsonnet
+{
+  sync_id: 'unique-sync-id',
+  pipelines: [
+    {
+      sources: [/* where to load catalog data */],
+      outputs: [/* which catalog types to push data into, and how */],
+    }
+  ],
+}`)
+
+	OUT(`
+Run the docs command to see a reference config file:
+
+$ catalog-importer docs
+
+Or view it in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
+`)
+	cfg, err := config.FileLoader(configFile).Load(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "loading config")
+	}
+	if err := cfg.Validate(); err != nil {
+		data, _ := json.MarshalIndent(err, "", "  ")
+
+		// Print the validation error in JSON. Needs improving.
+		return nil, fmt.Errorf("validating config:\n%s", string(data))
+	}
+
+	return cfg, nil
 }
 
 // OUT prints progress output to stderr.

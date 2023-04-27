@@ -53,6 +53,8 @@ func PrettyPrint(jsonnetSource string) {
 
 		fmt.Print("\n")
 	}
+
+	color.Unset()
 }
 
 var jsonnetDef *highlight.Def

@@ -11,7 +11,6 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/incident-io/catalog-importer/client"
-	"github.com/incident-io/catalog-importer/config"
 	"github.com/incident-io/catalog-importer/output"
 	"github.com/incident-io/catalog-importer/reconcile"
 	"github.com/incident-io/catalog-importer/source"
@@ -29,7 +28,6 @@ type SyncOptions struct {
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
-		Required().
 		StringVar(&opt.ConfigFile)
 	cmd.Flag("api-endpoint", "Endpoint of the incident.io API").
 		Default("https://api.incident.io").
@@ -46,9 +44,9 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 
 func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	// Load config
-	cfg, err := config.FileLoader(opt.ConfigFile).Load(ctx)
+	cfg, err := loadConfigOrError(ctx, opt.ConfigFile)
 	if err != nil {
-		return errors.Wrap(err, "validating config")
+		return err
 	}
 	{
 		var (
