@@ -62,7 +62,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	}
 
 	// Build incident.io client
-	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version)
+	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version())
 	if err != nil {
 		return err
 	}
@@ -327,7 +327,7 @@ func getAnnotations(syncID string) map[string]string {
 	return map[string]string{
 		AnnotationSyncID:     syncID,
 		AnnotationLastSyncAt: time.Now().Format(time.RFC3339),
-		AnnotationVersion:    Version,
+		AnnotationVersion:    Version(),
 	}
 }
 

@@ -85,12 +85,16 @@ var (
 )
 
 //go:embed VERSION
-var Version string
+var version string
+
+func Version() string {
+	return strings.TrimSpace(version)
+}
 
 func versionStanza() string {
 	return fmt.Sprintf(
 		"Version: %v\nGit SHA: %v\nGo Version: %v\nGo OS/Arch: %v/%v\nBuilt at: %v",
-		Version, Commit, GoVersion, runtime.GOOS, runtime.GOARCH, Date,
+		Version(), Commit, GoVersion, runtime.GOOS, runtime.GOARCH, Date,
 	)
 }
 
