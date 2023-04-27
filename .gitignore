@@ -1,5 +1,5 @@
 bin/
 dist/
 data/
-config.jsonnet
+/config.jsonnet
 __debug_bin
