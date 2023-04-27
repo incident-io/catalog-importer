@@ -13,10 +13,6 @@ type SourceLocal struct {
 	Files []string `json:"files"`
 }
 
-func (s SourceLocal) Description() string {
-	return "Load config files from the local filesystem."
-}
-
 func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
 	results := map[string]*SourceEntry{}
 	for _, pattern := range s.Files {

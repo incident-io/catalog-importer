@@ -43,7 +43,7 @@ func (e SourceEntry) Parse() ([]Entry, error) {
 // Source is instantiated from configuration and represents a source of catalog files.
 type Source struct {
 	Local  *SourceLocal  `json:"local,omitempty"`
-	Inline *SourceInline `json:"inline,omitempty"`
+	Inline *SourceInline `json:"inline,omitempty" doc:"Define entries on this source to load them directly."`
 }
 
 func (s Source) Name() string {

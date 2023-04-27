@@ -12,10 +12,6 @@ type SourceInline struct {
 	Entries []map[string]any `json:"entries"`
 }
 
-func (s SourceInline) Description() string {
-	return "Provide entries directly inside config."
-}
-
 func (s SourceInline) Load(ctx context.Context) ([]*SourceEntry, error) {
 	entries := []*SourceEntry{}
 	for idx, entry := range s.Entries {

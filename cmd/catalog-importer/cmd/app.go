@@ -21,12 +21,15 @@ var (
 	app = kingpin.New("catalog-importer", "Import data into your incident.io catalog").Version(versionStanza())
 
 	// Global flags
-	debug      = app.Flag("debug", "Enable debug logging").Default("false").Bool()
-	configFile = app.Flag("config", "Importer configuration file").Required().String()
+	debug = app.Flag("debug", "Enable debug logging").Default("false").Bool()
 
 	// Sync
-	sync        = app.Command("sync", "Run a sync of the catalog")
+	sync        = app.Command("sync", "Sync data from catalog sources into incident.io")
 	syncOptions = new(SyncOptions).Bind(sync)
+
+	// Docs
+	docs        = app.Command("docs", "Need help? Run this for links to docs and an example config reference")
+	docsOptions = new(DocsOptions).Bind(docs)
 
 	// Validate
 	validate        = app.Command("validate", "Validate configuration")
@@ -63,6 +66,8 @@ func Run(ctx context.Context) (err error) {
 	switch command {
 	case sync.FullCommand():
 		return syncOptions.Run(ctx, logger)
+	case docs.FullCommand():
+		return docsOptions.Run(ctx, logger)
 	case validate.FullCommand():
 		return validateOptions.Run(ctx, logger)
 	default:
@@ -85,7 +90,12 @@ func versionStanza() string {
 	)
 }
 
-func banner(msg string, args ...any) {
+// OUT prints progress output to stderr.
+func OUT(msg string, args ...any) {
+	fmt.Fprintf(os.Stderr, msg+"\n", args...)
+}
+
+func BANNER(msg string, args ...any) {
 	msg = strings.Join(
 		[]string{
 			"################################################################################",
@@ -95,5 +105,5 @@ func banner(msg string, args ...any) {
 		"\n",
 	)
 
-	fmt.Fprintf(os.Stderr, msg+"\n", args...)
+	OUT(msg, args...)
 }

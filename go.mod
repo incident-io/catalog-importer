@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/deepmap/oapi-codegen v1.12.4
+	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.0
@@ -16,6 +17,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/samber/lo v1.38.1
 	github.com/schollz/progressbar/v3 v3.13.1
+	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
 	golang.org/x/sync v0.1.0
 	gopkg.in/yaml.v2 v2.4.0
 )

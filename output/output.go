@@ -10,9 +10,9 @@ import (
 // config for the resulting catalog type, along with catalog type attributes and how to
 // build the values of said attributes from the sourced entries.
 type Output struct {
-	Name        string        `json:"name" doc:"The name of the resulting catalog type."`
-	Description string        `json:"description" doc:"Human readable description of what this catalog type represents."`
-	TypeName    string        `json:"type_name" doc:"The unique type name that represents this catalog type, usually the name in CamelCase with no spaces."`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	TypeName    string        `json:"type_name"`
 	Source      *SourceConfig `json:"source"`
 	Attributes  []*Attribute  `json:"attributes"`
 }
@@ -31,10 +31,10 @@ func (o Output) Validate() error {
 // external ID – used to uniquely identify an entry in the catalog – and the aliases of
 // that entry from the source.
 type SourceConfig struct {
-	Filter     string   `json:"filter" doc:"Filter to apply to sourced entries in CEL."`
-	Name       string   `json:"name" doc:"What field of the entry should be used as the entry name."`
-	ExternalID string   `json:"external_id" doc:"What field of the entry should be used as the external ID."`
-	Aliases    []string `json:"aliases" doc:"Optionally, what fields of the entry should be set as aliases."`
+	Filter     string   `json:"filter"`
+	Name       string   `json:"name"`
+	ExternalID string   `json:"external_id"`
+	Aliases    []string `json:"aliases"`
 }
 
 func (s SourceConfig) Validate() error {
@@ -46,11 +46,11 @@ func (s SourceConfig) Validate() error {
 }
 
 type Attribute struct {
-	ID     string `json:"id" doc:"The stable identifier for this attribute, in kebab-case."`
-	Name   string `json:"name" doc:"The name of this attribute as presented in the catalog."`
-	Type   string `json:"type" doc:"Type of this catalog, set to the type name of custom or synced catalog types."`
-	Array  bool   `json:"array" doc:"Set to true if this attribute should be an array (zero or more values)."`
-	Source string `json:"source" doc:"If powered by a source, this is the expression that gives the attribute value."`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Array  bool   `json:"array"`
+	Source string `json:"source"`
 }
 
 func (a Attribute) Validate() error {
