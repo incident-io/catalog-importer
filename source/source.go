@@ -1,14 +1,11 @@
 package source
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"reflect"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/pkg/errors"
-	"gopkg.in/yaml.v2"
 )
 
 // SourceEntry is an entry that has been discovered in a source, with the contents of the
@@ -19,31 +16,15 @@ type SourceEntry struct {
 	Content []byte
 }
 
-// Entry is a single sourced entry.  It's just a basic map, but makes it much clearer when
-// building lists of this type, as the type syntax can get a bit messy.
-type Entry map[string]any
-
 func (e SourceEntry) Parse() ([]Entry, error) {
-	var (
-		entries   = []Entry{}
-		docChunks = bytes.Split(e.Content, []byte("\n---"))
-	)
-	for _, chunk := range docChunks {
-		entry := map[string]any{}
-		if err := yaml.Unmarshal(chunk, &entry); err != nil {
-			return nil, errors.Wrap(err, "parsing YAML")
-		}
-
-		entries = append(entries, entry)
-	}
-
-	return entries, nil
+	return Parse(e.Content), nil
 }
 
 // Source is instantiated from configuration and represents a source of catalog files.
 type Source struct {
 	Local  *SourceLocal  `json:"local,omitempty"`
-	Inline *SourceInline `json:"inline,omitempty" doc:"Define entries on this source to load them directly."`
+	Inline *SourceInline `json:"inline,omitempty"`
+	Exec   *SourceExec   `json:"exec,omitempty"`
 }
 
 func (s Source) Name() string {
@@ -52,6 +33,9 @@ func (s Source) Name() string {
 	}
 	if s.Inline != nil {
 		return "inline"
+	}
+	if s.Exec != nil {
+		return "exec"
 	}
 
 	return "unknown"
@@ -80,6 +64,9 @@ func (s Source) Load(ctx context.Context) ([]*SourceEntry, error) {
 	}
 	if s.Inline != nil {
 		return s.Inline.Load(ctx)
+	}
+	if s.Exec != nil {
+		return s.Exec.Load(ctx)
 	}
 
 	return nil, ErrInvalidSourceEmpty
