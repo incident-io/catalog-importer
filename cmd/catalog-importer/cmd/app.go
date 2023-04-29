@@ -16,6 +16,7 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
+	"github.com/google/go-cmp/cmp"
 	"github.com/incident-io/catalog-importer/config"
 	"github.com/pkg/errors"
 )
@@ -168,4 +169,36 @@ func BANNER(msg string, args ...any) {
 	)
 
 	OUT(msg, args...)
+}
+
+func DIFF[Type any](prefix string, this, that Type) {
+	thisJSON, _ := json.Marshal(this)
+	var thisNormalised any
+	json.Unmarshal(thisJSON, &thisNormalised)
+
+	thatJSON, _ := json.Marshal(that)
+	var thatNormalised any
+	json.Unmarshal(thatJSON, &thatNormalised)
+
+	var buf strings.Builder
+
+	diff := cmp.Diff(thisNormalised, thatNormalised)
+	if diff != "" {
+		for _, line := range strings.Split(diff, "\n") {
+			// Add the prefix, such as constant whitespace.
+			buf.WriteString(prefix)
+
+			if strings.HasPrefix(line, "+") {
+				buf.WriteString("\x1b[92m" + line + "\x1b[0m" + "\n")
+			} else if strings.HasPrefix(line, "-") {
+				buf.WriteString("\x1b[91m" + line + "\x1b[0m" + "\n")
+			} else {
+				buf.WriteString(line + "\n")
+			}
+		}
+	}
+
+	if strings.TrimSpace(buf.String()) != "" {
+		OUT(strings.TrimRight(buf.String(), "\n "))
+	}
 }

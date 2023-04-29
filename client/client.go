@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func New(ctx context.Context, apiKey, apiEndpoint, version string) (*ClientWithResponses, error) {
+func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...ClientOption) (*ClientWithResponses, error) {
 	bearerTokenProvider, bearerTokenProviderErr := securityprovider.NewSecurityProviderBearerToken(apiKey)
 	if bearerTokenProviderErr != nil {
 		return nil, bearerTokenProviderErr
@@ -35,8 +35,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string) (*ClientWithR
 		return resp, err
 	})
 
-	client, err := NewClientWithResponses(
-		apiEndpoint,
+	clientOpts := append([]ClientOption{
 		WithHTTPClient(base),
 		WithRequestEditorFn(bearerTokenProvider.Intercept),
 		// Add a user-agent so we can tell which version these requests came from.
@@ -44,12 +43,26 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string) (*ClientWithR
 			req.Header.Add("user-agent", fmt.Sprintf("catalog-importer/%s", version))
 			return nil
 		}),
-	)
+	}, opts...)
+
+	client, err := NewClientWithResponses(apiEndpoint, clientOpts...)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating client")
 	}
 
 	return client, nil
+}
+
+// WithReadOnly restricts the client to GET requests only, useful when creating a client
+// for the purpose of dry-running.
+func WithReadOnly() ClientOption {
+	return WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+		if req.Method != http.MethodGet {
+			return fmt.Errorf("read-only client tried to make mutating request: %s %s", req.Method, req.URL.String())
+		}
+
+		return nil
+	})
 }
 
 // RoundTripperFunc wraps a function to implement the RoundTripper interface, allowing
