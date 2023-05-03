@@ -10,13 +10,15 @@ import (
 	"github.com/incident-io/catalog-importer/source"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
+	"gopkg.in/guregu/null.v3"
 )
 
 type CatalogTypeModel struct {
-	Name        string
-	Description string
-	TypeName    string
-	Attributes  []client.CatalogTypeAttributePayloadV2
+	Name            string
+	Description     string
+	TypeName        string
+	Attributes      []client.CatalogTypeAttributePayloadV2
+	EnumAttributeID null.String // tracks the origin attribute, if an enum model
 }
 
 type CatalogEntryModel struct {
@@ -26,29 +28,48 @@ type CatalogEntryModel struct {
 	AttributeValues map[string]client.CatalogAttributeBindingPayloadV2
 }
 
-// Marshal builds payloads to configure both catalog type and the entries for that type
-// from the output configuration and entries that have already been filtered.
-//
-// The majority of the work comes from compiling and evaluating the CEL expressions that
-// marshal the catalog entries from source.
-func MarshalType(output *Output) *CatalogTypeModel {
-	catalogTypeModel := &CatalogTypeModel{
+// MarshalType builds the base catalog type model for the output, and any associated enum
+// types for its attributes.
+func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTypeModel) {
+	base = &CatalogTypeModel{
 		Name:        output.Name,
 		Description: output.Description,
 		TypeName:    output.TypeName,
 		Attributes:  []client.CatalogTypeAttributePayloadV2{},
 	}
 	for _, attr := range output.Attributes {
-		catalogTypeModel.Attributes = append(
-			catalogTypeModel.Attributes, client.CatalogTypeAttributePayloadV2{
+		var attrType string
+
+		// When an attribute is an enum you don't need to define the type as we'll load it
+		// from the enum definition.
+		if attr.Enum != nil {
+			attrType = attr.Enum.TypeName
+		} else {
+			attrType = attr.Type.String
+		}
+
+		base.Attributes = append(
+			base.Attributes, client.CatalogTypeAttributePayloadV2{
 				Id:    lo.ToPtr(attr.ID),
 				Name:  attr.Name,
-				Type:  attr.Type,
+				Type:  attrType,
 				Array: attr.Array,
 			})
+
+		// The enums we generate should be returned as types too, as we'll need to sync them
+		// just as any other.
+		if attr.Enum != nil {
+			enumTypes = append(enumTypes, &CatalogTypeModel{
+				Name:            attr.Enum.Name,
+				Description:     attr.Enum.Description,
+				TypeName:        attr.Enum.TypeName,
+				Attributes:      []client.CatalogTypeAttributePayloadV2{},
+				EnumAttributeID: null.StringFrom(attr.ID),
+			})
+		}
 	}
 
-	return catalogTypeModel
+	return
 }
 
 // MarshalEntries builds payloads to for the entries of the given output, assuming those

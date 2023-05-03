@@ -150,118 +150,125 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 
 	// Create missing catalog types
 	OUT("\n↻ Creating catalog types that don't yet exist...")
-createCatalogType:
 	for _, outputType := range cfg.Outputs() {
 		logger := kitlog.With(logger, "type_name", outputType.TypeName)
 
-		model := output.MarshalType(outputType)
-		for _, existingCatalogType := range existingCatalogTypes {
-			if model.TypeName == existingCatalogType.TypeName {
-				level.Debug(logger).Log("catalog type already exists")
-				continue createCatalogType
+		baseModel, enumModels := output.MarshalType(outputType)
+	createCatalogType:
+		for _, model := range append(enumModels, baseModel) {
+			for _, existingCatalogType := range existingCatalogTypes {
+				if model.TypeName == existingCatalogType.TypeName {
+					level.Debug(logger).Log("catalog type already exists")
+					continue createCatalogType
+				}
 			}
+
+			var createdCatalogType client.CatalogTypeV2
+			if opt.DryRun {
+				logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
+				createdCatalogType = client.CatalogTypeV2{
+					Id:          fmt.Sprintf("DRY-RUN-%s", model.TypeName),
+					Name:        model.Name,
+					Description: model.Description,
+					TypeName:    model.TypeName,
+				}
+			} else {
+				logger.Log("msg", "catalog type does not already exist, creating")
+				result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
+					Name:        model.Name,
+					Description: model.Description,
+					TypeName:    lo.ToPtr(model.TypeName),
+					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
+				})
+				if err != nil {
+					return errors.Wrap(err, "creating catalog type")
+				}
+
+				createdCatalogType = result.JSON201.CatalogType
+				logger.Log("msg", "created catalog type", "catalog_type_id", createdCatalogType.Id)
+			}
+
+			existingCatalogTypes = append(existingCatalogTypes, createdCatalogType)
+			OUT("  ✔ %s (id=%s)", model.TypeName, createdCatalogType.Id)
 		}
-
-		var createdCatalogType client.CatalogTypeV2
-		if opt.DryRun {
-			logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
-			createdCatalogType = client.CatalogTypeV2{
-				Id:          fmt.Sprintf("DRY-RUN-%s", model.TypeName),
-				Name:        model.Name,
-				Description: model.Description,
-				TypeName:    model.TypeName,
-			}
-		} else {
-			logger.Log("msg", "catalog type does not already exist, creating")
-			result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
-				Name:        model.Name,
-				Description: model.Description,
-				TypeName:    lo.ToPtr(model.TypeName),
-				Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
-			})
-			if err != nil {
-				return errors.Wrap(err, "creating catalog type")
-			}
-
-			createdCatalogType = result.JSON201.CatalogType
-			logger.Log("msg", "created catalog type", "catalog_type_id", createdCatalogType.Id)
-		}
-
-		existingCatalogTypes = append(existingCatalogTypes, createdCatalogType)
-		OUT("  ✔ %s (id=%s)", outputType.TypeName, createdCatalogType)
 	}
 
 	// Prepare a lookup of catalog type by the output name for subsequent pipeline steps.
 	catalogTypesByOutput := map[string]*client.CatalogTypeV2{}
 	for _, outputType := range cfg.Outputs() {
-		var catalogType *client.CatalogTypeV2
-		for _, existingCatalogType := range existingCatalogTypes {
-			if outputType.TypeName == existingCatalogType.TypeName {
-				catalogType = &existingCatalogType
-				break
+		baseModel, enumModels := output.MarshalType(outputType)
+		for _, model := range append(enumModels, baseModel) {
+			var catalogType *client.CatalogTypeV2
+			for _, existingCatalogType := range existingCatalogTypes {
+				if model.TypeName == existingCatalogType.TypeName {
+					catalogType = &existingCatalogType
+					break
+				}
 			}
-		}
-		if catalogType == nil {
-			return fmt.Errorf("could not find catalog type for model '%s', this is a bug in the importer", outputType.TypeName)
-		}
+			if catalogType == nil {
+				return fmt.Errorf("could not find catalog type for model '%s', this is a bug in the importer", model.TypeName)
+			}
 
-		catalogTypesByOutput[outputType.TypeName] = catalogType
+			catalogTypesByOutput[model.TypeName] = catalogType
+		}
 	}
 
 	// Update type schemas to match config
 	OUT("\n↻ Syncing catalog type schemas...")
 	for _, outputType := range cfg.Outputs() {
-		var (
-			model       = output.MarshalType(outputType)
-			catalogType = catalogTypesByOutput[outputType.TypeName]
-		)
+		baseModel, enumModels := output.MarshalType(outputType)
+		for _, model := range append(enumModels, baseModel) {
+			var (
+				catalogType = catalogTypesByOutput[model.TypeName]
+			)
 
-		var updatedCatalogType client.CatalogTypeV2
-		if opt.DryRun {
-			logger.Log("msg", "dry-run active, which means we fake a response")
-			updatedCatalogType = *catalogType // they start the same
+			var updatedCatalogType client.CatalogTypeV2
+			if opt.DryRun {
+				logger.Log("msg", "dry-run active, which means we fake a response")
+				updatedCatalogType = *catalogType // they start the same
 
-			// Then we pretend like we've already updated the schema, which means we rebuild the
-			// attributes.
-			updatedCatalogType.Schema = client.CatalogTypeSchemaV2{
-				Version:    updatedCatalogType.Schema.Version,
-				Attributes: []client.CatalogTypeAttributeV2{},
-			}
-			for _, attr := range model.Attributes {
-				updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
-					Id:    *attr.Id,
-					Name:  attr.Name,
-					Type:  attr.Type,
-					Array: attr.Array,
+				// Then we pretend like we've already updated the schema, which means we rebuild the
+				// attributes.
+				updatedCatalogType.Schema = client.CatalogTypeSchemaV2{
+					Version:    updatedCatalogType.Schema.Version,
+					Attributes: []client.CatalogTypeAttributeV2{},
+				}
+				for _, attr := range model.Attributes {
+					updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
+						Id:    *attr.Id,
+						Name:  attr.Name,
+						Type:  attr.Type,
+						Array: attr.Array,
+					})
+				}
+			} else {
+				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
+				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
+					Name:        model.Name,
+					Description: model.Description,
+					TypeName:    lo.ToPtr(model.TypeName),
+					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 				})
-			}
-		} else {
-			logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
-			result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
-				Name:        model.Name,
-				Description: model.Description,
-				TypeName:    lo.ToPtr(model.TypeName),
-				Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
-			})
-			if err != nil {
-				return errors.Wrap(err, "updating catalog type")
-			}
+				if err != nil {
+					return errors.Wrap(err, "updating catalog type")
+				}
 
-			version := result.JSON200.CatalogType.Schema.Version
-			logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
-			schemaResult, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
-				Version:    version,
-				Attributes: model.Attributes,
-			})
-			if err != nil {
-				return errors.Wrap(err, "updating catalog type schema")
-			}
+				version := result.JSON200.CatalogType.Schema.Version
+				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
+				schemaResult, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
+					Version:    version,
+					Attributes: model.Attributes,
+				})
+				if err != nil {
+					return errors.Wrap(err, "updating catalog type schema")
+				}
 
-			updatedCatalogType = schemaResult.JSON200.CatalogType
-		}
-		OUT("  ✔ %s (id=%s)", outputType.TypeName, catalogType.Id)
-		if opt.DryRun {
-			DIFF("  ", *catalogType, updatedCatalogType)
+				updatedCatalogType = schemaResult.JSON200.CatalogType
+			}
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+			if opt.DryRun {
+				DIFF("  ", *catalogType, updatedCatalogType)
+			}
 		}
 	}
 
@@ -310,12 +317,55 @@ createCatalogType:
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}
 
-			logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
-			catalogType := catalogTypesByOutput[outputType.TypeName]
+			// This can be reused for both model and enum types.
+			entriesClient := newEntriesClient(cl, existingCatalogTypes, opt.DryRun)
 
-			err = reconcile.Entries(ctx, logger, newEntriesClient(cl, existingCatalogTypes, opt.DryRun), catalogType, entryModels, newEntriesProgress(!opt.DryRun))
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
+			{
+				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
+				catalogType := catalogTypesByOutput[outputType.TypeName]
+
+				err = reconcile.Entries(ctx, logger, entriesClient, catalogType, entryModels, newEntriesProgress(!opt.DryRun))
+				if err != nil {
+					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
+				}
+			}
+
+			// Process enum attributes, which require generating from the result of the parent
+			// model's attribute.
+			_, enumModels := output.MarshalType(outputType)
+			for _, enumModel := range enumModels {
+				// We've got an enum attribute, which means we need to sync the enum values.
+				valueSet := map[string]bool{}
+				for _, entry := range entryModels {
+					value := entry.AttributeValues[enumModel.EnumAttributeID.String]
+					if value.Value != nil {
+						valueSet[*value.Value.Literal] = true
+					}
+					if value.ArrayValue != nil {
+						for _, elementValue := range *value.ArrayValue {
+							valueSet[*elementValue.Literal] = true
+						}
+					}
+				}
+
+				enumModels := []*output.CatalogEntryModel{}
+				for value := range valueSet {
+					enumModels = append(enumModels, &output.CatalogEntryModel{
+						ExternalID:      value,
+						Name:            value,
+						Aliases:         []string{},
+						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{},
+					})
+				}
+
+				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
+				catalogType := catalogTypesByOutput[enumModel.TypeName]
+				err := reconcile.Entries(ctx, logger, entriesClient, catalogType, enumModels, newEntriesProgress(!opt.DryRun))
+				if err != nil {
+					return errors.Wrap(err,
+						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
+							outputType.TypeName, enumModel.EnumAttributeID.String, enumModel.TypeName))
+				}
 			}
 		}
 	}
