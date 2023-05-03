@@ -13,6 +13,48 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+type EntriesClient struct {
+	GetEntries func(ctx context.Context, catalogTypeID string) (*client.CatalogTypeV2, []client.CatalogEntryV2, error)
+	Delete     func(ctx context.Context, entry *client.CatalogEntryV2) error
+	Create     func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error)
+	Update     func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error)
+}
+
+// EntriesClientFromClient wraps a real client with hooks that can create, update and delete
+// entries. This can be overriden for custom behaviour, such as a dry-run that shouldn't
+// actually perform updates.
+func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
+	return EntriesClient{
+		GetEntries: func(ctx context.Context, catalogTypeID string) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
+			return GetEntries(ctx, cl, catalogTypeID)
+		},
+		Delete: func(ctx context.Context, entry *client.CatalogEntryV2) error {
+			_, err := cl.CatalogV2DestroyEntryWithResponse(ctx, entry.Id)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
+		Create: func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error) {
+			result, err := cl.CatalogV2CreateEntryWithResponse(ctx, payload)
+			if err != nil {
+				return nil, err
+			}
+
+			return &result.JSON201.CatalogEntry, nil
+		},
+		Update: func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error) {
+			result, err := cl.CatalogV2UpdateEntryWithResponse(ctx, entry.Id, payload)
+			if err != nil {
+				return nil, err
+			}
+
+			return &result.JSON200.CatalogEntry, err
+		},
+	}
+}
+
 type EntriesProgress struct {
 	OnDeleteStart    func(total int)
 	OnDeleteProgress func()
@@ -22,7 +64,7 @@ type EntriesProgress struct {
 	OnUpdateProgress func()
 }
 
-func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithResponses, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress) error {
+func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress) error {
 	logger = kitlog.With(logger,
 		"catalog_type_id", catalogType.Id,
 		"catalog_type_name", catalogType.TypeName,
@@ -34,7 +76,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 	}
 
 	logger.Log("msg", "listing existing entries")
-	catalogType, entries, err := getEntries(ctx, cl, catalogType.Id)
+	catalogType, entries, err := cl.GetEntries(ctx, catalogType.Id)
 	if err != nil {
 		return errors.Wrap(err, "listing entries")
 	}
@@ -79,7 +121,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 					defer onProgress()
 				}
 
-				_, err := cl.CatalogV2DestroyEntryWithResponse(ctx, entry.Id)
+				err := cl.Delete(ctx, &entry)
 				if err != nil {
 					return errors.Wrap(err, "unable to destroy catalog entry, got error")
 				}
@@ -132,7 +174,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 					defer onProgress()
 				}
 
-				result, err := cl.CatalogV2CreateEntryWithResponse(ctx, client.CreateEntryRequestBody{
+				result, err := cl.Create(ctx, client.CreateEntryRequestBody{
 					CatalogTypeId:   catalogType.Id,
 					Name:            model.Name,
 					ExternalId:      lo.ToPtr(model.ExternalID),
@@ -143,7 +185,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 					return errors.Wrap(err, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", model.ExternalID))
 				}
 
-				logger.Log("msg", "created catalog entry", "external_id", model.ExternalID, "entry_id", result.JSON201.CatalogEntry.Id)
+				logger.Log("msg", "created catalog entry", "external_id", model.ExternalID, "entry_id", result.Id)
 
 				return nil
 			})
@@ -228,7 +270,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 					defer onProgress()
 				}
 
-				_, err := cl.CatalogV2UpdateEntryWithResponse(ctx, entry.Id, client.UpdateEntryRequestBody{
+				_, err := cl.Update(ctx, entry, client.UpdateEntryRequestBody{
 					Name:            model.Name,
 					ExternalId:      lo.ToPtr(model.ExternalID),
 					Aliases:         lo.ToPtr(model.Aliases),
@@ -251,8 +293,8 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl *client.ClientWithRes
 	return nil
 }
 
-// getEntries paginates through all catalog entries for the given type.
-func getEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string) (catalogType *client.CatalogTypeV2, entries []client.CatalogEntryV2, err error) {
+// GetEntries paginates through all catalog entries for the given type.
+func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string) (catalogType *client.CatalogTypeV2, entries []client.CatalogEntryV2, err error) {
 	var (
 		after *string
 	)
