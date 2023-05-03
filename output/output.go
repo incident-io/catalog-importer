@@ -46,17 +46,31 @@ func (s SourceConfig) Validate() error {
 }
 
 type Attribute struct {
-	ID     string      `json:"id"`
-	Name   string      `json:"name"`
-	Type   string      `json:"type"`
-	Array  bool        `json:"array"`
-	Source null.String `json:"source"`
+	ID     string         `json:"id"`
+	Name   string         `json:"name"`
+	Type   null.String    `json:"type"`
+	Array  bool           `json:"array"`
+	Source null.String    `json:"source"`
+	Enum   *AttributeEnum `json:"enum"`
 }
 
 func (a Attribute) Validate() error {
 	return validation.ValidateStruct(&a,
 		validation.Field(&a.ID, validation.Required),
 		validation.Field(&a.Name, validation.Required),
-		validation.Field(&a.Type, validation.Required),
+		validation.Field(&a.Type,
+			validation.Required.When(a.Enum == nil).Error("type is required when enum is not set"),
+			validation.Empty.When(a.Enum != nil).Error("type cannot be set when enum is provided"),
+		),
+		validation.Field(&a.Enum,
+			validation.Required.When(!a.Type.Valid).Error("enum is required if type is not set"),
+			validation.Empty.When(a.Type.Valid).Error("enum cannot be provided when type is set"),
+		),
 	)
+}
+
+type AttributeEnum struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	TypeName    string `json:"type_name"`
 }

@@ -187,9 +187,13 @@
             {
               id: 'tags',
               name: 'Tags',
-              type: 'String',
               array: true,
               source: 'metadata.tags',
+              enum: {
+                name: 'Backstage Component Tag',
+                type_name: 'Custom["BackstageComponentTag"]',
+                description: 'Backstage component tags.',
+              },
             },
           ],
         },
