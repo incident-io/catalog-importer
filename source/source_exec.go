@@ -23,6 +23,10 @@ func (s SourceExec) Validate() error {
 	)
 }
 
+func (s SourceExec) String() string {
+	return fmt.Sprintf("exec (command=%s)", strings.Join(s.Command, ","))
+}
+
 func (s SourceExec) Load(ctx context.Context) ([]*SourceEntry, error) {
 	var (
 		command = s.Command[0]
