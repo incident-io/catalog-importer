@@ -17,7 +17,12 @@ type SourceEntry struct {
 }
 
 func (e SourceEntry) Parse() ([]Entry, error) {
-	return Parse(e.Content), nil
+	entries := Parse(e.Content)
+	if len(entries) == 0 {
+		return entries, fmt.Errorf("failed to parse any entries")
+	}
+
+	return entries, nil
 }
 
 // Source is instantiated from configuration and represents a source of catalog files.

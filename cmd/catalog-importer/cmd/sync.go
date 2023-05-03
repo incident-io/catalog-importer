@@ -25,6 +25,7 @@ type SyncOptions struct {
 	APIEndpoint    string
 	APIKey         string
 	Targets        []string
+	SampleLength   int
 	DryRun         bool
 	Prune          bool
 	AllowDeleteAll bool
@@ -42,6 +43,9 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		StringVar(&opt.APIKey)
 	cmd.Flag("target", `Restrict running to only these outputs (e.g. Custom["Customer"])`).
 		StringsVar(&opt.Targets)
+	cmd.Flag("sample-length", "How many character to sample when logging about invalid source entries (for --debug only)").
+		Default("256").
+		IntVar(&opt.SampleLength)
 	cmd.Flag("dry-run", "Only calculate the changes needed and print the diff, don't actually make changes").
 		Default("false").
 		BoolVar(&opt.DryRun)
@@ -305,7 +309,15 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				for _, sourceEntry := range sourceEntries {
 					parsedEntries, err := sourceEntry.Parse()
 					if err != nil {
-						return errors.Wrap(err, fmt.Sprintf("parsing source entry: %s", sourceEntry.Origin))
+						sample := string(sourceEntry.Content)
+						if len(sample) > opt.SampleLength {
+							sample = sample[:opt.SampleLength]
+						}
+						logger.Log(
+							"source", sourceEntry.Origin,
+							"error", errors.Wrap(err, "parsing source entry"),
+							"sample", sample,
+						)
 					}
 
 					sourcedEntries = append(sourcedEntries, parsedEntries...)
