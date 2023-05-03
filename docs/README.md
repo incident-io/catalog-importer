@@ -114,7 +114,7 @@ jobs:
       - run:
           name: Install catalog-importer
           command: |
-            VERSION="0.4.0"
+            VERSION="0.13.0"
 
             echo "Installing importer v${VERSION}..."
             curl -L \
@@ -124,16 +124,17 @@ jobs:
       - run:
           name: Sync
           command: |
-            /tmp/catalog-importer sync --config config.jsonnet
+            if [[ "${$CIRCLE_BRANCH}" == "master" ]]; then
+              /tmp/catalog-importer sync --config config.jsonnet
+            else
+              /tmp/catalog-importer sync --config config.jsonnet --dry-run
+            fi
 
 workflows:
   version: 2
   sync:
     jobs:
-      - sync:
-          filters:
-            branches:
-              only: master # or main
+      - sync
 ```
 
 ### GitHub Actions
