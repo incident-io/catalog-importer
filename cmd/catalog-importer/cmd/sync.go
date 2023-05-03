@@ -370,7 +370,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				// We've got an enum attribute, which means we need to sync the enum values.
 				valueSet := map[string]bool{}
 				for _, entry := range entryModels {
-					value := entry.AttributeValues[enumModel.EnumAttributeID.String]
+					value := entry.AttributeValues[enumModel.SourceAttribute.ID]
 					if value.Value != nil {
 						valueSet[*value.Value.Literal] = true
 					}
@@ -381,13 +381,26 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 					}
 				}
 
+				// Create a description so we can attribute this value back to the original
+				// source. It would look like:
+				//
+				// One of the values of 'Plan name' for Customer.
+				desc := fmt.Sprintf("One of the values of '%s' for %s.",
+					enumModel.SourceAttribute.Name, outputType.Name)
+
 				enumModels := []*output.CatalogEntryModel{}
 				for value := range valueSet {
 					enumModels = append(enumModels, &output.CatalogEntryModel{
-						ExternalID:      value,
-						Name:            value,
-						Aliases:         []string{},
-						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{},
+						ExternalID: value,
+						Name:       value,
+						Aliases:    []string{},
+						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{
+							"description": {
+								Value: &client.CatalogAttributeValuePayloadV2{
+									Literal: &desc,
+								},
+							},
+						},
 					})
 				}
 
@@ -397,7 +410,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
-							outputType.TypeName, enumModel.EnumAttributeID.String, enumModel.TypeName))
+							outputType.TypeName, enumModel.SourceAttribute.ID, enumModel.TypeName))
 				}
 			}
 		}
