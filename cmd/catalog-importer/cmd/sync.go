@@ -21,11 +21,12 @@ import (
 )
 
 type SyncOptions struct {
-	ConfigFile  string
-	APIEndpoint string
-	APIKey      string
-	DryRun      bool
-	Prune       bool
+	ConfigFile     string
+	APIEndpoint    string
+	APIKey         string
+	DryRun         bool
+	Prune          bool
+	AllowDeleteAll bool
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -43,6 +44,8 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		BoolVar(&opt.DryRun)
 	cmd.Flag("prune", "Remove catalog types that are no longer in the config").
 		BoolVar(&opt.Prune)
+	cmd.Flag("allow-delete-all", "Allow removing all entries from a catalog entry").
+		BoolVar(&opt.AllowDeleteAll)
 
 	return opt
 }
@@ -317,6 +320,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 			entryModels, err := output.MarshalEntries(ctx, outputType, entries)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
+			}
+
+			// As a precaution, error if we think there are no entries for this output and we
+			// haven't explicitly permitted deleting all entries.
+			if len(entryModels) == 0 && !opt.AllowDeleteAll {
+				return errors.New(fmt.Sprintf("outputs (type_name = '%s'): found 0 matching entries and would delete everything but --allow-delete-all not set", outputType.TypeName))
 			}
 
 			// This can be reused for both model and enum types.
