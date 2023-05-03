@@ -27,22 +27,6 @@ type Source struct {
 	Exec   *SourceExec   `json:"exec,omitempty"`
 }
 
-func (s Source) Name() string {
-	if s.Local != nil {
-		return "local"
-	}
-	if s.Inline != nil {
-		return "inline"
-	}
-	if s.Exec != nil {
-		return "exec"
-	}
-
-	return "unknown"
-}
-
-var ErrInvalidSourceEmpty = fmt.Errorf("invalid source, must specify at least one type of source configuration")
-
 func (s Source) Validate() error {
 	err := validation.Validate("source", validation.By(func(value any) error {
 		if reflect.ValueOf(s).IsZero() {
@@ -58,16 +42,32 @@ func (s Source) Validate() error {
 	return validation.ValidateStruct(&s)
 }
 
-func (s Source) Load(ctx context.Context) ([]*SourceEntry, error) {
+type SourceBackend interface {
+	String() string
+	Load(ctx context.Context) ([]*SourceEntry, error)
+}
+
+func (s Source) Backend() (SourceBackend, error) {
 	if s.Local != nil {
-		return s.Local.Load(ctx)
+		return s.Local, nil
 	}
 	if s.Inline != nil {
-		return s.Inline.Load(ctx)
+		return s.Inline, nil
 	}
 	if s.Exec != nil {
-		return s.Exec.Load(ctx)
+		return s.Exec, nil
 	}
 
 	return nil, ErrInvalidSourceEmpty
+}
+
+var ErrInvalidSourceEmpty = fmt.Errorf("invalid source, must specify at least one type of source configuration")
+
+func (s Source) Load(ctx context.Context) ([]*SourceEntry, error) {
+	source, err := s.Backend()
+	if err != nil {
+		return nil, err
+	}
+
+	return source.Load(ctx)
 }

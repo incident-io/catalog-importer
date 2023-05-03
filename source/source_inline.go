@@ -17,6 +17,10 @@ func (s SourceInline) Validate() error {
 	return validation.ValidateStruct(&s)
 }
 
+func (s SourceInline) String() string {
+	return "inline" // we can't put all entries here, that would be too much
+}
+
 func (s SourceInline) Load(ctx context.Context) ([]*SourceEntry, error) {
 	entries := []*SourceEntry{}
 	for idx, entry := range s.Entries {

@@ -282,9 +282,11 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		{
 			OUT("\n  ↻ Loading data from sources...")
 			for _, source := range pipeline.Sources {
+				sourceLabel := lo.Must(source.Backend()).String()
+
 				sourceEntries, err := source.Load(ctx)
 				if err != nil {
-					return errors.Wrap(err, fmt.Sprintf("loading entries from source %v", source))
+					return errors.Wrap(err, fmt.Sprintf("loading entries from source: %s", sourceLabel))
 				}
 
 				for _, sourceEntry := range sourceEntries {
@@ -296,7 +298,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 					sourcedEntries = append(sourcedEntries, parsedEntries...)
 				}
 
-				OUT("    ✔ %s (found %d entries)", source.Name(), len(sourcedEntries))
+				OUT("    ✔ %s (found %d entries)", sourceLabel, len(sourcedEntries))
 			}
 		}
 

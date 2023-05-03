@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/pkg/errors"
@@ -19,6 +20,10 @@ func (s SourceLocal) Validate() error {
 		validation.Field(&s.Files, validation.Length(1, 0).
 			Error("must provide at least one file when using local source")),
 	)
+}
+
+func (s SourceLocal) String() string {
+	return fmt.Sprintf("local (files=%s)", strings.Join(s.Files, ","))
 }
 
 func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
