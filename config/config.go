@@ -9,6 +9,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/incident-io/catalog-importer/output"
 	"github.com/incident-io/catalog-importer/source"
+	"github.com/samber/lo"
 )
 
 //go:embed reference.jsonnet
@@ -35,6 +36,29 @@ func (c Config) Validate() error {
 			Error("must provide a sync_id to track which resources are managed by this config, and to support clean-up when an output is removed")),
 		validation.Field(&c.Pipelines),
 	)
+}
+
+// Filter return a new config adjusted so all that remains is configuration pertaining to
+// the given type names.
+func (c Config) Filter(typeNames []string) *Config {
+	clone := c
+	for idx := range clone.Pipelines {
+		clone.Pipelines[idx].Outputs = lo.Filter(clone.Pipelines[idx].Outputs, func(output *output.Output, _ int) bool {
+			for _, target := range typeNames {
+				if target == output.TypeName {
+					return true
+				}
+			}
+
+			return false
+		})
+	}
+
+	clone.Pipelines = lo.Filter(clone.Pipelines, func(pipeline *Pipeline, _ int) bool {
+		return len(pipeline.Outputs) > 0
+	})
+
+	return &clone
 }
 
 func (c Config) Outputs() []*output.Output {

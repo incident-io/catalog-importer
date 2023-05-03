@@ -24,6 +24,7 @@ type SyncOptions struct {
 	ConfigFile     string
 	APIEndpoint    string
 	APIKey         string
+	Targets        []string
 	DryRun         bool
 	Prune          bool
 	AllowDeleteAll bool
@@ -39,6 +40,8 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 	cmd.Flag("api-key", "API key for incident.io").
 		Envar("INCIDENT_API_KEY").
 		StringVar(&opt.APIKey)
+	cmd.Flag("target", `Restrict running to only these outputs (e.g. Custom["Customer"])`).
+		StringsVar(&opt.Targets)
 	cmd.Flag("dry-run", "Only calculate the changes needed and print the diff, don't actually make changes").
 		Default("false").
 		BoolVar(&opt.DryRun)
@@ -51,8 +54,11 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 }
 
 func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
-	if opt.DryRun && opt.Prune {
+	if opt.Prune && opt.DryRun {
 		return errors.New("cannot use --dry-run with --prune")
+	}
+	if opt.Prune && len(opt.Targets) > 0 {
+		return errors.New("cannot use --targets with --prune")
 	}
 
 	// Load config
@@ -61,6 +67,10 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		return err
 	}
 	{
+		if len(opt.Targets) > 0 {
+			OUT("⊕ Filtering config to targets (%s)", strings.Join(opt.Targets, ", "))
+			cfg = cfg.Filter(opt.Targets)
+		}
 		var (
 			outputs, sources int
 		)
