@@ -10,7 +10,6 @@ import (
 	"github.com/incident-io/catalog-importer/source"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
-	"gopkg.in/guregu/null.v3"
 )
 
 type CatalogTypeModel struct {
@@ -18,7 +17,7 @@ type CatalogTypeModel struct {
 	Description     string
 	TypeName        string
 	Attributes      []client.CatalogTypeAttributePayloadV2
-	EnumAttributeID null.String // tracks the origin attribute, if an enum model
+	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
 }
 
 type CatalogEntryModel struct {
@@ -60,11 +59,17 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		// just as any other.
 		if attr.Enum != nil {
 			enumTypes = append(enumTypes, &CatalogTypeModel{
-				Name:            attr.Enum.Name,
-				Description:     attr.Enum.Description,
-				TypeName:        attr.Enum.TypeName,
-				Attributes:      []client.CatalogTypeAttributePayloadV2{},
-				EnumAttributeID: null.StringFrom(attr.ID),
+				Name:        attr.Enum.Name,
+				Description: attr.Enum.Description,
+				TypeName:    attr.Enum.TypeName,
+				Attributes: []client.CatalogTypeAttributePayloadV2{
+					{
+						Id:   lo.ToPtr("description"),
+						Name: "Description",
+						Type: "String",
+					},
+				},
+				SourceAttribute: lo.ToPtr(*attr),
 			})
 		}
 	}
