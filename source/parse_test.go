@@ -14,7 +14,7 @@ var _ = Describe("Parse", func() {
 	)
 
 	JustBeforeEach(func() {
-		entries = source.Parse([]byte(input))
+		entries = source.Parse("file.thing", []byte(input))
 	})
 
 	When("Jsonnet", func() {

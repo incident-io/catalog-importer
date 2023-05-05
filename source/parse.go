@@ -16,9 +16,9 @@ type Entry map[string]any
 // It also supports multidoc YAML, and will either return the root object itself if that
 // root is a map[string]any, or if the root is an array, will try returning the contents
 // of said array that are map[string]any's.
-func Parse(data []byte) []Entry {
+func Parse(filename string, data []byte) []Entry {
 	// Try Jsonnet first, which will also cover JSON.
-	jsonString, err := jsonnet.MakeVM().EvaluateAnonymousSnippet("", string(data))
+	jsonString, err := jsonnet.MakeVM().EvaluateAnonymousSnippet(filename, string(data))
 	if err == nil {
 		data = []byte(jsonString)
 	}

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/pkg/errors"
+	"github.com/yargevad/filepathx"
 )
 
 type SourceLocal struct {
@@ -29,7 +29,7 @@ func (s SourceLocal) String() string {
 func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
 	results := map[string]*SourceEntry{}
 	for _, pattern := range s.Files {
-		matches, err := filepath.Glob(pattern)
+		matches, err := filepathx.Glob(pattern)
 		if err != nil {
 			return nil, errors.Wrap(err, "glob matching files")
 		}
@@ -43,8 +43,9 @@ func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
 				}
 
 				results[match] = &SourceEntry{
-					Origin:  fmt.Sprintf("local: %s", match),
-					Content: data,
+					Origin:   fmt.Sprintf("local", match),
+					Filename: match,
+					Content:  data,
 				}
 			}
 		}

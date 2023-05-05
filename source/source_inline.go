@@ -30,8 +30,9 @@ func (s SourceInline) Load(ctx context.Context) ([]*SourceEntry, error) {
 		}
 
 		entries = append(entries, &SourceEntry{
-			Origin:  fmt.Sprintf("inline: entries.%d", idx),
-			Content: data,
+			Origin:   fmt.Sprintf("inline: entries.%d", idx),
+			Filename: "",
+			Content:  data,
 		})
 	}
 

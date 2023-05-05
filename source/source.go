@@ -12,12 +12,13 @@ import (
 // source file and an Origin that explains where the entry came from, specific to the type
 // of source that produced it.
 type SourceEntry struct {
-	Origin  string
-	Content []byte
+	Origin   string // the source origin e.g. inline
+	Filename string // the filename that it should be evaluated under e.g. app/main.jsonnet
+	Content  []byte // the content of the source
 }
 
 func (e SourceEntry) Parse() ([]Entry, error) {
-	entries := Parse(e.Content)
+	entries := Parse(e.Filename, e.Content)
 	if len(entries) == 0 {
 		return entries, fmt.Errorf("failed to parse any entries")
 	}
