@@ -43,6 +43,24 @@ var _ = Describe("Parse", func() {
 			})
 		})
 
+		When("std.thisFile", func() {
+			BeforeEach(func() {
+				input = `
+{
+	name: std.thisFile,
+}
+`
+			})
+
+			It("returns filename", func() {
+				Expect(entries).To(Equal([]source.Entry{
+					{
+						"name": "file.thing",
+					},
+				}))
+			})
+		})
+
 		When("array", func() {
 			BeforeEach(func() {
 				input = `

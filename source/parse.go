@@ -18,7 +18,7 @@ type Entry map[string]any
 // of said array that are map[string]any's.
 func Parse(filename string, data []byte) []Entry {
 	// Try Jsonnet first, which will also cover JSON.
-	jsonString, err := jsonnet.MakeVM().EvaluateAnonymousSnippet(filename, string(data))
+	jsonString, err := jsonnet.MakeVM().EvaluateSnippet(filename, string(data))
 	if err == nil {
 		data = []byte(jsonString)
 	}

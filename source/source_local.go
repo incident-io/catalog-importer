@@ -43,7 +43,7 @@ func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
 				}
 
 				results[match] = &SourceEntry{
-					Origin:   fmt.Sprintf("local", match),
+					Origin:   fmt.Sprintf("local: %s", match),
 					Filename: match,
 					Content:  data,
 				}
