@@ -37,6 +37,10 @@ var (
 	docs        = app.Command("docs", "Need help? Run this for links to docs and an example config reference")
 	docsOptions = new(DocsOptions).Bind(docs)
 
+	// Jsonnet
+	jsonnetCmd     = app.Command("jsonnet", "Evaluate Jsonnet files")
+	jsonnetOptions = new(JsonnetOptions).Bind(jsonnetCmd)
+
 	// Validate
 	validate        = app.Command("validate", "Validate configuration")
 	validateOptions = new(ValidateOptions).Bind(validate)
@@ -74,6 +78,8 @@ func Run(ctx context.Context) (err error) {
 		return syncOptions.Run(ctx, logger)
 	case docs.FullCommand():
 		return docsOptions.Run(ctx, logger)
+	case jsonnetCmd.FullCommand():
+		return jsonnetOptions.Run(ctx, logger)
 	case validate.FullCommand():
 		return validateOptions.Run(ctx, logger)
 	default:
