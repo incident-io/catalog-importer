@@ -13,7 +13,7 @@ import (
 // have anything in the standard environment just yet, but this ensures we instantiate the
 // CEL VM consistently, wherever we might use it.
 func Compile(source string) (cel.Program, error) {
-	env, err := cel.NewEnv()
+	env, err := cel.NewEnv(Stdlib()...)
 	if err != nil {
 		return nil, errors.Wrap(err, "building CEL environment")
 	}
@@ -24,7 +24,7 @@ func Compile(source string) (cel.Program, error) {
 	}
 
 	prg, err := env.Program(ast)
-	if err := issues.Err(); err != nil {
+	if err != nil {
 		return nil, errors.Wrap(err, "building CEL program")
 	}
 
