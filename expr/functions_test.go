@@ -92,4 +92,24 @@ var _ = Describe("Functions", func() {
 			})
 		})
 	})
+
+	Describe("TrimPrefix", func() {
+		BeforeEach(func() {
+			src = "trimPrefix(value, 'group:')"
+		})
+
+		When("the input is a string", func() {
+			It("returns the input without prefix", func() {
+				out, _, err := prg.Eval(map[string]any{
+					"value": "group:engineering",
+				})
+				Expect(err).NotTo(HaveOccurred())
+
+				result, err := out.ConvertToNative(reflect.TypeOf(""))
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(result).To(Equal("engineering"))
+			})
+		})
+	})
 })

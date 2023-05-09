@@ -2,6 +2,7 @@ package expr
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
@@ -14,6 +15,7 @@ func Stdlib() []cel.EnvOption {
 		Pluck(),
 		Coalesce(),
 		First(),
+		TrimPrefix(),
 	}
 }
 
@@ -92,6 +94,21 @@ func First() cel.EnvOption {
 			[]*cel.Type{cel.ListType(cel.AnyType)},
 			cel.AnyType,
 			cel.UnaryBinding(binding),
+		),
+	)
+}
+
+// TrimPrefix removes the given string from the front of the input.
+func TrimPrefix() cel.EnvOption {
+	binding := func(input ref.Val, prefix ref.Val) ref.Val {
+		return types.String(strings.TrimPrefix(input.Value().(string), prefix.Value().(string)))
+	}
+
+	return cel.Function("trimPrefix",
+		cel.Overload("trimPrefix_string_string",
+			[]*cel.Type{cel.StringType, cel.StringType},
+			cel.StringType,
+			cel.BinaryBinding(binding),
 		),
 	)
 }
