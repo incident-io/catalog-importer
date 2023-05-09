@@ -19,6 +19,7 @@ local `catalog-info.yaml` file, you can replace the `local` source to be
 This looks like:
 
 ```jsonnet
+// importer.jsonnet (pipelines.sources)
 {
   github: {
     repos: [
