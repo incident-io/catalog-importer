@@ -16,3 +16,5 @@ run with.
 ```console
 $ catalog-importer sync --config=importer.jsonnet
 ```
+
+![Backstage catalog types created by this config](dashboard.png)
