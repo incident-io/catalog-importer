@@ -9,5 +9,10 @@ It uses an example from the incident.io team where we sync three catalog types:
 - Integration, all third-party product integrations.
 - Team, list all Product Development teams.
 
-The root `config.jsonnet` file loads each pipeline, and is what the `sync`
-command should be run with.
+The root `catalog.jsonnet` file specifies all the catalog data, and
+`importer.jsonnet` defines pipelines and is what the `sync` command should be
+run with.
+
+```console
+$ catalog-importer sync --config=importer.jsonnet
+```
