@@ -49,7 +49,21 @@
         {
           backstage: {
             endpoint: 'http://localhost:6969/api/catalog/entities',
-            token: '<bearer-token>',
+            token: '$(BACKSTAGE_TOKEN)',
+          },
+        },
+        // When catalog data is stored in source code across GitHub repos, use
+        // this source to pull the content from files that match patterns inside
+        // those repos.
+        {
+          github: {
+            token: '$(GITHUB_TOKEN)',
+            repos: [
+              'incident-io/*',  // matches all repos under this org
+            ],
+            files: [
+              '**/catalog-info.yaml',
+            ],
           },
         },
         // If you need to transform the catalog data, you can use the exec
