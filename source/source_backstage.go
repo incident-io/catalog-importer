@@ -14,8 +14,8 @@ import (
 )
 
 type SourceBackstage struct {
-	Endpoint string `json:"endpoint"` // https://backstage.company.io/api/catalog/entities
-	Token    string `json:"token"`
+	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities
+	Token    Credential `json:"token"`
 }
 
 func (s SourceBackstage) Validate() error {
@@ -45,8 +45,8 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*Sou
 		if err != nil {
 			return nil, errors.Wrap(err, "building Backstage URL")
 		}
-		if s.Token != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.Token))
+		if string(s.Token) != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", string(s.Token)))
 		}
 
 		resp, err := client.Do(req)
