@@ -1,8 +1,31 @@
 # Docs
 
+The importer is powered by a JSON configuration file, which defines the
+pipelines that you use to get data into the catalog. Each pipeline consists of
+sources and outputs.
+
+**Sources** define where your data comes from. This might be inline data, local
+files, files from GitHub, or the output of a command.
+
+**Outputs** define the resulting catalog types and entries, including the
+attributes that the type should have, and how their values should be populated
+from the source data.
+
+## Getting started
+
 The easiest way to get started is to copy one of the examples and tweak it to
 match your needs, which will depend on whether you already use a catalog and the
 type of catalog data you have available.
+
+Each of our examples uses [Jsonnet][jsonnet], a tool which makes working with
+more complex JSON files easier. The `catalog-importer` tool includes Jsonnet
+support, but installing language support to your editor will make the process
+a lot smoother. (Example: [VSCode extension][vscode])
+
+You don't have to use Jsonnet: the `--config` parameter also accepts regular
+JSON, as well as YAML.
+
+### Examples
 
 Choose from:
 
@@ -11,11 +34,17 @@ Choose from:
 - [Backstage](backstage), for those already using Backstage as a service catalog
   and want to import existing `catalog-info.yaml` files.
 
-Once you've created a config.jsonnet, visit your incident dashboard to create an
-API key with permission to:
+Once you've created a `config.jsonnet`, visit your
+[incident dashboard][api-keys] to create an API key with permission to:
 
 - View data
 - Manage organisation settings
+
+You can check your config is valid by running:
+
+```
+$ catalog-importer validate --config=config.jsonnet
+```
 
 Then you can run a sync with:
 
@@ -85,6 +114,46 @@ $ catalog-importer sync --config=config.jsonnet
 ```
 
 </details>
+
+## Defining outputs
+
+When you define an output, you need to give it (and each of its attributes) a
+`source`. This defines the path to a value within the source data. Let's imagine
+we're sourcing our data from some JSON:
+
+```json
+{
+  "name": "Payments service",
+  "details": { "description": "Manages movements of money" },
+  "runbooks": ["https://github.com/incident-io/runbooks/blob/main/payments.md"]
+}
+```
+
+To use the description as an attribute, we can use dot notation in the `source`.
+This is because `catalog-importer` makes use of Common Expression Language, or
+[CEL][cel]. The attribute would end up looking like this:
+
+```json
+{
+  "id": "description",
+  "name": "Description",
+  "type": "Text",
+  "source": "details.description"
+}
+```
+
+Our Backstage example contains some more examples of using CEL expressions.
+
+### CEL extensions
+
+We've added some extensions to CEL that add some functions for you to use:
+
+- `pluck()`: a function that given a list of objects, will map over those
+  objects and return the values at the provided key.
+- `coalesce(list)`: Removes all null values from a list.
+- `first(list)`: Returns the first value from a list.
+- `trimPrefix(s: string, prefix: string)`: removes the given string from the
+  front of the input.
 
 ## Continuous integration (CI)
 
@@ -171,3 +240,8 @@ jobs:
         run: |
           catalog-importer sync --config=config.jsonnet --prune
 ```
+
+[api-keys]: https://app.incident.io/settings/api-keys
+[jsonnet]: https://jsonnet.org/
+[vscode]: https://marketplace.visualstudio.com/items?itemName=Grafana.vscode-jsonnet
+[cel]: https://github.com/google/cel-spec
