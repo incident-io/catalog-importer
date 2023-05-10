@@ -156,22 +156,18 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
-      -
-        name: Install catalog-importer
+          go-version: "1.20"
+      - name: Install catalog-importer
         run: |
           go install github.com/incident-io/catalog-importer/cmd/catalog-importer@latest
-      -
-        name: Sync
+      - name: Sync
         run: |
           catalog-importer sync --config=config.jsonnet --prune
 ```
