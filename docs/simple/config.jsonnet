@@ -7,6 +7,13 @@ local catalog = import 'catalog.jsonnet';
   pipelines: [
     // Teams.
     {
+      sources: [
+        {
+          inline: {
+            entries: catalog.teams,
+          },
+        },
+      ],
       outputs: [
         {
           name: 'Team',
@@ -81,17 +88,17 @@ local catalog = import 'catalog.jsonnet';
           ],
         },
       ],
-      sources: [
-        {
-          inline: {
-            entries: catalog.teams,
-          },
-        },
-      ],
     },
 
     // Features.
     {
+      sources: [
+        {
+          inline: {
+            entries: catalog.features,
+          },
+        },
+      ],
       outputs: [
         {
           name: 'Feature',
@@ -117,17 +124,17 @@ local catalog = import 'catalog.jsonnet';
           ],
         },
       ],
-      sources: [
-        {
-          inline: {
-            entries: catalog.features,
-          },
-        },
-      ],
     },
 
     // Integrations.
     {
+      sources: [
+        {
+          inline: {
+            entries: catalog.integrations,
+          },
+        },
+      ],
       outputs: [
         {
           name: 'Integration',
@@ -145,13 +152,6 @@ local catalog = import 'catalog.jsonnet';
               source: 'description',
             },
           ],
-        },
-      ],
-      sources: [
-        {
-          inline: {
-            entries: catalog.integrations,
-          },
         },
       ],
     },
