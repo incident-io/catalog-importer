@@ -41,11 +41,13 @@ their catalog data.
 
 These are, with details in the links:
 
-- [`inline`](sources#inline) for defining inside the importer config
-- [`local`](sources#local) from local files
-- [`backstage`](sources#backstage) for catalog data pulled from the Backstage API
-- [`github`](sources#github) to load from files in GitHub repositories
-- [`exec`](sources#local) from the output of a command
+- [`inline`](sources.md#inline) for defining inside the importer config
+- [`local`](sources.md#local) from local files
+- [`backstage`](sources.md#backstage) for catalog data pulled from the Backstage API
+- [`github`](sources.md#github) to load from files in GitHub repositories
+- [`exec`](sources.md#local) from the output of a command
+
+View more details in [Sources](sources.md).
 
 ## Outputs
 
