@@ -18,7 +18,7 @@ var _ = Describe("Functions", func() {
 	)
 
 	JustBeforeEach(func() {
-		env, err := cel.NewEnv(Stdlib()...)
+		env, err := cel.NewEnv(Stdlib())
 		Expect(err).NotTo(HaveOccurred())
 
 		ast, issues := env.Parse(src)

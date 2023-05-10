@@ -10,13 +10,29 @@ import (
 	"github.com/google/cel-go/common/types/traits"
 )
 
-func Stdlib() []cel.EnvOption {
+// Stdlib adds importer specific library functions to the CEL runtime.
+func Stdlib() cel.EnvOption {
+	return cel.Lib(&stdlib{})
+}
+
+type stdlib struct {
+}
+
+func (*stdlib) LibraryName() string {
+	return "catalog-importer.expr"
+}
+
+func (*stdlib) CompileOptions() []cel.EnvOption {
 	return []cel.EnvOption{
 		Pluck(),
 		Coalesce(),
 		First(),
 		TrimPrefix(),
 	}
+}
+
+func (*stdlib) ProgramOptions() []cel.ProgramOption {
+	return []cel.ProgramOption{}
 }
 
 // Pluck is a function that given a list of object, will map over those objects and return
