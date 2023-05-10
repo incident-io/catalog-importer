@@ -107,7 +107,6 @@ This looks like:
 
 ```jsonnet
 // pipelines.*.sources.*
-
 {
   'local': {
     // List of file glob patterns to apply from the current directory.
@@ -160,6 +159,57 @@ std.map(function(desc) { description: desc }, [
   "Your Jsonnet files",
   "will also load fine",
 ])
+```
+
+### `backstage`
+
+If you already have a Backstage catalog setup, you can ask the importer to pull
+directly from the Backstage API.
+
+This looks like:
+
+```jsonnet
+// pipelines.*.sources.*
+{
+  backstage: {
+    endpoint: 'https://backstage-internal.example.com/api/catalog/entities',
+    token: '<bearer-token>',
+  },
+}
+```
+
+[backstage-endpoint]: https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities
+
+The `endpoint` should be pointing at whatever URL maps to [GET
+/entries][backstage-endpoint] on your Backstage instance, and the `token` should
+be a bearer token with permissions to make this call.
+
+This will pull in all catalog entries after which you may use the source
+`filter`s to separate entries into different types.
+
+### `github`
+
+This source can pull files matching a pattern from across repositories in a
+GitHub account, and is useful when you already have catalog files such as the
+catalog-info.yaml used by Backstage.
+
+> This is not yet built, but please contact us if this would be your preferred
+> way of sourcing catalog data.
+
+This would look like:
+
+```jsonnet
+// pipelines.*.sources.*
+{
+  github: {
+    repos: [
+      "example-org/example-repo",
+    ],
+    files: [
+      "catalog-info.yaml",
+    ],
+  },
+}
 ```
 
 ### `exec`

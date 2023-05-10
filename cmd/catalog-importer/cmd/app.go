@@ -33,6 +33,10 @@ var (
 	sync        = app.Command("sync", "Sync data from catalog sources into incident.io")
 	syncOptions = new(SyncOptions).Bind(sync)
 
+	// Source
+	sourceCmd     = app.Command("source", "Loads and prints the catalog entries from source, for debugging")
+	sourceOptions = new(SourceOptions).Bind(sourceCmd)
+
 	// Docs
 	docs        = app.Command("docs", "Need help? Run this for links to docs and an example config reference")
 	docsOptions = new(DocsOptions).Bind(docs)
@@ -76,6 +80,8 @@ func Run(ctx context.Context) (err error) {
 	switch command {
 	case sync.FullCommand():
 		return syncOptions.Run(ctx, logger)
+	case sourceCmd.FullCommand():
+		return sourceOptions.Run(ctx, logger)
 	case docs.FullCommand():
 		return docsOptions.Run(ctx, logger)
 	case jsonnetCmd.FullCommand():
