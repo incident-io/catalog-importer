@@ -1,4 +1,4 @@
-# Docs
+# Catalog importer
 
 Jump to [Getting started](#getting-started) if you want to begin from an example
 configuration or just want to experiment.
@@ -7,6 +7,7 @@ Otherwise check-out the rest of our documentation for details on how the
 importer works:
 
 - [Understanding importer configuration](config.md)
+- [Sources for catalog data such as files, GitHub, Backstage and more](sources.md)
 - [Using expressions to filter and adjust source data](expressions.md)
 - [Run the importer from CI tools like CircleCI or GitHub Actions](deploying.md)
 

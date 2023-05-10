@@ -15,7 +15,7 @@ Out the box, this will sync catalog types for:
 If the importer is running from an environment with access to your Backstage API
 endpoints, you can change the source to point at that endpoint.
 
-See more details at [Sources > Backstage](../sources.md#backstage).
+See more details at [Sources > Backstage](../config.md#backstage).
 
 ## Sourcing from GitHub
 
@@ -23,7 +23,7 @@ If you want to load catalog-info.yaml files from across GitHub instead of from a
 local `catalog-info.yaml` file, you can replace the `local` source to be
 `github`.
 
-See more details at [Sources > GitHub](../sources.md#github).
+See more details at [Sources > GitHub](../config.md#github).
 
 ## Customising for your annotations
 
