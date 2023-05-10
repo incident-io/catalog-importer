@@ -18,9 +18,9 @@ import (
 )
 
 type SourceGitHub struct {
-	Repos []string `json:"repos"`
-	Files []string `json:"files"`
-	Token string   `json:"token"`
+	Repos []string   `json:"repos"`
+	Files []string   `json:"files"`
+	Token Credential `json:"token"`
 }
 
 func (s SourceGitHub) Validate() error {
@@ -38,7 +38,7 @@ func (s SourceGitHub) String() string {
 
 func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	client := github.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: s.Token},
+		&oauth2.Token{AccessToken: string(s.Token)},
 	)))
 
 	type Target struct {

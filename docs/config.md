@@ -44,6 +44,8 @@ These are:
 
 - [`inline`](#inline) for defining inside the importer config
 - [`local`](#local) from local files
+- [`backstage`](#backstage) for catalog data pulled from the Backstage API
+- [`github`](#github) to load from files in GitHub repositories
 - [`exec`](#local) from the output of a command
 
 ### `inline`
@@ -172,8 +174,13 @@ This looks like:
 // pipelines.*.sources.*
 {
   backstage: {
+    // This will depend on where your Backstage is located, and if it's
+    // available on the same network as the importer.
     endpoint: 'https://backstage-internal.example.com/api/catalog/entities',
-    token: '<bearer-token>',
+
+    // Supports environment variable substitution.
+    // https://github.com/incident-io/catalog-importer/blob/master/docs/config.md#credentials
+    token: '$(BACKSTAGE_TOKEN)',
   },
 }
 ```
@@ -200,7 +207,8 @@ This would look like:
 {
   github: {
     // Personal access token from GitHub.
-    token: "<personal-access-token>",
+    // https://github.com/incident-io/catalog-importer/blob/master/docs/config.md#credentials
+    token: "$(GITHUB_TOKEN)",
     repos: [
       "example-org/*",                    // find all repositories
       "another-example-org/example-repo", // or specific ones
@@ -405,6 +413,24 @@ given a single attribute:
 For more information on how to use filter expressions, read [Using
 expressions](expressions.md) or look at the [Backstage](backstage) example for
 real-life use cases.
+
+## Credentials
+
+For config fields that might contain sensitive values, we support substituting
+values from environment variables into the value of that field.
+
+As an example:
+
+```jsonnet
+{
+  token: '$(SOME_TOKEN)',
+}
+```
+
+Would be expanded into whatever the value of `SOME_TOKEN` is from the process
+environment.
+
+Wherever this is supported, it will be documented against that field.
 
 ## File format
 
