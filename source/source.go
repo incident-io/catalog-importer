@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
+	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -32,6 +33,7 @@ type Source struct {
 	Inline    *SourceInline    `json:"inline,omitempty"`
 	Exec      *SourceExec      `json:"exec,omitempty"`
 	Backstage *SourceBackstage `json:"backstage,omitempty"`
+	GitHub    *SourceGitHub    `json:"github,omitempty"`
 }
 
 func (s Source) Validate() error {
@@ -51,7 +53,7 @@ func (s Source) Validate() error {
 
 type SourceBackend interface {
 	String() string
-	Load(ctx context.Context) ([]*SourceEntry, error)
+	Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error)
 }
 
 func (s Source) Backend() (SourceBackend, error) {
@@ -67,17 +69,20 @@ func (s Source) Backend() (SourceBackend, error) {
 	if s.Backstage != nil {
 		return s.Backstage, nil
 	}
+	if s.GitHub != nil {
+		return s.GitHub, nil
+	}
 
 	return nil, ErrInvalidSourceEmpty
 }
 
 var ErrInvalidSourceEmpty = fmt.Errorf("invalid source, must specify at least one type of source configuration")
 
-func (s Source) Load(ctx context.Context) ([]*SourceEntry, error) {
+func (s Source) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	source, err := s.Backend()
 	if err != nil {
 		return nil, err
 	}
 
-	return source.Load(ctx)
+	return source.Load(ctx, logger)
 }

@@ -193,24 +193,40 @@ This source can pull files matching a pattern from across repositories in a
 GitHub account, and is useful when you already have catalog files such as the
 catalog-info.yaml used by Backstage.
 
-> This is not yet built, but please contact us if this would be your preferred
-> way of sourcing catalog data.
-
 This would look like:
 
 ```jsonnet
 // pipelines.*.sources.*
 {
   github: {
+    // Personal access token from GitHub.
+    token: "<personal-access-token>",
     repos: [
-      "example-org/example-repo",
+      "example-org/*",                    // find all repositories
+      "another-example-org/example-repo", // or specific ones
     ],
+    // Supports glob syntax like * for a single directory or ** for any number.
     files: [
-      "catalog-info.yaml",
+      "**/catalog-info.yaml",
     ],
   },
 }
 ```
+
+The personal access token will need to have access to the organization that
+contains the repos you'd like to source catalog data from.
+
+GitHub has two types of personal access tokens, classic or fine-grained.
+Depending on the type of token you create you'll need:
+
+- Classic: `repo`, `user`, `read:org` and `read:discussion` scopes.
+- Fine-grained:
+  - Organization permissions:
+    - Read access to members, organization administrative, team discussions.
+  - Repository permissions:
+    - Read access to code, discussions, metadata.
+
+If you encounter issues, be sure to get in touch.
 
 ### `exec`
 

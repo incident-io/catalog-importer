@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-cleanhttp"
@@ -30,7 +31,7 @@ func (s SourceBackstage) String() string {
 	return fmt.Sprintf("backstage (endpoint=%s)", s.Endpoint)
 }
 
-func (s SourceBackstage) Load(ctx context.Context) ([]*SourceEntry, error) {
+func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	client := cleanhttp.DefaultClient()
 
 	var (

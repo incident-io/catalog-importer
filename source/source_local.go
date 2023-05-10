@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/pkg/errors"
 	"github.com/yargevad/filepathx"
@@ -26,7 +27,7 @@ func (s SourceLocal) String() string {
 	return fmt.Sprintf("local (files=%s)", strings.Join(s.Files, ","))
 }
 
-func (s SourceLocal) Load(ctx context.Context) ([]*SourceEntry, error) {
+func (s SourceLocal) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	results := map[string]*SourceEntry{}
 	for _, pattern := range s.Files {
 		matches, err := filepathx.Glob(pattern)

@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/pkg/errors"
 )
@@ -27,7 +28,7 @@ func (s SourceExec) String() string {
 	return fmt.Sprintf("exec (command=%s)", strings.Join(s.Command, ","))
 }
 
-func (s SourceExec) Load(ctx context.Context) ([]*SourceEntry, error) {
+func (s SourceExec) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	var (
 		command = s.Command[0]
 		args    = s.Command[1:]

@@ -46,7 +46,7 @@ func (opt *SourceOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 			for _, source := range pipeline.Sources {
 				sourceLabel := lo.Must(source.Backend()).String()
 
-				sourceEntries, err := source.Load(ctx)
+				sourceEntries, err := source.Load(ctx, logger)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("loading entries from source: %s", sourceLabel))
 				}
