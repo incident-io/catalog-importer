@@ -28,9 +28,10 @@ func (e SourceEntry) Parse() ([]Entry, error) {
 
 // Source is instantiated from configuration and represents a source of catalog files.
 type Source struct {
-	Local  *SourceLocal  `json:"local,omitempty"`
-	Inline *SourceInline `json:"inline,omitempty"`
-	Exec   *SourceExec   `json:"exec,omitempty"`
+	Local     *SourceLocal     `json:"local,omitempty"`
+	Inline    *SourceInline    `json:"inline,omitempty"`
+	Exec      *SourceExec      `json:"exec,omitempty"`
+	Backstage *SourceBackstage `json:"backstage,omitempty"`
 }
 
 func (s Source) Validate() error {
@@ -62,6 +63,9 @@ func (s Source) Backend() (SourceBackend, error) {
 	}
 	if s.Exec != nil {
 		return s.Exec, nil
+	}
+	if s.Backstage != nil {
+		return s.Backstage, nil
 	}
 
 	return nil, ErrInvalidSourceEmpty

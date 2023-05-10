@@ -81,8 +81,5 @@ type Pipeline struct {
 }
 
 func (p Pipeline) Validate() error {
-	return validation.ValidateStruct(&p,
-		validation.Field(&p.Sources, validation.Required),
-		validation.Field(&p.Outputs, validation.Required),
-	)
+	return validation.ValidateStruct(&p)
 }

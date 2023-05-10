@@ -45,6 +45,13 @@
             ],
           },
         },
+        // If you want to pull data directly from Backstage's API.
+        {
+          backstage: {
+            endpoint: 'http://localhost:6969/api/catalog/entities',
+            token: '<bearer-token>',
+          },
+        },
         // If you need to transform the catalog data, you can use the exec
         // source to run a command.
         //

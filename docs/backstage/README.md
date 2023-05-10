@@ -10,27 +10,20 @@ Out the box, this will sync catalog types for:
 
 ![Backstage catalog types created by this config](dashboard.png)
 
+## Sourcing from Backstage API
+
+If the importer is running from an environment with access to your Backstage API
+endpoints, you can change the source to point at that endpoint.
+
+See more details at [Sources > Backstage](../sources.md#backstage).
+
 ## Sourcing from GitHub
 
 If you want to load catalog-info.yaml files from across GitHub instead of from a
 local `catalog-info.yaml` file, you can replace the `local` source to be
 `github`.
 
-This looks like:
-
-```jsonnet
-// importer.jsonnet (pipelines.sources)
-{
-  github: {
-    repos: [
-      "example-org/example-repo",
-    ],
-    files: [
-      "catalog-info.yaml",
-    ],
-  },
-}
-```
+See more details at [Sources > GitHub](../sources.md#github).
 
 ## Customising for your annotations
 
