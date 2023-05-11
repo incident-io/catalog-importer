@@ -37,9 +37,9 @@ jobs:
           name: Sync
           command: |
             if [[ "${$CIRCLE_BRANCH}" == "master" ]]; then
-              /tmp/catalog-importer sync --config config.jsonnet
+              /tmp/catalog-importer sync --config importer.jsonnet
             else
-              /tmp/catalog-importer sync --config config.jsonnet --dry-run
+              /tmp/catalog-importer sync --config importer.jsonnet --dry-run
             fi
 
 workflows:
@@ -81,6 +81,6 @@ jobs:
           go install github.com/incident-io/catalog-importer/cmd/catalog-importer@latest
       - name: Sync
         run: |
-          catalog-importer sync --config=config.jsonnet --prune
+          catalog-importer sync --config=importer.jsonnet --prune
 ```
 

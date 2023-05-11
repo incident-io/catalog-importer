@@ -7,7 +7,7 @@ outputs.
 This file is given to the importer via the `--config` flag:
 
 ```console
-$ catalog-importer validate --config=config.jsonnet
+$ catalog-importer validate --config=importer.jsonnet
 ```
 
 We explain how the configuration works below, but if you're already familiar or
@@ -159,5 +159,5 @@ YAML: both will work fine.
 ```console
 $ catalog-importer validate --config=config.json    # also works
 $ catalog-importer validate --config=config.yaml    # ...as does this
-$ catalog-importer validate --config=config.jsonnet # ...and this
+$ catalog-importer validate --config=importer.jsonnet # ...and this
 ```

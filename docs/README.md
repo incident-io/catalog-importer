@@ -34,7 +34,7 @@ Choose from:
 - [Backstage](backstage), for those already using Backstage as a service catalog
   and want to import existing `catalog-info.yaml` files.
 
-Once you've created a `config.jsonnet`, visit your [incident dashboard][api-keys]
+Once you've created a `importer.jsonnet`, visit your [incident dashboard][api-keys]
 to create an API key with permission to:
 
 - View data
@@ -43,13 +43,13 @@ to create an API key with permission to:
 You can check your config is valid by running:
 
 ```
-$ catalog-importer validate --config=config.jsonnet
+$ catalog-importer validate --config=importer.jsonnet
 ```
 
 Then you can run a sync with:
 
 ```console
-$ catalog-importer sync --config=config.jsonnet
+$ catalog-importer sync --config=importer.jsonnet
 
 ✔ Loaded config (3 pipelines, 3 sources, 3 outputs)
 ✔ Connected to incident.io API (https://api.incident.io)

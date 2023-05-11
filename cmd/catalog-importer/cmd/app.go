@@ -127,7 +127,7 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
 
 		OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
 `)
-		config.PrettyPrint(`// e.g. config.jsonnet
+		config.PrettyPrint(`// e.g. importer.jsonnet
 {
   sync_id: 'unique-sync-id',
   pipelines: [

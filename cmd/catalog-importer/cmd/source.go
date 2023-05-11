@@ -19,7 +19,7 @@ type SourceOptions struct {
 }
 
 func (opt *SourceOptions) Bind(cmd *kingpin.CmdClause) *SourceOptions {
-	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
+	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. importer.jsonnet)").
 		StringVar(&opt.ConfigFile)
 	cmd.Flag("sample-length", "How many character to sample when logging about invalid source entries (for --debug only)").
 		Default("256").

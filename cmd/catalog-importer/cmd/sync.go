@@ -32,7 +32,7 @@ type SyncOptions struct {
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
-	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
+	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. importer.jsonnet)").
 		StringVar(&opt.ConfigFile)
 	cmd.Flag("api-endpoint", "Endpoint of the incident.io API").
 		Default("https://api.incident.io").

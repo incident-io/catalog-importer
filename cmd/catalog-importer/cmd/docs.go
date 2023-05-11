@@ -33,7 +33,7 @@ But first, some quicklinks that can help you get started:
         - CircleCI => https://github.com/incident-io/catalog-importer/tree/master/docs#circleci
         - GitHub Actions => https://github.com/incident-io/catalog-importer/tree/master/docs#github-actions
 
-Below is the reference config.jsonnet, documenting all config options:
+Below is the reference importer.jsonnet, documenting all config options:
 
 `)
 	config.PrettyPrint(string(config.ReferenceConfig))

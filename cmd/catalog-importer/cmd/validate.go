@@ -16,7 +16,7 @@ type ValidateOptions struct {
 }
 
 func (opt *ValidateOptions) Bind(cmd *kingpin.CmdClause) *ValidateOptions {
-	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. config.jsonnet)").
+	cmd.Flag("config", "Config file in either Jsonnet, YAML or JSON (e.g. importer.jsonnet)").
 		StringVar(&opt.ConfigFile)
 
 	return opt
