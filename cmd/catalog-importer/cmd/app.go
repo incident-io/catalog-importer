@@ -29,6 +29,10 @@ var (
 	// Global flags
 	debug = app.Flag("debug", "Enable debug logging").Default("false").Bool()
 
+	// Init
+	initCmd     = app.Command("init", "Initialises a new config from a template")
+	initOptions = new(InitOptions).Bind(initCmd)
+
 	// Sync
 	sync        = app.Command("sync", "Sync data from catalog sources into incident.io")
 	syncOptions = new(SyncOptions).Bind(sync)
@@ -36,10 +40,6 @@ var (
 	// Source
 	sourceCmd     = app.Command("source", "Loads and prints the catalog entries from source, for debugging")
 	sourceOptions = new(SourceOptions).Bind(sourceCmd)
-
-	// Docs
-	docs        = app.Command("docs", "Need help? Run this for links to docs and an example config reference")
-	docsOptions = new(DocsOptions).Bind(docs)
 
 	// Jsonnet
 	jsonnetCmd     = app.Command("jsonnet", "Evaluate Jsonnet files")
@@ -78,12 +78,12 @@ func Run(ctx context.Context) (err error) {
 	}()
 
 	switch command {
+	case initCmd.FullCommand():
+		return initOptions.Run(ctx, logger)
 	case sync.FullCommand():
 		return syncOptions.Run(ctx, logger)
 	case sourceCmd.FullCommand():
 		return sourceOptions.Run(ctx, logger)
-	case docs.FullCommand():
-		return docsOptions.Run(ctx, logger)
 	case jsonnetCmd.FullCommand():
 		return jsonnetOptions.Run(ctx, logger)
 	case validate.FullCommand():

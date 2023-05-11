@@ -1,7 +1,7 @@
 # Backstage
 
-The `importer.jsonnet` file is intended to be used with the incident.io
-catalog-importer to import Backstage catalog data.
+This template is used to import Backstage catalog data into the incident.io
+catalog.
 
 Out the box, this will sync catalog types for:
 

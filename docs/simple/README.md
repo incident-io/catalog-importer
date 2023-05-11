@@ -1,7 +1,7 @@
 # Simple
 
-This is an example of configuring a catalog from scratch, designed to be
-centralised in a single repo.
+This template creates a catalog with basic types like Feature, Integration and
+Team, intended to sync catalog data from a centralised repo.
 
 It uses an example from the incident.io team where we sync three catalog types:
 
