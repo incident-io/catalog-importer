@@ -54,7 +54,7 @@ to add a new attribute:
 ```jsonnet
 {
   name: 'Backstage User',
-  description: 'Users syned from Backstage.',
+  description: 'Users synced from Backstage.',
   type_name: 'Custom["BackstageUser"]',
   source: {
     // ...
