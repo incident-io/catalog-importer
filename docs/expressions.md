@@ -100,8 +100,8 @@ On a CEL variable named `subject` of value:
 
 ```json
 [
-  { "key": "one", "another_key: "two" },
-  { "key": "three", "another_key: "four" }
+  { "key": "one", "another_key": "two" },
+  { "key": "three", "another_key": "four" }
 ]
 ```
 
