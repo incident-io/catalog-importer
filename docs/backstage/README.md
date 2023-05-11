@@ -1,33 +1,71 @@
 # Backstage
 
-If you use Backstage, this configuration can be used to load `catalog-info.yaml`
-and process them into incident.io catalog types.
-
-It's recommended that you start with this config then tailor each output to
-support any custom annotations you may have in your configuration.
+The `importer.jsonnet` file is intended to be used with the incident.io
+catalog-importer to import Backstage catalog data.
 
 Out the box, this will sync catalog types for:
 
 ![Backstage catalog types created by this config](dashboard.png)
 
-## Sourcing from Backstage API
+See documentation on how to use the importer at:
 
-If the importer is running from an environment with access to your Backstage API
-endpoints, you can change the source to point at that endpoint.
+- https://github.com/incident-io/catalog-importer/tree/master/docs
 
-See more details at [Sources > Backstage](../config.md#backstage).
+Otherwise get started below.
 
-## Sourcing from GitHub
+## Getting started
 
-If you want to load catalog-info.yaml files from across GitHub instead of from a
-local `catalog-info.yaml` file, you can replace the `local` source to be
-`github`.
+### 1. Install the catalog-importer:
 
-See more details at [Sources > GitHub](../config.md#github).
+```console
+brew tap incident-io/homebrew-taps
+brew install catalog-importer
+```
+
+### 2. Create an API key
+
+Create an API key from https://app.incident.io/settings/api-keys with the
+following scopes:
+
+- Can view data, like public incidents and organization settings
+- Can manage organization settings (e.g. custom fields)
+
+Then set that token as your `INCIDENT_API_KEY` environment variable.
+
+### 3. Sync
+
+Now you can run a sync to import your data into the incident catalog.
+
+```console
+$ export INCIDENT_API_KEY="<token-from-above>"
+$ catalog-importer sync --config importer.jsonnet --allow-delete-all
+
+✔ Loaded config (5 pipelines, 10 sources, 5 outputs)
+✔ Connected to incident.io API (https://api.incident.io/)
+✔ Found 29 catalog types, with 12 that match our sync ID (backstage)
+
+...
+```
+
+This will create Backstage catalog entries from the sample `catalog-info.yaml`
+file that we've included as an example to get people started.
+
+### 4. Use your real data
+
+To use real data, edit the `sources` in `pipelines/entries.jsonnet` to pull your
+data from one of the following sources:
+
+- `backstage` for directly from the Backstage API, if the importer can reach it
+- `github` for sourcing catalog-info.yaml files across your organization
+- `local` if you have catalog-info.yaml files locally on your filesystem
+- `exec` to run a script that can build the catalog data
+
+See more details at [Sources](../sources.md) and get in touch with
+support@incident.io if you're having trouble.
 
 ## Customising for your annotations
 
-Most organisations store custom config inside annotations of Backstage catalog
+Most organizations store custom config inside annotations of Backstage catalog
 types, enriching the default Backstage types for their own uses.
 
 If you use GitHub, you might want to tag each Backstage user with their GitHub
@@ -49,7 +87,7 @@ spec:
 ```
 
 If you want to load this into the incident.io catalog, you can amend the output
-to add a new attribute:
+(see pipelines/entries.jsonnet) to add a new attribute:
 
 ```jsonnet
 {
