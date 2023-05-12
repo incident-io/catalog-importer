@@ -1,6 +1,7 @@
 # Outputs
 
-Outputs are best understood by example:
+Outputs define the resulting catalog types and entries, and are best understood
+by example. Take this pipeline:
 
 ```jsonnet
 {
