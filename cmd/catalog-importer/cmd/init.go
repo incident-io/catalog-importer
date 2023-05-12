@@ -82,6 +82,26 @@ func (opt *InitOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		}
 	}
 
+	entries, err := os.ReadDir(chosenDest)
+	if err != nil {
+		return errors.Wrap(err, "listing destination directory")
+	}
+	if len(entries) > 0 {
+		prompt := promptui.Select{
+			Label: "The chosen destination already contains files, are you sure you want to continue?",
+			Items: []string{
+				"Yes",
+				"No",
+			},
+		}
+
+		_, answer, _ := prompt.Run()
+		if answer != "Yes" {
+			return nil
+		}
+
+	}
+
 	err = fs.WalkDir(docs.Content, chosenTemplate.Name, fs.WalkDirFunc(func(entryPath string, d fs.DirEntry, err error) error {
 		destPath := path.Join(chosenDest, entryPath)
 		OUT("writing %s...", destPath)
@@ -116,8 +136,8 @@ func (opt *InitOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		return err
 	}
 
-	OUT("\nYour template has been installed at: %s", path.Join(chosenDest, chosenTemplate.Name))
-	OUT("Instructions on how to use it can be found in the README.md.")
+	OUT("\nYour template has been installed at:\n  %s\n", path.Join(chosenDest, chosenTemplate.Name))
+	OUT("View the README.md for instructions on how to use it.")
 
 	return nil
 }
