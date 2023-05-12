@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:embed simple/* backstage/*
+//go:embed */*
 var Content embed.FS
 
 type Template struct {
@@ -30,10 +30,14 @@ func GetTemplates() ([]Template, error) {
 			return nil, errors.Wrap(err, "reading README.md")
 		}
 
+		var preamble string
+		preamble = strings.SplitN(string(data), "Out the box", 2)[0] // keep everything above
+		preamble = strings.SplitN(preamble, "\n\n", 2)[1]            // drop the header
+
 		templates = append(templates, Template{
 			Name:        entry.Name(),
 			Label:       strings.TrimPrefix(strings.Split(string(data), "\n")[0], "# "),
-			Description: strings.Split(string(data), "\n\n")[1],
+			Description: preamble,
 		})
 	}
 

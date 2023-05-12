@@ -1,7 +1,8 @@
 # Backstage
 
 This template is used to import Backstage catalog data into the incident.io
-catalog.
+catalog, either by pulling entries directly from the Backstage API or by loading
+catalog-info.yaml files.
 
 Out the box, this will sync catalog types for:
 

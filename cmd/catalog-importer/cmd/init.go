@@ -32,7 +32,7 @@ func (opt *InitOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	var chosenTemplate docs.Template
 	{
 		prompt := promptui.Select{
-			Label: "Which template would you like to use?",
+			Label: "Where do you store your catalog data?",
 			Items: configTemplates,
 			Size:  4,
 			Templates: &promptui.SelectTemplates{
