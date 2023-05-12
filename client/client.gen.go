@@ -26,6 +26,13 @@ const (
 	Outstanding ActionV1Status = "outstanding"
 )
 
+// Defines values for CatalogResourceV2Category.
+const (
+	CatalogResourceV2CategoryCustom    CatalogResourceV2Category = "custom"
+	CatalogResourceV2CategoryExternal  CatalogResourceV2Category = "external"
+	CatalogResourceV2CategoryPrimitive CatalogResourceV2Category = "primitive"
+)
+
 // Defines values for CatalogTypeV2Color.
 const (
 	CatalogTypeV2ColorBlue   CatalogTypeV2Color = "blue"
@@ -215,6 +222,8 @@ const (
 
 // Defines values for IdentityV1Roles.
 const (
+	IdentityV1RolesCatalogEditor   IdentityV1Roles = "catalog_editor"
+	IdentityV1RolesCatalogViewer   IdentityV1Roles = "catalog_viewer"
 	IdentityV1RolesGlobalAccess    IdentityV1Roles = "global_access"
 	IdentityV1RolesIncidentCreator IdentityV1Roles = "incident_creator"
 	IdentityV1RolesIncidentEditor  IdentityV1Roles = "incident_editor"
@@ -224,9 +233,9 @@ const (
 
 // Defines values for IncidentRoleV1RoleType.
 const (
-	Custom   IncidentRoleV1RoleType = "custom"
-	Lead     IncidentRoleV1RoleType = "lead"
-	Reporter IncidentRoleV1RoleType = "reporter"
+	IncidentRoleV1RoleTypeCustom   IncidentRoleV1RoleType = "custom"
+	IncidentRoleV1RoleTypeLead     IncidentRoleV1RoleType = "lead"
+	IncidentRoleV1RoleTypeReporter IncidentRoleV1RoleType = "reporter"
 )
 
 // Defines values for IncidentStatusV1Category.
@@ -286,6 +295,36 @@ const (
 	UpdateRequestBody2RequiredAlways        UpdateRequestBody2Required = "always"
 	UpdateRequestBody2RequiredBeforeClosure UpdateRequestBody2Required = "before_closure"
 	UpdateRequestBody2RequiredNever         UpdateRequestBody2Required = "never"
+)
+
+// Defines values for UpdateTypeRequestBodyColor.
+const (
+	Blue   UpdateTypeRequestBodyColor = "blue"
+	Green  UpdateTypeRequestBodyColor = "green"
+	Red    UpdateTypeRequestBodyColor = "red"
+	Slate  UpdateTypeRequestBodyColor = "slate"
+	Violet UpdateTypeRequestBodyColor = "violet"
+	Yellow UpdateTypeRequestBodyColor = "yellow"
+)
+
+// Defines values for UpdateTypeRequestBodyIcon.
+const (
+	Bolt      UpdateTypeRequestBodyIcon = "bolt"
+	Box       UpdateTypeRequestBodyIcon = "box"
+	Briefcase UpdateTypeRequestBodyIcon = "briefcase"
+	Browser   UpdateTypeRequestBodyIcon = "browser"
+	Bulb      UpdateTypeRequestBodyIcon = "bulb"
+	Clock     UpdateTypeRequestBodyIcon = "clock"
+	Cog       UpdateTypeRequestBodyIcon = "cog"
+	Database  UpdateTypeRequestBodyIcon = "database"
+	Doc       UpdateTypeRequestBodyIcon = "doc"
+	Email     UpdateTypeRequestBodyIcon = "email"
+	Server    UpdateTypeRequestBodyIcon = "server"
+	Severity  UpdateTypeRequestBodyIcon = "severity"
+	Star      UpdateTypeRequestBodyIcon = "star"
+	Tag       UpdateTypeRequestBodyIcon = "tag"
+	User      UpdateTypeRequestBodyIcon = "user"
+	Users     UpdateTypeRequestBodyIcon = "users"
 )
 
 // Defines values for UserV1Role.
@@ -446,6 +485,27 @@ type CatalogEntryV2 struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// CatalogResourceV2 defines model for CatalogResourceV2.
+type CatalogResourceV2 struct {
+	// Category Which category of resource
+	Category CatalogResourceV2Category `json:"category"`
+
+	// Description Human readable description for this resource
+	Description string `json:"description"`
+
+	// Label Label for this catalog resource type
+	Label string `json:"label"`
+
+	// Type Catalog type name for this resource
+	Type string `json:"type"`
+
+	// ValueDocstring Documentation for the literal string value of this resource
+	ValueDocstring string `json:"value_docstring"`
+}
+
+// CatalogResourceV2Category Which category of resource
+type CatalogResourceV2Category string
+
 // CatalogTypeAttributePayloadV2 defines model for CatalogTypeAttributePayloadV2.
 type CatalogTypeAttributePayloadV2 struct {
 	// Array Whether this attribute is an array
@@ -527,7 +587,7 @@ type CatalogTypeV2 struct {
 	// SemanticType Semantic type of this resource
 	SemanticType string `json:"semantic_type"`
 
-	// TypeName The type name of this catalog type, to be used when defining attributes
+	// TypeName The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom["SomeName "]
 	TypeName string `json:"type_name"`
 
 	// UpdatedAt When this type was last updated
@@ -800,7 +860,7 @@ type CreateTypeRequestBody struct {
 	// SemanticType Semantic type of this resource
 	SemanticType *string `json:"semantic_type,omitempty"`
 
-	// TypeName The type name of this catalog type, to be used when defining attributes
+	// TypeName The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom["SomeName "]
 	TypeName *string `json:"type_name,omitempty"`
 }
 
@@ -1357,6 +1417,11 @@ type ListEntriesResponseBody struct {
 	PaginationMeta PaginationMetaResult `json:"pagination_meta"`
 }
 
+// ListResourcesResponseBody defines model for ListResourcesResponseBody.
+type ListResourcesResponseBody struct {
+	Resources []CatalogResourceV2 `json:"resources"`
+}
+
 // ListResponseBody defines model for ListResponseBody.
 type ListResponseBody struct {
 	Actions []ActionV1 `json:"actions"`
@@ -1427,7 +1492,7 @@ type ListTypesResponseBody struct {
 
 // PaginationMetaResult defines model for PaginationMetaResult.
 type PaginationMetaResult struct {
-	// After If provided, were records after a particular ID
+	// After If provided, pass this as the 'after' param to load the next page
 	After *string `json:"after,omitempty"`
 
 	// PageSize What was the maximum number of results requested
@@ -1436,7 +1501,7 @@ type PaginationMetaResult struct {
 
 // PaginationMetaResultWithTotal defines model for PaginationMetaResultWithTotal.
 type PaginationMetaResultWithTotal struct {
-	// After If provided, were records after a particular ID
+	// After If provided, pass this as the 'after' param to load the next page
 	After *string `json:"after,omitempty"`
 
 	// PageSize What was the maximum number of results requested
@@ -1609,6 +1674,36 @@ type UpdateRequestBody4 struct {
 	// Name Unique name of this status
 	Name string `json:"name"`
 }
+
+// UpdateTypeRequestBody defines model for UpdateTypeRequestBody.
+type UpdateTypeRequestBody struct {
+	// Annotations Annotations that can track metadata about this type
+	Annotations *map[string]string `json:"annotations,omitempty"`
+
+	// Color Sets the display color of this type in the dashboard
+	Color *UpdateTypeRequestBodyColor `json:"color,omitempty"`
+
+	// Description Human readble description of this type
+	Description string `json:"description"`
+
+	// Icon Sets the display icon of this type in the dashboard
+	Icon *UpdateTypeRequestBodyIcon `json:"icon,omitempty"`
+
+	// Name Name is the human readable name of this type
+	Name string `json:"name"`
+
+	// Ranked If this type should be ranked
+	Ranked *bool `json:"ranked,omitempty"`
+
+	// SemanticType Semantic type of this resource
+	SemanticType *string `json:"semantic_type,omitempty"`
+}
+
+// UpdateTypeRequestBodyColor Sets the display color of this type in the dashboard
+type UpdateTypeRequestBodyColor string
+
+// UpdateTypeRequestBodyIcon Sets the display icon of this type in the dashboard
+type UpdateTypeRequestBodyIcon string
 
 // UpdateTypeSchemaRequestBody defines model for UpdateTypeSchemaRequestBody.
 type UpdateTypeSchemaRequestBody struct {
@@ -1797,7 +1892,7 @@ type CatalogV2UpdateEntryJSONRequestBody = UpdateEntryRequestBody
 type CatalogV2CreateTypeJSONRequestBody = CreateTypeRequestBody
 
 // CatalogV2UpdateTypeJSONRequestBody defines body for CatalogV2UpdateType for application/json ContentType.
-type CatalogV2UpdateTypeJSONRequestBody = CreateTypeRequestBody
+type CatalogV2UpdateTypeJSONRequestBody = UpdateTypeRequestBody
 
 // CatalogV2UpdateTypeSchemaJSONRequestBody defines body for CatalogV2UpdateTypeSchema for application/json ContentType.
 type CatalogV2UpdateTypeSchemaJSONRequestBody = UpdateTypeSchemaRequestBody
@@ -2034,6 +2129,9 @@ type ClientInterface interface {
 	CatalogV2UpdateEntryWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	CatalogV2UpdateEntry(ctx context.Context, id string, body CatalogV2UpdateEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogV2ListResources request
+	CatalogV2ListResources(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogV2ListTypes request
 	CatalogV2ListTypes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2747,6 +2845,18 @@ func (c *Client) CatalogV2UpdateEntryWithBody(ctx context.Context, id string, co
 
 func (c *Client) CatalogV2UpdateEntry(ctx context.Context, id string, body CatalogV2UpdateEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCatalogV2UpdateEntryRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogV2ListResources(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogV2ListResourcesRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -4695,6 +4805,33 @@ func NewCatalogV2UpdateEntryRequestWithBody(server string, id string, contentTyp
 	return req, nil
 }
 
+// NewCatalogV2ListResourcesRequest generates requests for CatalogV2ListResources
+func NewCatalogV2ListResourcesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/catalog_resources")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewCatalogV2ListTypesRequest generates requests for CatalogV2ListTypes
 func NewCatalogV2ListTypesRequest(server string) (*http.Request, error) {
 	var err error
@@ -5524,6 +5661,9 @@ type ClientWithResponsesInterface interface {
 	CatalogV2UpdateEntryWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogV2UpdateEntryResponse, error)
 
 	CatalogV2UpdateEntryWithResponse(ctx context.Context, id string, body CatalogV2UpdateEntryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogV2UpdateEntryResponse, error)
+
+	// CatalogV2ListResources request
+	CatalogV2ListResourcesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CatalogV2ListResourcesResponse, error)
 
 	// CatalogV2ListTypes request
 	CatalogV2ListTypesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CatalogV2ListTypesResponse, error)
@@ -6492,6 +6632,28 @@ func (r CatalogV2UpdateEntryResponse) StatusCode() int {
 	return 0
 }
 
+type CatalogV2ListResourcesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResourcesResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogV2ListResourcesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogV2ListResourcesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type CatalogV2ListTypesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7265,6 +7427,15 @@ func (c *ClientWithResponses) CatalogV2UpdateEntryWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParseCatalogV2UpdateEntryResponse(rsp)
+}
+
+// CatalogV2ListResourcesWithResponse request returning *CatalogV2ListResourcesResponse
+func (c *ClientWithResponses) CatalogV2ListResourcesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CatalogV2ListResourcesResponse, error) {
+	rsp, err := c.CatalogV2ListResources(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogV2ListResourcesResponse(rsp)
 }
 
 // CatalogV2ListTypesWithResponse request returning *CatalogV2ListTypesResponse
@@ -8436,6 +8607,32 @@ func ParseCatalogV2UpdateEntryResponse(rsp *http.Response) (*CatalogV2UpdateEntr
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest ShowEntryResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogV2ListResourcesResponse parses an HTTP response from a CatalogV2ListResourcesWithResponse call
+func ParseCatalogV2ListResourcesResponse(rsp *http.Response) (*CatalogV2ListResourcesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogV2ListResourcesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResourcesResponseBody
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
