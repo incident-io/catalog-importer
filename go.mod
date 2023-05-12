@@ -18,6 +18,7 @@ require (
 	github.com/google/go-jsonnet v0.20.0
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
+	github.com/manifoldco/promptui v0.9.0
 	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.6
 	github.com/pkg/errors v0.9.1
@@ -37,6 +38,7 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230305170008-8188dc5388df // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/getkin/kin-openapi v0.107.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
