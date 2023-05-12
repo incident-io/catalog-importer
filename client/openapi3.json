@@ -2282,13 +2282,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   },
                   "pagination_meta": {
@@ -2523,13 +2523,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
                 }
@@ -2665,15 +2665,48 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/catalog_resources": {
+      "get": {
+        "tags": [
+          "Catalog V2"
+        ],
+        "summary": "ListResources Catalog V2",
+        "description": "List available engine resources for the catalog",
+        "operationId": "Catalog V2#ListResources",
+        "responses": {
+          "200": {
+            "description": "OK response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResourcesResponseBody"
+                },
+                "example": {
+                  "resources": [
+                    {
+                      "category": "custom",
+                      "description": "Boolean true or false value",
+                      "label": "GitHub Repository",
+                      "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]",
+                      "value_docstring": "Either the GraphQL node ID of the repository or a string of <owner>/<repo>, e.g. incident-io/website"
+                    }
+                  ]
                 }
               }
             }
@@ -2722,13 +2755,13 @@
                             "array": false,
                             "id": "01GW2G3V0S59R238FAHPDS1R66",
                             "name": "tier",
-                            "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                            "type": "Custom[\"Service\"]"
                           }
                         ],
                         "version": 1
                       },
                       "semantic_type": "custom",
-                      "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                      "type_name": "Custom[\"BackstageGroup\"]",
                       "updated_at": "2021-08-17T13:28:57.801578Z"
                     }
                   ]
@@ -2762,7 +2795,7 @@
                 "name": "Kubernetes Cluster",
                 "ranked": true,
                 "semantic_type": "custom",
-                "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]"
+                "type_name": "Custom[\"BackstageGroup\"]"
               }
             }
           }
@@ -2799,13 +2832,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
                 }
@@ -2896,13 +2929,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
                 }
@@ -2937,7 +2970,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTypeRequestBody"
+                "$ref": "#/components/schemas/UpdateTypeRequestBody"
               },
               "example": {
                 "annotations": {
@@ -2948,8 +2981,7 @@
                 "icon": "bolt",
                 "name": "Kubernetes Cluster",
                 "ranked": true,
-                "semantic_type": "custom",
-                "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]"
+                "semantic_type": "custom"
               }
             }
           }
@@ -2986,13 +3018,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
                 }
@@ -3037,7 +3069,7 @@
                     "array": false,
                     "id": "01GW2G3V0S59R238FAHPDS1R66",
                     "name": "tier",
-                    "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                    "type": "Custom[\"Service\"]"
                   }
                 ],
                 "version": 1
@@ -3077,13 +3109,13 @@
                           "array": false,
                           "id": "01GW2G3V0S59R238FAHPDS1R66",
                           "name": "tier",
-                          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                          "type": "Custom[\"Service\"]"
                         }
                       ],
                       "version": 1
                     },
                     "semantic_type": "custom",
-                    "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                    "type_name": "Custom[\"BackstageGroup\"]",
                     "updated_at": "2021-08-17T13:28:57.801578Z"
                   }
                 }
@@ -5343,6 +5375,56 @@
           "updated_at"
         ]
       },
+      "CatalogResourceV2": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Which category of resource",
+            "example": "custom",
+            "enum": [
+              "primitive",
+              "custom",
+              "external"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "Human readable description for this resource",
+            "example": "Boolean true or false value"
+          },
+          "label": {
+            "type": "string",
+            "description": "Label for this catalog resource type",
+            "example": "GitHub Repository"
+          },
+          "type": {
+            "type": "string",
+            "description": "Catalog type name for this resource",
+            "example": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+          },
+          "value_docstring": {
+            "type": "string",
+            "description": "Documentation for the literal string value of this resource",
+            "example": "Either the GraphQL node ID of the repository or a string of <owner>/<repo>, e.g. incident-io/website"
+          }
+        },
+        "example": {
+          "category": "custom",
+          "description": "Boolean true or false value",
+          "label": "GitHub Repository",
+          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]",
+          "value_docstring": "Either the GraphQL node ID of the repository or a string of <owner>/<repo>, e.g. incident-io/website"
+        },
+        "required": [
+          "type",
+          "label",
+          "description",
+          "value_docstring",
+          "category",
+          "config"
+        ]
+      },
       "CatalogTypeAttributePayloadV2": {
         "type": "object",
         "properties": {
@@ -5364,14 +5446,14 @@
           "type": {
             "type": "string",
             "description": "Catalog type name for this attribute",
-            "example": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+            "example": "Custom[\"Service\"]"
           }
         },
         "example": {
           "array": false,
           "id": "01GW2G3V0S59R238FAHPDS1R66",
           "name": "tier",
-          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+          "type": "Custom[\"Service\"]"
         },
         "required": [
           "name",
@@ -5400,14 +5482,14 @@
           "type": {
             "type": "string",
             "description": "Catalog type name for this attribute",
-            "example": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+            "example": "Custom[\"Service\"]"
           }
         },
         "example": {
           "array": false,
           "id": "01GW2G3V0S59R238FAHPDS1R66",
           "name": "tier",
-          "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+          "type": "Custom[\"Service\"]"
         },
         "required": [
           "id",
@@ -5430,7 +5512,7 @@
                 "array": false,
                 "id": "01GW2G3V0S59R238FAHPDS1R66",
                 "name": "tier",
-                "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                "type": "Custom[\"Service\"]"
               }
             ]
           },
@@ -5447,7 +5529,7 @@
               "array": false,
               "id": "01GW2G3V0S59R238FAHPDS1R66",
               "name": "tier",
-              "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+              "type": "Custom[\"Service\"]"
             }
           ],
           "version": 1
@@ -5570,8 +5652,8 @@
           },
           "type_name": {
             "type": "string",
-            "description": "The type name of this catalog type, to be used when defining attributes",
-            "example": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]"
+            "description": "The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom[\"SomeName \"]",
+            "example": "Custom[\"BackstageGroup\"]"
           },
           "updated_at": {
             "type": "string",
@@ -5603,13 +5685,13 @@
                 "array": false,
                 "id": "01GW2G3V0S59R238FAHPDS1R66",
                 "name": "tier",
-                "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                "type": "Custom[\"Service\"]"
               }
             ],
             "version": 1
           },
           "semantic_type": "custom",
-          "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+          "type_name": "Custom[\"BackstageGroup\"]",
           "updated_at": "2021-08-17T13:28:57.801578Z"
         },
         "required": [
@@ -5952,8 +6034,7 @@
           "instructions": {
             "type": "string",
             "description": "Provided to whoever is nominated for the role",
-            "example": "Take point on the incident; Make sure people are clear on responsibilities",
-            "minLength": 1
+            "example": "Take point on the incident; Make sure people are clear on responsibilities"
           },
           "name": {
             "type": "string",
@@ -6484,8 +6565,8 @@
           },
           "type_name": {
             "type": "string",
-            "description": "The type name of this catalog type, to be used when defining attributes",
-            "example": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]"
+            "description": "The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom[\"SomeName \"]",
+            "example": "Custom[\"BackstageGroup\"]"
           }
         },
         "example": {
@@ -6498,7 +6579,7 @@
           "name": "Kubernetes Cluster",
           "ranked": true,
           "semantic_type": "custom",
-          "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]"
+          "type_name": "Custom[\"BackstageGroup\"]"
         },
         "required": [
           "name",
@@ -6536,13 +6617,13 @@
                   "array": false,
                   "id": "01GW2G3V0S59R238FAHPDS1R66",
                   "name": "tier",
-                  "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                  "type": "Custom[\"Service\"]"
                 }
               ],
               "version": 1
             },
             "semantic_type": "custom",
-            "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+            "type_name": "Custom[\"BackstageGroup\"]",
             "updated_at": "2021-08-17T13:28:57.801578Z"
           }
         },
@@ -7181,7 +7262,9 @@
                 "incident_creator",
                 "incident_editor",
                 "manage_settings",
-                "global_access"
+                "global_access",
+                "catalog_viewer",
+                "catalog_editor"
               ]
             },
             "description": "Which roles have been enabled for this key",
@@ -7424,8 +7507,7 @@
           "instructions": {
             "type": "string",
             "description": "Provided to whoever is nominated for the role",
-            "example": "Take point on the incident; Make sure people are clear on responsibilities",
-            "minLength": 1
+            "example": "Take point on the incident; Make sure people are clear on responsibilities"
           },
           "name": {
             "type": "string",
@@ -8623,13 +8705,13 @@
                   "array": false,
                   "id": "01GW2G3V0S59R238FAHPDS1R66",
                   "name": "tier",
-                  "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                  "type": "Custom[\"Service\"]"
                 }
               ],
               "version": 1
             },
             "semantic_type": "custom",
-            "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+            "type_name": "Custom[\"BackstageGroup\"]",
             "updated_at": "2021-08-17T13:28:57.801578Z"
           },
           "pagination_meta": {
@@ -8641,6 +8723,40 @@
           "catalog_type",
           "catalog_entries",
           "pagination_meta"
+        ]
+      },
+      "ListResourcesResponseBody": {
+        "type": "object",
+        "properties": {
+          "resources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogResourceV2"
+            },
+            "example": [
+              {
+                "category": "custom",
+                "description": "Boolean true or false value",
+                "label": "GitHub Repository",
+                "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]",
+                "value_docstring": "Either the GraphQL node ID of the repository or a string of <owner>/<repo>, e.g. incident-io/website"
+              }
+            ]
+          }
+        },
+        "example": {
+          "resources": [
+            {
+              "category": "custom",
+              "description": "Boolean true or false value",
+              "label": "GitHub Repository",
+              "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]",
+              "value_docstring": "Either the GraphQL node ID of the repository or a string of <owner>/<repo>, e.g. incident-io/website"
+            }
+          ]
+        },
+        "required": [
+          "resources"
         ]
       },
       "ListResponseBody": {
@@ -9680,13 +9796,13 @@
                       "array": false,
                       "id": "01GW2G3V0S59R238FAHPDS1R66",
                       "name": "tier",
-                      "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                      "type": "Custom[\"Service\"]"
                     }
                   ],
                   "version": 1
                 },
                 "semantic_type": "custom",
-                "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+                "type_name": "Custom[\"BackstageGroup\"]",
                 "updated_at": "2021-08-17T13:28:57.801578Z"
               }
             ]
@@ -9717,13 +9833,13 @@
                     "array": false,
                     "id": "01GW2G3V0S59R238FAHPDS1R66",
                     "name": "tier",
-                    "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                    "type": "Custom[\"Service\"]"
                   }
                 ],
                 "version": 1
               },
               "semantic_type": "custom",
-              "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+              "type_name": "Custom[\"BackstageGroup\"]",
               "updated_at": "2021-08-17T13:28:57.801578Z"
             }
           ]
@@ -9737,7 +9853,7 @@
         "properties": {
           "after": {
             "type": "string",
-            "description": "If provided, were records after a particular ID",
+            "description": "If provided, pass this as the 'after' param to load the next page",
             "example": "01FCNDV6P870EA6S7TK1DSYDG0"
           },
           "page_size": {
@@ -9761,7 +9877,7 @@
         "properties": {
           "after": {
             "type": "string",
-            "description": "If provided, were records after a particular ID",
+            "description": "If provided, pass this as the 'after' param to load the next page",
             "example": "01FCNDV6P870EA6S7TK1DSYDG0"
           },
           "page_size": {
@@ -10647,13 +10763,13 @@
                   "array": false,
                   "id": "01GW2G3V0S59R238FAHPDS1R66",
                   "name": "tier",
-                  "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                  "type": "Custom[\"Service\"]"
                 }
               ],
               "version": 1
             },
             "semantic_type": "custom",
-            "type_name": "CatalogEntry[\"01FCNDV6P870EA6S7TK1DSYDG2\"]",
+            "type_name": "Custom[\"BackstageGroup\"]",
             "updated_at": "2021-08-17T13:28:57.801578Z"
           }
         },
@@ -11299,8 +11415,7 @@
           "instructions": {
             "type": "string",
             "description": "Provided to whoever is nominated for the role",
-            "example": "Take point on the incident; Make sure people are clear on responsibilities",
-            "minLength": 1
+            "example": "Take point on the incident; Make sure people are clear on responsibilities"
           },
           "name": {
             "type": "string",
@@ -11366,6 +11481,93 @@
           "updated_at"
         ]
       },
+      "UpdateTypeRequestBody": {
+        "type": "object",
+        "properties": {
+          "annotations": {
+            "type": "object",
+            "description": "Annotations that can track metadata about this type",
+            "example": {
+              "incident.io/catalog-importer/id": "id-of-config"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "example": "abc123"
+            }
+          },
+          "color": {
+            "type": "string",
+            "description": "Sets the display color of this type in the dashboard",
+            "example": "slate",
+            "enum": [
+              "slate",
+              "red",
+              "yellow",
+              "green",
+              "blue",
+              "violet"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "Human readble description of this type",
+            "example": "Represents Kubernetes clusters that we run inside of GKE."
+          },
+          "icon": {
+            "type": "string",
+            "description": "Sets the display icon of this type in the dashboard",
+            "example": "bolt",
+            "enum": [
+              "bolt",
+              "box",
+              "briefcase",
+              "browser",
+              "bulb",
+              "clock",
+              "cog",
+              "database",
+              "doc",
+              "email",
+              "server",
+              "severity",
+              "star",
+              "tag",
+              "user",
+              "users"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "Name is the human readable name of this type",
+            "example": "Kubernetes Cluster"
+          },
+          "ranked": {
+            "type": "boolean",
+            "description": "If this type should be ranked",
+            "example": true
+          },
+          "semantic_type": {
+            "type": "string",
+            "description": "Semantic type of this resource",
+            "example": "custom"
+          }
+        },
+        "example": {
+          "annotations": {
+            "incident.io/catalog-importer/id": "id-of-config"
+          },
+          "color": "slate",
+          "description": "Represents Kubernetes clusters that we run inside of GKE.",
+          "icon": "bolt",
+          "name": "Kubernetes Cluster",
+          "ranked": true,
+          "semantic_type": "custom"
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      },
       "UpdateTypeSchemaRequestBody": {
         "type": "object",
         "properties": {
@@ -11379,7 +11581,7 @@
                 "array": false,
                 "id": "01GW2G3V0S59R238FAHPDS1R66",
                 "name": "tier",
-                "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+                "type": "Custom[\"Service\"]"
               }
             ]
           },
@@ -11395,7 +11597,7 @@
               "array": false,
               "id": "01GW2G3V0S59R238FAHPDS1R66",
               "name": "tier",
-              "type": "CatalogEntry[\"01GVGYJSD39FRKVDWACK9NDS4E\"]"
+              "type": "Custom[\"Service\"]"
             }
           ],
           "version": 1

@@ -263,7 +263,6 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
 					Name:        model.Name,
 					Description: model.Description,
-					TypeName:    lo.ToPtr(model.TypeName),
 					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 				})
 				if err != nil {

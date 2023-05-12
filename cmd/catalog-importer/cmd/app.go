@@ -33,6 +33,10 @@ var (
 	initCmd     = app.Command("init", "Initialises a new config from a template")
 	initOptions = new(InitOptions).Bind(initCmd)
 
+	// Types
+	typesCmd     = app.Command("types", "Shows all the types that can be used for this account")
+	typesOptions = new(TypesOptions).Bind(typesCmd)
+
 	// Sync
 	sync        = app.Command("sync", "Sync data from catalog sources into incident.io")
 	syncOptions = new(SyncOptions).Bind(sync)
@@ -80,6 +84,8 @@ func Run(ctx context.Context) (err error) {
 	switch command {
 	case initCmd.FullCommand():
 		return initOptions.Run(ctx, logger)
+	case typesCmd.FullCommand():
+		return typesOptions.Run(ctx, logger)
 	case sync.FullCommand():
 		return syncOptions.Run(ctx, logger)
 	case sourceCmd.FullCommand():
