@@ -8,6 +8,7 @@ importer works:
 
 - [Understanding importer configuration](config.md)
 - [Sources for catalog data such as files, GitHub, Backstage and more](sources.md)
+- [Outputs that produce catalog types and entries](outputs.md)
 - [Using expressions to filter and adjust source data](expressions.md)
 - [Run the importer from CI tools like CircleCI or GitHub Actions](deploying.md)
 
