@@ -19,7 +19,6 @@ import (
 type SourceBackstage struct {
 	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities
 	Token    Credential `json:"token"`
-	Signed   bool       `json:"signed"`
 }
 
 func (s SourceBackstage) Validate() error {
@@ -36,13 +35,9 @@ func (s SourceBackstage) String() string {
 }
 
 func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
-	token := string(s.Token)
-	if s.Signed {
-		var err error
-		token, err = s.getJWT()
-		if err != nil {
-			return nil, err
-		}
+	token, err := s.getJWT()
+	if err != nil {
+		return nil, err
 	}
 
 	client := cleanhttp.DefaultClient()
