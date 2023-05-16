@@ -10,7 +10,7 @@
     {
       'local': {
         files: [
-          'catalog-info.json',
+          'catalog-info.yaml',
         ],
       },
     },
@@ -53,7 +53,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "API"',
         name: 'metadata.name',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         {
@@ -104,7 +107,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "Component"',
         name: 'metadata.name',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         {
@@ -182,7 +188,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "Domain"',
         name: 'metadata.name',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         {
@@ -209,7 +218,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "Group"',
         name: 'metadata.name',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         {
@@ -240,7 +252,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "User"',
         name: 'spec.profile.displayName',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         {
@@ -268,7 +283,10 @@
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "System"',
         name: 'metadata.name',
-        external_id: 'metadata.name',
+        external_id: 'metadata.namespace + "/" + metadata.name',
+        aliases: [
+          'metadata.name',
+        ],
       },
       attributes: [
         // Default fields

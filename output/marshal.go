@@ -135,14 +135,28 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
 
+		// Try to parse each alias as either a string or a string array, then concat and
+		// dedupe them together.
 		aliases := []string{}
 		for idx, aliasProgram := range aliasPrograms {
+			toAdd := []string{}
+
 			alias, err := expr.Eval[string](ctx, aliasProgram, entry)
 			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry external ID", idx))
+				aliasArray, arrayErr := expr.Eval[[]string](ctx, aliasProgram, entry)
+				if arrayErr != nil {
+					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
+				}
+				toAdd = append(toAdd, aliasArray...)
+			} else {
+				toAdd = append(toAdd, alias)
 			}
 
-			aliases = append(aliases, alias)
+			for _, alias := range toAdd {
+				if alias != "" {
+					aliases = append(aliases, alias)
+				}
+			}
 		}
 
 		// Attribute values are built best effort, as it might not be the case that upstream
