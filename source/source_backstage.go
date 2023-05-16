@@ -35,9 +35,13 @@ func (s SourceBackstage) String() string {
 }
 
 func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
-	token, err := s.getJWT()
-	if err != nil {
-		return nil, err
+	var token string
+	if s.Token != "" {
+		var err error
+		token, err = s.getJWT()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	client := cleanhttp.DefaultClient()
