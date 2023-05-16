@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/bmatcuk/doublestar/v4 v4.6.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0
@@ -13,6 +12,7 @@ require (
 	github.com/go-kit/log v0.2.0
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/cel-go v0.14.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v52 v52.0.0

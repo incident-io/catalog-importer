@@ -119,6 +119,14 @@ This looks like:
 
     // Supports environment variable substitution.
     // https://github.com/incident-io/catalog-importer/blob/master/docs/sources.md#credentials
+    //
+    // This token must be in base64 according to the Backstage requirements for
+    // external API tokens.
+    //
+    // You can generate a token using something like:
+    // $ node -p 'require("crypto").randomBytes(24).toString("base64")'
+    //
+    // https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
     token: '$(BACKSTAGE_TOKEN)',
   },
 }

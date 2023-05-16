@@ -2,13 +2,16 @@ package source
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/golang-jwt/jwt"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/pkg/errors"
 )
@@ -32,6 +35,11 @@ func (s SourceBackstage) String() string {
 }
 
 func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+	token, err := s.getJWT()
+	if err != nil {
+		return nil, err
+	}
+
 	client := cleanhttp.DefaultClient()
 
 	var (
@@ -45,8 +53,8 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*Sou
 		if err != nil {
 			return nil, errors.Wrap(err, "building Backstage URL")
 		}
-		if string(s.Token) != "" {
-			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", string(s.Token)))
+		if token != "" {
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 		}
 
 		resp, err := client.Do(req)
@@ -75,4 +83,22 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*Sou
 
 		offset += len(page)
 	}
+}
+
+// getJWT applies the rules from the Backstage docs to generate a JWT that is valid for
+// external Backstage authentication.
+//
+// https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
+func (s SourceBackstage) getJWT() (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	token.Claims = jwt.MapClaims{
+		"sub": "backstage-server",
+		"exp": time.Now().Add(time.Hour).Unix(),
+	}
+	secret, err := base64.StdEncoding.DecodeString(string(s.Token))
+	if err != nil {
+		return "", errors.Wrap(err, "supplied backstage token must be a base64 string")
+	}
+
+	return token.SignedString(secret)
 }
