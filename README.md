@@ -20,4 +20,5 @@ Once installed, see [documentation](docs) for example catalogs and CI config.
 ## Contributing
 
 We're happy to accept open-source contributions or feedback. Just open a
-PR/issue and we'll get back to you.
+PR/issue and we'll get back to you. This repo contains details on
+[how to get started with local development](./development.md).
