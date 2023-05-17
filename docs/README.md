@@ -41,8 +41,10 @@ Choose from:
 Once you've created a `importer.jsonnet`, visit your [incident dashboard][api-keys]
 to create an API key with permission to:
 
-- View data
-- Manage organisation settings
+- View catalog types and entries
+- Manage catalog types and edit catalog data
+
+Then set that token as your `INCIDENT_API_KEY` environment variable.
 
 You can check your config is valid by running:
 

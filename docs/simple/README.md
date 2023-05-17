@@ -36,8 +36,8 @@ brew install catalog-importer
 Create an API key from https://app.incident.io/settings/api-keys with the
 following scopes:
 
-- Can view data, like public incidents and organization settings
-- Can manage organization settings (e.g. custom fields)
+- View catalog types and entries
+- Manage catalog types and edit catalog data
 
 Then set that token as your `INCIDENT_API_KEY` environment variable.
 
