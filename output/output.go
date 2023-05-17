@@ -14,6 +14,7 @@ type Output struct {
 	Name        string       `json:"name"`
 	Description string       `json:"description"`
 	TypeName    string       `json:"type_name"`
+	Ranked      bool         `json:"ranked"`
 	Source      SourceConfig `json:"source"`
 	Attributes  []*Attribute `json:"attributes"`
 }
@@ -35,6 +36,7 @@ type SourceConfig struct {
 	Filter     null.String `json:"filter"`
 	Name       string      `json:"name"`
 	ExternalID string      `json:"external_id"`
+	Rank       null.String `json:"rank"`
 	Aliases    []string    `json:"aliases"`
 }
 

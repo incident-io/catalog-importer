@@ -177,6 +177,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 				result, err := cl.Create(ctx, client.CreateEntryRequestBody{
 					CatalogTypeId:   catalogType.Id,
 					Name:            model.Name,
+					Rank:            &model.Rank,
 					ExternalId:      lo.ToPtr(model.ExternalID),
 					Aliases:         lo.ToPtr(model.Aliases),
 					AttributeValues: model.AttributeValues,
@@ -205,47 +206,44 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 				continue // will have been created above
 			}
 
-			entry, alreadyExists := entriesByExternalID[model.ExternalID]
-			if alreadyExists {
-				// If we found the entry in the list of all entries, then we need to diff it and
-				// update as appropriate.
-				if entry != nil {
-					isSame :=
-						entry.Name == model.Name &&
-							reflect.DeepEqual(entry.Aliases, model.Aliases)
+			// If we found the entry in the list of all entries, then we need to diff it and
+			// update as appropriate.
+			if entry != nil {
+				isSame :=
+					entry.Name == model.Name &&
+						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank != model.Rank
 
-					currentBindings := map[string]client.CatalogAttributeBindingPayloadV2{}
-					for attributeID, value := range entry.AttributeValues {
-						current := client.CatalogAttributeBindingPayloadV2{}
-						// Our API behaves strangely with empty arrays, and will omit them. This patch
-						// ensures the array is present so our comparison doesn't trigger falsly.
-						if value.ArrayValue == nil && value.Value == nil {
-							value.ArrayValue = lo.ToPtr([]client.CatalogAttributeValueV2{})
-						}
+				currentBindings := map[string]client.CatalogAttributeBindingPayloadV2{}
+				for attributeID, value := range entry.AttributeValues {
+					current := client.CatalogAttributeBindingPayloadV2{}
+					// Our API behaves strangely with empty arrays, and will omit them. This patch
+					// ensures the array is present so our comparison doesn't trigger falsly.
+					if value.ArrayValue == nil && value.Value == nil {
+						value.ArrayValue = lo.ToPtr([]client.CatalogAttributeValueV2{})
+					}
 
-						if value.ArrayValue != nil {
-							current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogAttributeValueV2, _ int) client.CatalogAttributeValuePayloadV2 {
-								return client.CatalogAttributeValuePayloadV2{
-									Literal: binding.Literal,
-								}
-							}))
-						}
-						if value.Value != nil {
-							current.Value = &client.CatalogAttributeValuePayloadV2{
-								Literal: value.Value.Literal,
+					if value.ArrayValue != nil {
+						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogAttributeValueV2, _ int) client.CatalogAttributeValuePayloadV2 {
+							return client.CatalogAttributeValuePayloadV2{
+								Literal: binding.Literal,
 							}
+						}))
+					}
+					if value.Value != nil {
+						current.Value = &client.CatalogAttributeValuePayloadV2{
+							Literal: value.Value.Literal,
 						}
-
-						currentBindings[attributeID] = current
 					}
 
-					if isSame && reflect.DeepEqual(model.AttributeValues, currentBindings) {
-						logger.Log("msg", "catalog entry has not changed, not updating", "entry_id", entry.Id)
-						continue eachPayload
-					} else {
-						logger.Log("msg", "catalog entry has changed, scheduling for update", "entry_id", entry.Id)
-						toUpdate = append(toUpdate, model)
-					}
+					currentBindings[attributeID] = current
+				}
+
+				if isSame && reflect.DeepEqual(model.AttributeValues, currentBindings) {
+					logger.Log("msg", "catalog entry has not changed, not updating", "entry_id", entry.Id)
+					continue eachPayload
+				} else {
+					logger.Log("msg", "catalog entry has changed, scheduling for update", "entry_id", entry.Id)
+					toUpdate = append(toUpdate, model)
 				}
 			}
 		}
@@ -272,6 +270,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 
 				_, err := cl.Update(ctx, entry, client.UpdateEntryRequestBody{
 					Name:            model.Name,
+					Rank:            &model.Rank,
 					ExternalId:      lo.ToPtr(model.ExternalID),
 					Aliases:         lo.ToPtr(model.Aliases),
 					AttributeValues: model.AttributeValues,
