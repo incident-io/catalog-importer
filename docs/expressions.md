@@ -14,7 +14,7 @@ from our example configurations.
 
 ## Where can I use expressions?
 
-Taking an example from the Backstage config:
+Taking an example from the Backstage config (extended slightly):
 
 ```jsonnet
 {
@@ -37,6 +37,12 @@ Taking an example from the Backstage config:
               name: 'Description',
               type: 'Text',
               source: 'metadata.description',
+            },
+            {
+              id: 'google_group',
+              name: 'Google Group',
+              type: 'String',
+              source: 'trimPrefix(metadata.google_group, "group:")',
             },
           ]
         }
@@ -152,3 +158,4 @@ On a CEL variable named `subject` of value:
 
 - `trimPrefix(subject, "something:")` => `group:engineering@example.com`
 - `trimPrefix(subject, "group:")` => `engineering@example.com`
+
