@@ -33,3 +33,7 @@ brews:
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     homepage: https://incident.io/
     description: Official incident.io catalog importer, for syncing catalog entries.
+
+dockers:
+  - image_templates:
+    - incidentio/{{.ProjectName}}
