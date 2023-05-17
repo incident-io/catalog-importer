@@ -194,6 +194,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
 					Name:        model.Name,
 					Description: model.Description,
+					Ranked:      &model.Ranked,
 					TypeName:    lo.ToPtr(model.TypeName),
 					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 				})
@@ -263,6 +264,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
 					Name:        model.Name,
 					Description: model.Description,
+					Ranked:      &model.Ranked,
 					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
 				})
 				if err != nil {

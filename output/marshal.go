@@ -16,6 +16,7 @@ type CatalogTypeModel struct {
 	Name            string
 	Description     string
 	TypeName        string
+	Ranked          bool
 	Attributes      []client.CatalogTypeAttributePayloadV2
 	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
 }
@@ -24,6 +25,7 @@ type CatalogEntryModel struct {
 	ExternalID      string
 	Name            string
 	Aliases         []string
+	Rank            int32
 	AttributeValues map[string]client.CatalogAttributeBindingPayloadV2
 }
 
@@ -34,6 +36,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		Name:        output.Name,
 		Description: output.Description,
 		TypeName:    output.TypeName,
+		Ranked:      output.Ranked,
 		Attributes:  []client.CatalogTypeAttributePayloadV2{},
 	}
 	for _, attr := range output.Attributes {
@@ -62,6 +65,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 				Name:        attr.Enum.Name,
 				Description: attr.Enum.Description,
 				TypeName:    attr.Enum.TypeName,
+				Ranked:      output.Ranked,
 				Attributes: []client.CatalogTypeAttributePayloadV2{
 					{
 						Id:   lo.ToPtr("description"),
@@ -91,6 +95,15 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 	externalIDProgram, err := expr.Compile(output.Source.ExternalID)
 	if err != nil {
 		return nil, errors.Wrap(err, "source.external_id")
+	}
+
+	var rankProgram cel.Program
+	if output.Source.Rank.Valid {
+		var err error
+		rankProgram, err = expr.Compile(output.Source.Rank.String)
+		if err != nil {
+			return nil, errors.Wrap(err, "source.rank")
+		}
 	}
 
 	aliasPrograms := []cel.Program{}
@@ -133,6 +146,15 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		externalID, err := expr.Eval[string](ctx, externalIDProgram, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry external ID")
+		}
+
+		var rank int32
+		if rankProgram != nil {
+			var err error
+			rank, err = expr.Eval[int32](ctx, rankProgram, entry)
+			if err != nil {
+				return nil, errors.Wrap(err, "evaluating entry external ID")
+			}
 		}
 
 		// Try to parse each alias as either a string or a string array, then concat and
@@ -202,6 +224,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		catalogEntryModels = append(catalogEntryModels, &CatalogEntryModel{
 			Name:            name,
 			ExternalID:      externalID,
+			Rank:            rank,
 			Aliases:         aliases,
 			AttributeValues: attributeValues,
 		})
