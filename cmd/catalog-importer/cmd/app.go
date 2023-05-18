@@ -52,6 +52,10 @@ var (
 	// Validate
 	validate        = app.Command("validate", "Validate configuration")
 	validateOptions = new(ValidateOptions).Bind(validate)
+
+	// Backstage
+	backstageCmd     = app.Command("backstage", "Syncs catalog entries directly from Backstage API into incident.io")
+	backstageOptions = new(BackstageOptions).Bind(backstageCmd)
 )
 
 func Run(ctx context.Context) (err error) {
@@ -87,13 +91,15 @@ func Run(ctx context.Context) (err error) {
 	case typesCmd.FullCommand():
 		return typesOptions.Run(ctx, logger)
 	case sync.FullCommand():
-		return syncOptions.Run(ctx, logger)
+		return syncOptions.Run(ctx, logger, nil)
 	case sourceCmd.FullCommand():
 		return sourceOptions.Run(ctx, logger)
 	case jsonnetCmd.FullCommand():
 		return jsonnetOptions.Run(ctx, logger)
 	case validate.FullCommand():
 		return validateOptions.Run(ctx, logger)
+	case backstageCmd.FullCommand():
+		return backstageOptions.Run(ctx, logger)
 	default:
 		return fmt.Errorf("unrecognised command: %s", command)
 	}
