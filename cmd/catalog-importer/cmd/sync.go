@@ -7,11 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
+	"github.com/schollz/progressbar/v3"
 
 	"github.com/incident-io/catalog-importer/client"
 	"github.com/incident-io/catalog-importer/output"
