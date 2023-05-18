@@ -3,3 +3,4 @@ dist/
 data/
 /config.jsonnet
 __debug_bin
+.idea/
