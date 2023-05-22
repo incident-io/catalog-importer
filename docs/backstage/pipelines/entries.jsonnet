@@ -251,7 +251,7 @@
       type_name: 'Custom["BackstageUser"]',
       source: {
         filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "User"',
-        name: 'spec.profile.displayName',
+        name: 'metadata.name',
         external_id: 'metadata.namespace + "/" + metadata.name',
         aliases: [
           'metadata.name',

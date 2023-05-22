@@ -16,6 +16,7 @@ import (
 	"github.com/schollz/progressbar/v3"
 
 	"github.com/incident-io/catalog-importer/client"
+	"github.com/incident-io/catalog-importer/config"
 	"github.com/incident-io/catalog-importer/output"
 	"github.com/incident-io/catalog-importer/reconcile"
 	"github.com/incident-io/catalog-importer/source"
@@ -58,7 +59,7 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 	return opt
 }
 
-func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
+func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *config.Config) error {
 	if opt.Prune && opt.DryRun {
 		return errors.New("cannot use --dry-run with --prune")
 	}
@@ -66,10 +67,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		return errors.New("cannot use --targets with --prune")
 	}
 
-	// Load config
-	cfg, err := loadConfigOrError(ctx, opt.ConfigFile)
-	if err != nil {
-		return err
+	// Load config if it hasn't been provided.
+	if cfg == nil {
+		var err error
+		cfg, err = loadConfigOrError(ctx, opt.ConfigFile)
+		if err != nil {
+			return err
+		}
 	}
 	{
 		if len(opt.Targets) > 0 {

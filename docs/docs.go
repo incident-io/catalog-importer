@@ -2,9 +2,13 @@ package docs
 
 import (
 	"embed"
+	"fmt"
+	"io"
+	"io/fs"
 	"path"
 	"strings"
 
+	"github.com/google/go-jsonnet"
 	"github.com/pkg/errors"
 )
 
@@ -42,4 +46,44 @@ func GetTemplates() ([]Template, error) {
 	}
 
 	return templates, nil
+}
+
+// EvaluateJsonnet returns the JSON document produced when evaluating a Jsonnet file
+// within the docs directory.
+func EvaluateJsonnet(wd, file string) ([]byte, error) {
+	importer := jsonnet.MemoryImporter{
+		Data: map[string]jsonnet.Contents{},
+	}
+	err := fs.WalkDir(Content, wd, fs.WalkDirFunc(func(entryPath string, d fs.DirEntry, err error) error {
+		if d.IsDir() {
+			return nil
+		}
+		src, err := Content.Open(entryPath)
+		if err != nil {
+			return err
+		}
+
+		data, err := io.ReadAll(src)
+		if err != nil {
+			return err
+		}
+
+		importer.Data[strings.TrimPrefix(entryPath, fmt.Sprintf("%s/", wd))] =
+			jsonnet.MakeContentsRaw(data)
+
+		return nil
+	}))
+	if err != nil {
+		return nil, err
+	}
+
+	vm := jsonnet.MakeVM()
+	vm.Importer(&importer)
+
+	data, err := vm.EvaluateFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return []byte(data), nil
 }
