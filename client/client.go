@@ -8,6 +8,7 @@ import (
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	"github.com/hashicorp/go-cleanhttp"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +18,10 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 		return nil, bearerTokenProviderErr
 	}
 
-	base := cleanhttp.DefaultClient()
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryMax = 3
+
+	base := retryClient.StandardClient()
 
 	// The generated client won't turn validation errors into actual errors, so we do this
 	// inside of a generic middleware.
