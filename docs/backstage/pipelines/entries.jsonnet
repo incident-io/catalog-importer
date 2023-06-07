@@ -138,6 +138,12 @@
           source: 'spec.owner.replace("group:", "")',
         },
         {
+          id: 'system',
+          name: 'System',
+          type: 'Custom["BackstageSystem"]',
+          source: 'spec.system',
+        },
+        {
           id: 'subcomponent_of',
           name: 'Subcomponent of',
           type: 'Custom["BackstageComponent"]',
