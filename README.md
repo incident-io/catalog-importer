@@ -1,7 +1,7 @@
 # Catalog importer
 
 This is the official catalog importer for the [incident.io](https://incident.io/)
-catalog. It's can be used to sync catalog data from sources like local files or
+catalog. It can be used to sync catalog data from sources like local files or
 GitHub and push them into the incident.io catalog.
 
 ![Catalog dashboard](dashboard.png)
