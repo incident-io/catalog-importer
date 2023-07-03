@@ -211,7 +211,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 			if entry != nil {
 				isSame :=
 					entry.Name == model.Name &&
-						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank != model.Rank
+						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank == model.Rank
 
 				currentBindings := map[string]client.CatalogAttributeBindingPayloadV2{}
 				for attributeID, value := range entry.AttributeValues {
