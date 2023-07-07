@@ -122,3 +122,5 @@ $ catalog-importer sync --config=importer.jsonnet
 </details>
 
 And that's it! Your data will now be loaded into your catalog.
+
+Note that we only support up to 50,000 entries for each catalog type. Please contact us if you'd like to explore options for larger lists.
