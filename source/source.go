@@ -34,6 +34,7 @@ type Source struct {
 	Exec      *SourceExec      `json:"exec,omitempty"`
 	Backstage *SourceBackstage `json:"backstage,omitempty"`
 	GitHub    *SourceGitHub    `json:"github,omitempty"`
+	GraphQL   *SourceGraphQL   `json:"graphql,omitempty"`
 }
 
 func (s Source) Validate() error {
@@ -71,6 +72,9 @@ func (s Source) Backend() (SourceBackend, error) {
 	}
 	if s.GitHub != nil {
 		return s.GitHub, nil
+	}
+	if s.GraphQL != nil {
+		return s.GraphQL, nil
 	}
 
 	return nil, ErrInvalidSourceEmpty
