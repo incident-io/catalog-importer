@@ -86,6 +86,55 @@
             ],
           },
         },
+        // For GraphQL APIs, you can use this source to execute queries and paginate
+        // through results.
+        //
+        // The example shows how you'd query the GitHub GraphQL API to find all the
+        // repositories available to the viewer.
+        {
+          graphql: {
+            // The GraphQL endpoint.
+            endpoint: 'https://api.github.com/graphql',
+            // Headers for authorization or anything else you may need, supporting the
+            // credentials from environment variable substitution.
+            headers: {
+              authorization: 'Bearer $(GITHUB_TOKEN)',
+            },
+            // This is the query. We support three pagination strategies:
+            // - No pagination, where the query has no variables
+            // - Use of a $page variable that is iterated once per page, or an $offset
+            // that is incremented by the number of results that have been seen
+            // - $cursor for cursor based pagination: this requires the
+            // paginate.next_cursor to specify where in the GraphQL result you should find
+            // the next cursor value
+            query: |||
+              query($cursor: String) {
+              	viewer {
+              		repositories(first: 50, after: $cursor) {
+              			edges {
+              				repository:node {
+              					name
+              					description
+              				}
+              			}
+              			pageInfo {
+              				endCursor
+              				hasNextPage
+              			}
+              		}
+              	}
+              }
+            |||,
+            // This is what we pass into the output pipeline.
+            result: 'viewer.repositories.edges',
+            // Configure pagination strategies here:
+            paginate: {
+              // If cursor based, this says where to find the cursor value for the
+              // subsequent query.
+              next_cursor: 'viewer.repositories.pageInfo.endCursor',
+            },
+          },
+        },
       ],
 
       // List of outputs, corresponding to catalog types, that the importer will

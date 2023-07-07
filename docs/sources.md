@@ -10,6 +10,7 @@ These are:
 - [`backstage`](#backstage) for catalog data pulled from the Backstage API
 - [`github`](#github) to load from files in GitHub repositories
 - [`exec`](#local) from the output of a command
+- [`graphql`](#graphql) for GraphQL APIs
 
 For each of the sources, we support parsing JSON, YAML – both single and
 multi-doc – and Jsonnet, where those files provide either a single source entry
@@ -263,6 +264,58 @@ you can use curl or a similar tool to pull that data.
   },
 }
 ```
+
+## `graphql`
+
+If you have a GraphQL API hosting data you'd like to import into the catalog,
+you can get the importer to issue queries directly against the API and paginate
+the results.
+
+An example of generating a list of GitHub repositories using their GraphQL API
+might be:
+
+```jsonnet
+// pipelines.*.sources.*
+{
+  graphql: {
+    endpoint: 'https://api.github.com/graphql',
+    headers: {
+      authorization: 'Bearer $(GITHUB_TOKEN)',
+    },
+    query: |||
+      query($cursor: String) {
+        viewer {
+          repositories(first: 50, after: $cursor) {
+            edges {
+              repository:node {
+                name
+                description
+              }
+            }
+            pageInfo {
+              endCursor
+              hasNextPage
+            }
+          }
+        }
+      }
+    |||,
+    result: 'viewer.repositories.edges',
+    paginate: {
+      next_cursor: 'viewer.repositories.pageInfo.endCursor',
+    },
+  },
+}
+```
+
+The example uses cursor based pagination but we support three pagination
+strategies:
+
+- No pagination, where the query has no variables.
+- Use of a $page variable that is iterated once per page, or an $offset that is
+  incremented by the number of results that have been seen.
+- $cursor for cursor based pagination: this requires the `paginate.next_cursor`
+  to specify where in the GraphQL result you should find the next cursor value.
 
 ## Credentials
 
