@@ -19,7 +19,7 @@ import (
 )
 
 type SourceGraphQL struct {
-	Endpoint string                `json:"endpoint"` // https://api.github.com/graphql
+	Endpoint Credential            `json:"endpoint"` // https://api.github.com/graphql
 	Headers  map[string]Credential `json:"headers"`
 	Query    string                `json:"query"`
 	Result   null.String           `json:"result"`
@@ -61,7 +61,7 @@ func (s SourceGraphQL) String() string {
 }
 
 func (s SourceGraphQL) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
-	client := graphql.NewClient(s.Endpoint,
+	client := graphql.NewClient(string(s.Endpoint),
 		graphql.WithHTTPClient(cleanhttp.DefaultClient()))
 	client.Log = func(msg string) {
 		logger.Log("msg", msg)
