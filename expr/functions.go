@@ -2,6 +2,7 @@ package expr
 
 import (
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/google/cel-go/cel"
@@ -28,6 +29,7 @@ func (*stdlib) CompileOptions() []cel.EnvOption {
 		Coalesce(),
 		First(),
 		TrimPrefix(),
+		Replace(),
 	}
 }
 
@@ -125,6 +127,28 @@ func TrimPrefix() cel.EnvOption {
 			[]*cel.Type{cel.StringType, cel.StringType},
 			cel.StringType,
 			cel.BinaryBinding(binding),
+		),
+	)
+}
+
+// Replace removes the given string from the front of the input.
+func Replace() cel.EnvOption {
+	binding := func(vals ...ref.Val) ref.Val {
+		input, pattern, replacement := vals[0], vals[1], vals[2]
+		regex, err := regexp.Compile(pattern.Value().(string))
+		if err != nil {
+			return types.WrapErr(err)
+		}
+
+		return types.String(regex.ReplaceAllString(input.Value().(string), replacement.Value().(string)))
+	}
+
+	return cel.Function("replace",
+		cel.Overload("replace_string_string_string",
+			[]*cel.Type{cel.StringType, cel.StringType, cel.StringType},
+			cel.StringType,
+			cel.FunctionBinding(binding),
+			//cel.BinaryBinding(binding),
 		),
 	)
 }
