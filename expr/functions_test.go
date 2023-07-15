@@ -117,7 +117,7 @@ var _ = Describe("Functions", func() {
 			src = "replace(value, r'^https://([0-9A-Za-z_\\-]+)\\.example\\.com.*$', '$1')"
 		})
 
-		When("The input is a matching string", func() {
+		When("the input is a matching string", func() {
 			It("Returns the replacement", func() {
 				out, _, err := prg.Eval(map[string]any{
 					"value": "https://some-slug.example.com/test",
@@ -131,8 +131,8 @@ var _ = Describe("Functions", func() {
 			})
 		})
 
-		When("The input has no matches", func() {
-			It("Returns the source string", func() {
+		When("the input has no matches", func() {
+			It("returns the source string", func() {
 				out, _, err := prg.Eval(map[string]any{
 					"value": "https://some-slug.incident.io/test",
 				})
