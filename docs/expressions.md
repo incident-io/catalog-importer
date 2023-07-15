@@ -140,7 +140,7 @@ On a CEL variable named `subject` of value:
 
 ```json
 [
-  "one", null, "two",
+  "one", null, "two"
 ]
 ```
 
@@ -159,3 +159,17 @@ On a CEL variable named `subject` of value:
 - `trimPrefix(subject, "something:")` => `group:engineering@example.com`
 - `trimPrefix(subject, "group:")` => `engineering@example.com`
 
+### `replace`
+
+Performs a RegEx replace on a string using [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
+If there are no pattern matches, the input string will be returned. `replace` supports group references (`$1`).
+
+On a CEL variable named `subject` of value:
+
+```json
+"group:engineering@example.com"
+```
+
+- `replace(subject, "group:([[:alpha:]]+)@.+$", "$1")` => `engineering`
+- `replace(subject, "@example\\.com", "")` => `group:engineering`
+- `replace(subject, ".+@test.example.com"` => `group:engineering@example.com` (no match)
