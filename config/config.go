@@ -26,7 +26,7 @@ func init() {
 }
 
 type Config struct {
-	SyncID    string      `json:"sync_id"`
+	SyncID    string      `json:"sync_id,omitempty"`
 	Pipelines []*Pipeline `json:"pipelines"`
 }
 

@@ -33,6 +33,10 @@ var (
 	initCmd     = app.Command("init", "Initialises a new config from a template")
 	initOptions = new(InitOptions).Bind(initCmd)
 
+	// import
+	importCmd     = app.Command("import", "Import catalog data directly or generate importer config")
+	importOptions = new(ImportOptions).Bind(importCmd)
+
 	// Types
 	typesCmd     = app.Command("types", "Shows all the types that can be used for this account")
 	typesOptions = new(TypesOptions).Bind(typesCmd)
@@ -88,6 +92,8 @@ func Run(ctx context.Context) (err error) {
 	switch command {
 	case initCmd.FullCommand():
 		return initOptions.Run(ctx, logger)
+	case importCmd.FullCommand():
+		return importOptions.Run(ctx, logger)
 	case typesCmd.FullCommand():
 		return typesOptions.Run(ctx, logger)
 	case sync.FullCommand():

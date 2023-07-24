@@ -2,6 +2,9 @@ package source
 
 import (
 	"bytes"
+	"encoding/csv"
+	"strings"
+	"unicode"
 
 	"github.com/google/go-jsonnet"
 	"gopkg.in/yaml.v2"
@@ -48,6 +51,39 @@ func Parse(filename string, data []byte) []Entry {
 			}
 
 			entries = append(entries, listOfEntries...)
+		}
+	}
+
+	// If we find nothing, we'll attempt CSV as a hail-mary.
+	if len(entries) == 0 {
+		records, err := csv.NewReader(bytes.NewReader(data)).ReadAll()
+		if err != nil {
+			return entries
+		}
+
+		// We can only use CSVs that provide a header row. And if there only exists headers,
+		// we should return no entries.
+		if len(records) <= 1 {
+			return entries
+		}
+
+		headers, rows := records[0], records[1:]
+		headerIndexes := map[int]string{}
+		for idx, header := range headers {
+			headerStripped := strings.TrimFunc(header, func(r rune) bool {
+				return !unicode.IsGraphic(r)
+			})
+
+			headerIndexes[idx] = headerStripped
+		}
+
+		for _, row := range rows {
+			entry := Entry{}
+			for idx, column := range row {
+				entry[headerIndexes[idx]] = column
+			}
+
+			entries = append(entries, entry)
 		}
 	}
 
