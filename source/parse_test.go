@@ -208,4 +208,37 @@ we: hate yaml
 			})
 		})
 	})
+
+	When("CSV", func() {
+		When("headers", func() {
+			BeforeEach(func() {
+				input = `
+id,name,description
+P123,My name is,What
+P124,My name is,Who
+P125,My name is,Slim Shady
+`
+			})
+
+			It("returns all parsed entries", func() {
+				Expect(entries).To(Equal([]source.Entry{
+					{
+						"id":          "P123",
+						"name":        "My name is",
+						"description": "What",
+					},
+					{
+						"id":          "P124",
+						"name":        "My name is",
+						"description": "Who",
+					},
+					{
+						"id":          "P125",
+						"name":        "My name is",
+						"description": "Slim Shady",
+					},
+				}))
+			})
+		})
+	})
 })

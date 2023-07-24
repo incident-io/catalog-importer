@@ -35,6 +35,13 @@ func Compile(source string) (cel.Program, error) {
 // Eval evaluates the given program against the scope, returning a value that matches the
 // type requested via the generic ReturnType parameter.
 func Eval[ReturnType any](ctx context.Context, prg cel.Program, scope map[string]any) (result ReturnType, err error) {
+	// It's useful to be able to refer directly to the top-level scope via a non-escaped
+	// variable name, as it's otherwise impossible to access a scope variable that has
+	// whitespace (e.g. "Name of thing").
+	//
+	// By adding a reference at _, this becomes possible via `_["Name of thing"]`.
+	scope["_"] = scope
+
 	out, _, err := prg.ContextEval(ctx, scope)
 	if err != nil {
 		return
