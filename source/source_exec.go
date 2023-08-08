@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -34,9 +35,13 @@ func (s SourceExec) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEn
 		args    = s.Command[1:]
 	)
 	cmd := exec.CommandContext(ctx, command, args...)
-	cmd.Stderr = os.Stderr // allow stderr output
+
+	// If the exec'd command goes wrong, then we want to be able to see both the
+	// stdout and stderr in the terminal, but if it's succeeded then we need to
+	// have captured stdout, to construct the entry.
 	var output bytes.Buffer
-	cmd.Stdout = &output
+	cmd.Stdout = io.MultiWriter(os.Stdout, &output)
+	cmd.Stderr = os.Stderr // allow stderr output
 
 	err := cmd.Run()
 	if err != nil {
