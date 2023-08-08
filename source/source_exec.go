@@ -34,12 +34,32 @@ func (s SourceExec) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEn
 		args    = s.Command[1:]
 	)
 	cmd := exec.CommandContext(ctx, command, args...)
-	cmd.Stderr = os.Stderr // allow stderr output
+
 	var output bytes.Buffer
 	cmd.Stdout = &output
+	cmd.Stderr = os.Stderr // stderr is streamed to the parent terminal
 
 	err := cmd.Run()
 	if err != nil {
+		// If the exec'd command fails, then it's sometimes useful to see the standard output
+		// that it produced. This is especially relevant when the program doesn't behave
+		// according to conventions, and the error message isn't actually present in stderr.
+		// In some cases though, the stream of data could be very large, so we deliberately
+		// only show the last 1KiB, to avoid filling up the logs/terminal.
+		// We write this output back onto stderr, to play nice with any downstream tooling.
+		limit := 1024
+		stdout := output.Bytes()
+
+		if len(stdout) > limit {
+			fmt.Fprintln(os.Stderr, "last 1KiB of failing command's stdout:")
+
+			stdout = stdout[len(stdout)-limit:]
+		} else if len(stdout) > 0 {
+			fmt.Fprintln(os.Stderr, "failing command's stdout:")
+		}
+
+		fmt.Fprintln(os.Stderr, string(stdout))
+
 		return nil, errors.Wrap(err, "error running exec command")
 	}
 
