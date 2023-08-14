@@ -69,7 +69,9 @@ The `source` config for the output:
 - And similar that `external_id` should come from the `external_id` field.
 
 It's worth reading our guide on [expressions](expressions.md) to understand the
-syntax and what is possible in these fields.
+syntax and what is possible in these fields, and our guide on [external IDs and
+aliases](aliases-and-external-ids.md) to understand how these special fields
+work.
 
 The Backstage API Type (the catalog type we're creating for this output) will be
 given a single attribute:
