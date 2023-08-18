@@ -80,9 +80,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			OUT("⊕ Filtering config to targets (%s)", strings.Join(opt.Targets, ", "))
 			cfg = cfg.Filter(opt.Targets)
 		}
-		var (
-			outputs, sources int
-		)
+		var outputs, sources int
 		for _, pipeline := range cfg.Pipelines {
 			outputs += len(pipeline.Outputs)
 			sources += len(pipeline.Sources)
@@ -241,9 +239,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	for _, outputType := range cfg.Outputs() {
 		baseModel, enumModels := output.MarshalType(outputType)
 		for _, model := range append(enumModels, baseModel) {
-			var (
-				catalogType = catalogTypesByOutput[model.TypeName]
-			)
+			catalogType := catalogTypesByOutput[model.TypeName]
 
 			var updatedCatalogType client.CatalogTypeV2
 			if opt.DryRun {
@@ -387,26 +383,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					}
 				}
 
-				// Create a description so we can attribute this value back to the original
-				// source. It would look like:
-				//
-				// One of the values of 'Plan name' for Customer.
-				desc := fmt.Sprintf("One of the values of '%s' for %s.",
-					enumModel.SourceAttribute.Name, outputType.Name)
-
 				enumModels := []*output.CatalogEntryModel{}
 				for value := range valueSet {
 					enumModels = append(enumModels, &output.CatalogEntryModel{
-						ExternalID: value,
-						Name:       value,
-						Aliases:    []string{},
-						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{
-							"description": {
-								Value: &client.CatalogAttributeValuePayloadV2{
-									Literal: &desc,
-								},
-							},
-						},
+						ExternalID:      value,
+						Name:            value,
+						Aliases:         []string{},
+						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{},
 					})
 				}
 
