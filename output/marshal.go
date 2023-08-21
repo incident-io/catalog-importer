@@ -208,7 +208,8 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 
 				binding.ArrayValue = &arrayValue
 			} else {
-				literal, err := expr.Eval[string](ctx, prg, entry)
+				literal, err := evaluateEntryWithAttributeType(ctx, prg, entry, attributeByID[attributeID])
+
 				if err != nil {
 					continue eachAttribute
 				}
@@ -231,4 +232,45 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 	}
 
 	return catalogEntryModels, nil
+}
+
+func evaluateEntryWithAttributeType(ctx context.Context, prg cel.Program, entry map[string]any, attribute *Attribute) (string, error) {
+	var literal string
+
+	// If we have an attribute type of type Bool or Number, we can try to evaluate the program against the scope
+	// with the appropriate type.
+	// If that fails, we'll fall back to a string literal since we accept passing a boolean or numeric value
+	// as a string literal.
+	if attribute != nil && attribute.Type.Valid {
+		switch attribute.Type.String {
+		case "Bool":
+			literal, _ = evaluateEntryWithType[bool](ctx, prg, entry)
+			if literal != "" {
+				return literal, nil
+			}
+		case "Number":
+			// Number accepts float or int, so we'll try to evaluate as a float first.
+			literal, _ = evaluateEntryWithType[float64](ctx, prg, entry)
+			if literal != "" {
+				return literal, nil
+			}
+			literal, _ = evaluateEntryWithType[int64](ctx, prg, entry)
+			if literal != "" {
+				return literal, nil
+			}
+		}
+	}
+
+	// If we have an attribute type of type String, or we failed to evaluate the program against the scope
+	// with the appropriate type, we'll try to evaluate as a string literal.
+	return evaluateEntryWithType[string](ctx, prg, entry)
+}
+
+func evaluateEntryWithType[ReturnType any](ctx context.Context, prg cel.Program, entry map[string]any) (string, error) {
+	literal, err := expr.Eval[ReturnType](ctx, prg, entry)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%v", literal), nil
 }
