@@ -42,6 +42,7 @@ metadata:
   annotations:
     github.com/user-login: lawrencejones
   name: lawrence
+  namespace: default
 spec:
   memberOf:
     - engineering
