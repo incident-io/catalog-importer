@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Install catalog-importer
           command: |
-            VERSION="0.13.0"
+            VERSION="1.5.1"
 
             echo "Installing importer v${VERSION}..."
             curl -L \
@@ -78,9 +78,15 @@ jobs:
           go-version: "1.20"
       - name: Install catalog-importer
         run: |
-          go install github.com/incident-io/catalog-importer/cmd/catalog-importer@latest
+          VERSION="1.5.1"
+
+          echo "Installing importer v${VERSION}..."
+          curl -L \
+            -o "/tmp/catalog-importer_${VERSION}_linux_amd64.tar.gz" \
+            "https://github.com/incident-io/catalog-importer/releases/download/v${VERSION}/catalog-importer_${VERSION}_linux_amd64.tar.gz"
+          tar zxf "/tmp/catalog-importer_${VERSION}_linux_amd64.tar.gz" -C /tmp
       - name: Sync
         run: |
-          catalog-importer sync --config=importer.jsonnet --prune
+          /tmp/catalog-importer sync --config=importer.jsonnet --prune
 ```
 
