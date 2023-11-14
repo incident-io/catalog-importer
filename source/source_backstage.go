@@ -19,6 +19,7 @@ import (
 type SourceBackstage struct {
 	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities
 	Token    Credential `json:"token"`
+	SignJWT  *bool      `json:"sign_jwt"`
 }
 
 func (s SourceBackstage) Validate() error {
@@ -37,10 +38,17 @@ func (s SourceBackstage) String() string {
 func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	var token string
 	if s.Token != "" {
-		var err error
-		token, err = s.getJWT()
-		if err != nil {
-			return nil, err
+		// If not provided or explicitly enabled, sign the token into a JWT and use that as
+		// the Authorization header.
+		if s.SignJWT == nil || *s.SignJWT {
+			var err error
+			token, err = s.getJWT()
+			if err != nil {
+				return nil, err
+			}
+			// Otherwise if someone has told us not to, don't sign the token and use it as-is.
+		} else {
+			token = string(s.Token)
 		}
 	}
 

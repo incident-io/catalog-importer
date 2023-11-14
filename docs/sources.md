@@ -129,6 +129,11 @@ This looks like:
     //
     // https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
     token: '$(BACKSTAGE_TOKEN)',
+
+    // Some Backstage instances (e.g. Roadie) may prefer tokens to be used
+    // as-is instead of signed into JWTs. If this is you, explicitly opt-out of
+    // signing like so:
+    sign_jwt: false,
   },
 }
 ```
