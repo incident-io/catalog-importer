@@ -5,16 +5,19 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 )
 
 var _ = Describe("Parse", func() {
 	var (
 		input   string
 		entries []source.Entry
+		err     error
 	)
 
 	JustBeforeEach(func() {
-		entries = source.Parse("file.thing", []byte(input))
+		entries, err = source.Parse("README.md", []byte(input))
+		Expect(err).ToNot(HaveOccurred())
 	})
 
 	When("Jsonnet", func() {
@@ -32,14 +35,16 @@ var _ = Describe("Parse", func() {
 			})
 
 			It("returns the object", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-						"nested": map[any]any{
-							"another_key": "another_value",
-						},
+				Expect(entries).To(ConsistOf(MatchKeys(
+					IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+						"nested": MatchKeys(IgnoreExtras, Keys{
+							"another_key": Equal("another_value"),
+						}),
 					},
-				}))
+				)))
 			})
 		})
 
@@ -53,11 +58,11 @@ var _ = Describe("Parse", func() {
 			})
 
 			It("returns filename", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"name": "file.thing",
-					},
-				}))
+				Expect(entries).To(ConsistOf(MatchKeys(IgnoreExtras, Keys{
+					"_local.filename": Equal("README.md"),
+					"_local.path":     HaveSuffix("README.md"),
+					"name":            Equal("README.md"),
+				})))
 			})
 		})
 
@@ -76,14 +81,18 @@ var _ = Describe("Parse", func() {
 			})
 
 			It("returns all objects", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-					},
-					{
-						"another_key": "another_value",
-					},
-				}))
+				Expect(entries).To(ConsistOf(
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+					}),
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"another_key":     Equal("another_value"),
+					}),
+				))
 			})
 		})
 	})
@@ -102,14 +111,16 @@ var _ = Describe("Parse", func() {
 			})
 
 			It("returns the object", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-						"nested": map[any]any{
-							"another_key": "another_value",
-						},
+				Expect(entries).To(ConsistOf(MatchKeys(
+					IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+						"nested": MatchKeys(IgnoreExtras, Keys{
+							"another_key": Equal("another_value"),
+						}),
 					},
-				}))
+				)))
 			})
 		})
 
@@ -128,14 +139,18 @@ var _ = Describe("Parse", func() {
 			})
 
 			It("returns all objects", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-					},
-					{
-						"another_key": "another_value",
-					},
-				}))
+				Expect(entries).To(ConsistOf(
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+					}),
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"another_key":     Equal("another_value"),
+					}),
+				))
 			})
 		})
 	})
@@ -151,14 +166,16 @@ nested:
 			})
 
 			It("returns the object", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-						"nested": map[any]any{
-							"another_key": "another_value",
-						},
+				Expect(entries).To(ConsistOf(MatchKeys(
+					IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+						"nested": MatchKeys(IgnoreExtras, Keys{
+							"another_key": Equal("another_value"),
+						}),
 					},
-				}))
+				)))
 			})
 		})
 
@@ -174,17 +191,24 @@ we: hate yaml
 			})
 
 			It("returns the object", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-						"nested": map[any]any{
-							"another_key": "another_value",
+				Expect(entries).To(ConsistOf(
+					MatchKeys(
+						IgnoreExtras, Keys{
+							"_local.filename": Equal("README.md"),
+							"_local.path":     HaveSuffix("README.md"),
+							"key":             Equal("value"),
+							"nested": MatchKeys(IgnoreExtras, Keys{
+								"another_key": Equal("another_value"),
+							}),
 						},
-					},
-					{
-						"we": "hate yaml",
-					},
-				}))
+					),
+					MatchKeys(
+						IgnoreExtras, Keys{
+							"_local.filename": Equal("README.md"),
+							"_local.path":     HaveSuffix("README.md"),
+							"we":              Equal("hate yaml"),
+						}),
+				))
 			})
 		})
 
@@ -197,14 +221,18 @@ we: hate yaml
 			})
 
 			It("returns all objects", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"key": "value",
-					},
-					{
-						"another_key": "another_value",
-					},
-				}))
+				Expect(entries).To(ConsistOf(
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"key":             Equal("value"),
+					}),
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"another_key":     Equal("another_value"),
+					}),
+				))
 			})
 		})
 	})
@@ -221,23 +249,29 @@ P125,My name is,Slim Shady
 			})
 
 			It("returns all parsed entries", func() {
-				Expect(entries).To(Equal([]source.Entry{
-					{
-						"id":          "P123",
-						"name":        "My name is",
-						"description": "What",
-					},
-					{
-						"id":          "P124",
-						"name":        "My name is",
-						"description": "Who",
-					},
-					{
-						"id":          "P125",
-						"name":        "My name is",
-						"description": "Slim Shady",
-					},
-				}))
+				Expect(entries).To(ConsistOf(
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"id":              Equal("P123"),
+						"name":            Equal("My name is"),
+						"description":     Equal("What"),
+					}),
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"id":              Equal("P124"),
+						"name":            Equal("My name is"),
+						"description":     Equal("Who"),
+					}),
+					MatchKeys(IgnoreExtras, Keys{
+						"_local.filename": Equal("README.md"),
+						"_local.path":     HaveSuffix("README.md"),
+						"id":              Equal("P125"),
+						"name":            Equal("My name is"),
+						"description":     Equal("Slim Shady"),
+					}),
+				))
 			})
 		})
 	})

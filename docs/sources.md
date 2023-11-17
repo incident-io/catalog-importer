@@ -103,6 +103,32 @@ Jsonnet, and will flatten the resulting entries into a single array.
 
 See more details about acceptable formats in [Parsing](#parsing).
 
+### Filename/Path
+
+You can access the filename and the path of a local file you're importing from
+in the `source` field of a config. For example:
+
+```jsonnet
+attributes: [
+  {
+    id: 'filename',
+    name: 'Filename',
+    type: 'String',
+    array: false,
+    source: '_local.filename',
+  },
+  {
+    id: 'path',
+    name: 'Path',
+    type: 'String',
+    array: false,
+    source: '_local.path',
+  },
+]
+```
+
+These references will be replaced with the filename or path of the current file.
+
 ## `backstage`
 
 If you already have a Backstage catalog setup, you can ask the importer to pull
@@ -390,4 +416,3 @@ std.map(function(desc) { description: desc }, [
   "will also load fine",
 ])
 ```
-
