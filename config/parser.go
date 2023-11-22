@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -19,9 +20,31 @@ func Parse(filename string, data []byte) (*Config, error) {
 		data = []byte(jsonString)
 	}
 
+	return parse(data)
+}
+
+func parse(data []byte) (*Config, error) {
+	// Translate from JSON/YAML to a JSON string (normalise things so we can use the default
+	// Go JSON parser).
+	{
+		var cfg map[string]any
+		err := yaml.Unmarshal(data, &cfg)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing yaml/json")
+		}
+
+		data, err = json.Marshal(cfg)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing yaml/json")
+		}
+	}
+
+	d := json.NewDecoder(strings.NewReader(string(data)))
+	d.DisallowUnknownFields()
+
 	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, errors.Wrap(err, "parsing yaml")
+	if err := d.Decode(&cfg); err != nil {
+		return nil, errors.Wrap(err, "parsing config")
 	}
 
 	return &cfg, nil
