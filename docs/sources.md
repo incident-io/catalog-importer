@@ -147,6 +147,14 @@ be a bearer token with permissions to make this call.
 This will pull in all catalog entries after which you may use the source
 `filter`s to separate entries into different types.
 
+Note: these instructions also work for Backstage hosted with [Roadie]([url](https://roadie.io)). You will need to adjust the `endpoint` to:
+
+```
+https://api.roadie.so/api/catalog/entities
+``` 
+
+And you should append `sign_jwt: false,` to your jsonnet, as explained above.
+
 ## `github`
 
 This source can pull files matching a pattern from across repositories in a
