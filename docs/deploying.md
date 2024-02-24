@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Install catalog-importer
           command: |
-            VERSION="1.5.1"
+            VERSION="1.7.0"
 
             echo "Installing importer v${VERSION}..."
             curl -L \
@@ -78,7 +78,7 @@ jobs:
           go-version: "1.20"
       - name: Install catalog-importer
         run: |
-          VERSION="1.5.1"
+          VERSION="1.7.0"
 
           echo "Installing importer v${VERSION}..."
           curl -L \
