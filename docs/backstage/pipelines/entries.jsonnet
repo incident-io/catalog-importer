@@ -264,10 +264,11 @@
         ],
       },
       attributes: [
+        // Include this attribute to connect your users within Backstage to users within incident.io
         {
-          id: 'email',
-          name: 'Email',
-          type: 'String',
+          id: 'user',
+          name: 'incident.io User',
+          type: 'User',
           source: 'spec.profile.email',
         },
         {
