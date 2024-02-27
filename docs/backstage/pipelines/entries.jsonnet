@@ -265,12 +265,6 @@
       },
       attributes: [
         {
-          id: 'email',
-          name: 'Email',
-          type: 'String',
-          source: 'spec.profile.email',
-        },
-        {
           id: 'groups',
           name: 'Groups',
           type: 'Custom["BackstageGroup"]',
