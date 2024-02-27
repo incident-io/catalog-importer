@@ -271,7 +271,7 @@
           source: 'spec.memberOf',
           array: true,
         },
-        // Include the below to connect your users within Backstage to users within Incident.io
+        // Include the below to connect your users within Backstage to users within incident.io
         {
           id: 'user',
           name: 'incident.io User',
