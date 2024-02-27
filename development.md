@@ -18,5 +18,3 @@ export INCIDENT_ENDPOINT="http://localhost:3001/api/public"
 ```
 
 [go]: https://go.dev/doc/install
-
-!!!
