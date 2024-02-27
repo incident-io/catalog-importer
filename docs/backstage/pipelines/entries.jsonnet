@@ -264,19 +264,19 @@
         ],
       },
       attributes: [
+        // Include this attribute to connect your users within Backstage to users within incident.io
+        {
+          id: 'user',
+          name: 'incident.io User',
+          type: 'User',
+          source: 'spec.profile.email',
+        },
         {
           id: 'groups',
           name: 'Groups',
           type: 'Custom["BackstageGroup"]',
           source: 'spec.memberOf',
           array: true,
-        },
-        // Include the below to connect your users within Backstage to users within incident.io
-        {
-          id: 'user',
-          name: 'incident.io User',
-          type: 'User',
-          source: 'spec.profile.email',
         },
       ],
     },
