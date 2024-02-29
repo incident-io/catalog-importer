@@ -10,7 +10,7 @@
             "args": [
                 "sync", 
                 "--config", 
-                "/tmp/config.jsonnet" // Point to an actual config file
+                "/tmp/config.jsonnet"
             ],
             "env": {
                 "INCIDENT_API_KEY": "inc_..."
