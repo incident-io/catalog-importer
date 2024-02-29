@@ -62,7 +62,7 @@ func (opt *InitOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 			Default: ".",
 		}
 
-		chosenDest, _ = prompt.Run()
+		chosenDest, err = prompt.Run()
 		if err != nil {
 			return err
 		}
