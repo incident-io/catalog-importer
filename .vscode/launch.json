@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug catalog-importer sync",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/catalog-importer",
+            "args": [
+                "sync", 
+                "--config", 
+                "/tmp/config.jsonnet"
+            ],
+            "env": {
+                "INCIDENT_API_KEY": "inc_..."
+            }
+        }
+    ]
+}
