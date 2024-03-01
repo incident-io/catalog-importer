@@ -6,7 +6,7 @@ BUILD_COMMAND=go build -ldflags "-s -w -X main.Version=$(VERSION)"
 # Build
 ################################################################################
 
-.PHONY: prog darwin linux generate clean
+.PHONY: prog darwin linux generate clean test
 
 prog: $(PROG)
 darwin: $(PROG:=.darwin_amd64)
@@ -23,6 +23,9 @@ bin/%:
 
 generate:
 	go generate ./...
+
+test:
+	go test -v ./...
 
 clean:
 	rm -rfv $(PROG)

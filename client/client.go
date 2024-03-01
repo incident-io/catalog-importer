@@ -5,12 +5,40 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
+	"golang.org/x/time/rate"
 )
+
+const (
+	rpm              = 600
+	bucketsPerMinute = 60
+)
+
+type RateLimitedClient struct {
+	client      *http.Client
+	rateLimiter *rate.Limiter
+}
+
+func (c *RateLimitedClient) Do(req *http.Request) (*http.Response, error) {
+	if c.rateLimiter == nil {
+		return nil, errors.New("rate limiter not set")
+	}
+	ctx := context.Background()
+	err := c.rateLimiter.Wait(ctx)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
 
 func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...ClientOption) (*ClientWithResponses, error) {
 	bearerTokenProvider, bearerTokenProviderErr := securityprovider.NewSecurityProviderBearerToken(apiKey)
@@ -39,8 +67,13 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 		return resp, err
 	})
 
+	rlClient := &RateLimitedClient{
+		client:      base,
+		rateLimiter: rate.NewLimiter(rate.Every(time.Minute/bucketsPerMinute), rpm/bucketsPerMinute),
+	}
+
 	clientOpts := append([]ClientOption{
-		WithHTTPClient(base),
+		WithHTTPClient(rlClient),
 		WithRequestEditorFn(bearerTokenProvider.Intercept),
 		// Add a user-agent so we can tell which version these requests came from.
 		WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {

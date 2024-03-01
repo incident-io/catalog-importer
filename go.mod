@@ -33,6 +33,7 @@ require (
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/sync v0.2.0
+	golang.org/x/time v0.0.0-20220411224347-583f2d630306
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
 )
