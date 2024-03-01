@@ -14,9 +14,15 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// last retry will wait 64 seconds (2^6)
+// will also listen to 'Retry-After' header
+
 const (
 	rpm              = 600
 	bucketsPerMinute = 60
+	maxRetries       = 6
+	minRetryWait     = 1 * time.Second
+	maxRetryWait     = 65 * time.Second
 )
 
 type RateLimitedClient struct {
@@ -47,7 +53,10 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	}
 
 	retryClient := retryablehttp.NewClient()
-	retryClient.RetryMax = 3
+
+	retryClient.RetryMax = maxRetries
+	retryClient.RetryWaitMin = minRetryWait
+	retryClient.RetryWaitMax = maxRetryWait
 
 	base := retryClient.StandardClient()
 
