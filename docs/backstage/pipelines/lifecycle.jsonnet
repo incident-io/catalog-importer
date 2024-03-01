@@ -33,15 +33,15 @@
       description: 'Component lifecycle stage.',
       type_name: 'Custom["BackstageLifecycle"]',
       source: {
-        name: 'name',
-        external_id: 'external_id',
+        name: '$.name',
+        external_id: '$.external_id',
       },
       attributes: [
         {
           id: 'description',
           name: 'Description',
           type: 'Text',
-          source: 'description',
+          source: '$.description',
         },
       ],
     },

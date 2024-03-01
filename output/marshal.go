@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/cel-go/cel"
 	"github.com/incident-io/catalog-importer/client"
 	"github.com/incident-io/catalog-importer/expr"
 	"github.com/incident-io/catalog-importer/source"
@@ -84,74 +83,44 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 // MarshalEntries builds payloads to for the entries of the given output, assuming those
 // entries have already been filtered.
 //
-// The majority of the work comes from compiling and evaluating the CEL expressions that
+// The majority of the work comes from compiling and evaluating the JS expressions that
 // marshal the catalog entries from source.
 func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry) ([]*CatalogEntryModel, error) {
-	nameProgram, err := expr.Compile(output.Source.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, "source.name")
-	}
-
-	externalIDProgram, err := expr.Compile(output.Source.ExternalID)
-	if err != nil {
-		return nil, errors.Wrap(err, "source.external_id")
-	}
-
-	var rankProgram cel.Program
-	if output.Source.Rank.Valid {
-		var err error
-		rankProgram, err = expr.Compile(output.Source.Rank.String)
-		if err != nil {
-			return nil, errors.Wrap(err, "source.rank")
-		}
-	}
-
-	aliasPrograms := []cel.Program{}
-	for idx, alias := range output.Source.Aliases {
-		prg, err := expr.Compile(alias)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("alias.%d: compiling alias", idx))
-		}
-
-		aliasPrograms = append(aliasPrograms, prg)
-	}
+	nameSource := output.Source.Name
+	externalIDSource := output.Source.ExternalID
+	rankSource := output.Source.Rank.String
+	aliasesSource := output.Source.Aliases
 
 	var (
-		attributeByID     = map[string]*Attribute{}
-		attributePrograms = map[string]cel.Program{}
+		attributeByID    = map[string]*Attribute{}
+		attributeSources = map[string]string{}
 	)
-	for idx, attr := range output.Attributes {
+	for _, attr := range output.Attributes {
 		// Use the attribute ID by default if source isn't explicitly provided.
 		source := attr.ID
 		if attr.Source.Valid {
 			source = attr.Source.String
 		}
-
-		prg, err := expr.Compile(source)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("attributes.%d (id = %s): compiling source", idx, attr.ID))
-		}
-
 		attributeByID[attr.ID] = attr
-		attributePrograms[attr.ID] = prg
+		attributeSources[attr.ID] = source
 	}
 
 	catalogEntryModels := []*CatalogEntryModel{}
 	for _, entry := range entries {
-		name, err := expr.Eval[string](ctx, nameProgram, entry)
+		name, err := expr.EvaluateSingleValue[string](ctx, nameSource, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry name")
 		}
 
-		externalID, err := expr.Eval[string](ctx, externalIDProgram, entry)
+		externalID, err := expr.EvaluateSingleValue[string](ctx, externalIDSource, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
 
 		var rank int32
-		if rankProgram != nil {
+		if rankSource != "" { // TODO should this be != nil? (which fails type checking... but is this an issue? )
 			var err error
-			rank, err = expr.Eval[int32](ctx, rankProgram, entry)
+			rank, err = expr.EvaluateSingleValue[int32](ctx, rankSource, entry)
 			if err != nil {
 				return nil, errors.Wrap(err, "evaluating entry external ID")
 			}
@@ -160,12 +129,12 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		// Try to parse each alias as either a string or a string array, then concat and
 		// dedupe them together.
 		aliases := []string{}
-		for idx, aliasProgram := range aliasPrograms {
+		for idx, aliasSource := range aliasesSource {
 			toAdd := []string{}
 
-			alias, err := expr.Eval[string](ctx, aliasProgram, entry)
+			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry)
 			if err != nil {
-				aliasArray, arrayErr := expr.Eval[[]string](ctx, aliasProgram, entry)
+				aliasArray, arrayErr := expr.EvaluateSingleValue[[]string](ctx, aliasSource, entry)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
@@ -184,14 +153,14 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		// Attribute values are built best effort, as it might not be the case that upstream
 		// source entries have these fields, or have fields of the correct type.
 		attributeValues := map[string]client.CatalogAttributeBindingPayloadV2{}
-	eachAttribute:
-		for attributeID, prg := range attributePrograms {
+
+		for attributeID, src := range attributeSources {
 			binding := client.CatalogAttributeBindingPayloadV2{}
 
 			if attributeByID[attributeID].Array {
-				valueLiterals, err := expr.Eval[[]any](ctx, prg, entry)
+				valueLiterals, err := expr.EvaluateArray[any](ctx, src, entry)
 				if err != nil {
-					continue eachAttribute
+					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
 
 				arrayValue := []client.CatalogAttributeValuePayloadV2{}
@@ -208,10 +177,10 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 
 				binding.ArrayValue = &arrayValue
 			} else {
-				literal, err := evaluateEntryWithAttributeType(ctx, prg, entry, attributeByID[attributeID])
+				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID])
 
 				if err != nil {
-					continue eachAttribute
+					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
 
 				binding.Value = &client.CatalogAttributeValuePayloadV2{
@@ -234,7 +203,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 	return catalogEntryModels, nil
 }
 
-func evaluateEntryWithAttributeType(ctx context.Context, prg cel.Program, entry map[string]any, attribute *Attribute) (string, error) {
+func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute) (string, error) {
 	var literal string
 
 	// If we have an attribute type of type Bool or Number, we can try to evaluate the program against the scope
@@ -244,17 +213,17 @@ func evaluateEntryWithAttributeType(ctx context.Context, prg cel.Program, entry 
 	if attribute != nil && attribute.Type.Valid {
 		switch attribute.Type.String {
 		case "Bool":
-			literal, _ = evaluateEntryWithType[bool](ctx, prg, entry)
+			literal, _ = evaluateEntryWithType[bool](ctx, src, entry)
 			if literal != "" {
 				return literal, nil
 			}
 		case "Number":
 			// Number accepts float or int, so we'll try to evaluate as a float first.
-			literal, _ = evaluateEntryWithType[float64](ctx, prg, entry)
+			literal, _ = evaluateEntryWithType[float64](ctx, src, entry)
 			if literal != "" {
 				return literal, nil
 			}
-			literal, _ = evaluateEntryWithType[int64](ctx, prg, entry)
+			literal, _ = evaluateEntryWithType[int64](ctx, src, entry)
 			if literal != "" {
 				return literal, nil
 			}
@@ -263,11 +232,11 @@ func evaluateEntryWithAttributeType(ctx context.Context, prg cel.Program, entry 
 
 	// If we have an attribute type of type String, or we failed to evaluate the program against the scope
 	// with the appropriate type, we'll try to evaluate as a string literal.
-	return evaluateEntryWithType[string](ctx, prg, entry)
+	return evaluateEntryWithType[string](ctx, src, entry)
 }
 
-func evaluateEntryWithType[ReturnType any](ctx context.Context, prg cel.Program, entry map[string]any) (string, error) {
-	literal, err := expr.Eval[ReturnType](ctx, prg, entry)
+func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any) (string, error) {
+	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, src, entry)
 	if err != nil {
 		return "", err
 	}

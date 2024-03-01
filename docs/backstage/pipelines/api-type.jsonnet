@@ -39,15 +39,15 @@
       description: 'Type or format of the API.',
       type_name: 'Custom["BackstageAPIType"]',
       source: {
-        name: 'name',
-        external_id: 'external_id',
+        name: '$.name',
+        external_id: '$.external_id',
       },
       attributes: [
         {
           id: 'description',
           name: 'Description',
           type: 'Text',
-          source: 'description',
+          source: '$.description',
         },
       ],
     },

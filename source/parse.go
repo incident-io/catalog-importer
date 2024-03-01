@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/ghodss/yaml"
 	"github.com/google/go-jsonnet"
-	"gopkg.in/yaml.v2"
 )
 
 // Entry is a single sourced entry.  It's just a basic map, but makes it much clearer when
@@ -38,7 +38,6 @@ func Parse(filename string, data []byte) []Entry {
 			if err := yaml.Unmarshal(chunk, &entry); err != nil {
 				goto tryArray
 			}
-
 			entries = append(entries, entry)
 			continue
 		}

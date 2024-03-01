@@ -126,12 +126,12 @@
               }
             |||,
             // This is what we pass into the output pipeline.
-            result: 'viewer.repositories.edges',
+            result: '$.viewer.repositories.edges',
             // Configure pagination strategies here:
             paginate: {
               // If cursor based, this says where to find the cursor value for the
               // subsequent query.
-              next_cursor: 'viewer.repositories.pageInfo.endCursor',
+              next_cursor: '$.viewer.repositories.pageInfo.endCursor',
             },
           },
         },
@@ -169,7 +169,7 @@
             //
             // Only entries where this filter is true will be synced into this
             // output.
-            filter: 'metadata.kind = "Service"',
+            filter: '$.metadata.kind = "Service"',
 
             // Required mapping of entry field to the external ID of this entry.
             //
@@ -180,11 +180,11 @@
             //
             // The uuid of the resource in the external catalog system would be
             // an ideal value.
-            external_id: 'metadata.name',
+            external_id: '$.metadata.name',
 
             // Required field in the source that will act as the name for this
             // entry, where name is the human readable label.
-            name: 'metadata.name',
+            name: '$.metadata.name',
           },
 
           // Controls which attributes this type will have. Attributes are types
@@ -227,7 +227,7 @@
               // attribute.
               //
               // Will default to the id of this attribute.
-              source: 'metadata.description',
+              source: '$.metadata.description',
             },
 
             // Most of the time you can be much less verbose, as source will
@@ -244,7 +244,7 @@
               id: 'linear_team',
               name: 'Linear team',
               type: 'LinearTeam',  // automatically available if Linear is connected
-              source: 'metadata.annotations["incident.io/linear-team"]',
+              source: '$.metadata.annotations["incident.io/linear-team"]',
             },
           ],
         },

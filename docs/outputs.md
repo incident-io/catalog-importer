@@ -84,7 +84,7 @@ given a single attribute:
   other catalog type by referencing it's type name, such as `Custom["Service"]`
   or even `Custom["BackstageAPIType"]` to reference itself.
 - It is a single value attribute, because `array` is false.
-- The source is a CEL expression (see [docs](expressions.md)) that is evaluated
+- The source is a Javascript expression (see [docs](expressions.md)) that is evaluated
   against the source entry to find the value for this attribute.
 
 For more information on how to use filter expressions, read [Using

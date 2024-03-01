@@ -340,7 +340,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			}
 			OUT("      ✔ Building entries... (found %d entries matching filters)", len(entries))
 
-			// Marshal entries using the CEL expressions.
+			// Marshal entries using the JS expressions.
 			entryModels, err := output.MarshalEntries(ctx, outputType, entries)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
