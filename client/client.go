@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -46,6 +47,33 @@ func (c *RateLimitedClient) Do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
+func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	// Retry for rate limits and server errors.
+	if resp != nil && resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500 {
+		// Check for a 'Retry-After' header.
+		retryAfter := resp.Header.Get("Retry-After")
+		if retryAfter != "" {
+			if retryAfterSeconds, err := time.ParseDuration(retryAfter + "s"); err == nil {
+				return retryAfterSeconds
+			}
+		}
+
+		// If not check if there is a response in the body
+		var data map[string]interface{}
+		json.NewDecoder(resp.Body).Decode(&data)
+		defer resp.Body.Close()
+		retryAfter, ok := data["Retry-After"].(string)
+		if ok && retryAfter != "" {
+			if retryAfterSeconds, err := time.ParseDuration(retryAfter + "s"); err == nil {
+				return retryAfterSeconds
+			}
+		}
+
+		// otherwise use the default backoff
+	}
+	return retryablehttp.DefaultBackoff(min, max, attemptNum, resp)
+}
+
 func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...ClientOption) (*ClientWithResponses, error) {
 	bearerTokenProvider, bearerTokenProviderErr := securityprovider.NewSecurityProviderBearerToken(apiKey)
 	if bearerTokenProviderErr != nil {
@@ -57,6 +85,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	retryClient.RetryMax = maxRetries
 	retryClient.RetryWaitMin = minRetryWait
 	retryClient.RetryWaitMax = maxRetryWait
+	retryClient.Backoff = attentiveBackoff
 
 	base := retryClient.StandardClient()
 
