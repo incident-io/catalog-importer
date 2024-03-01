@@ -34,7 +34,7 @@ func (c *RateLimitedClient) Do(req *http.Request) (*http.Response, error) {
 	if c.rateLimiter == nil {
 		return nil, errors.New("rate limiter not set")
 	}
-	ctx := context.Background()
+	ctx := req.Context()
 	err := c.rateLimiter.Wait(ctx)
 	if err != nil {
 		return nil, err
