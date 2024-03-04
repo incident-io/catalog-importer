@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/bmatcuk/doublestar/v4 v4.6.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0

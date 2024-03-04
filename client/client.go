@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/go-retryablehttp"
@@ -19,9 +20,9 @@ import (
 // will also listen to 'Retry-After' header
 
 const (
-	rpm              = 600
+	rpm              = 600000000000000000
 	bucketsPerMinute = 60
-	maxRetries       = 6
+	maxRetries       = 7
 	minRetryWait     = 1 * time.Second
 	maxRetryWait     = 65 * time.Second
 )
@@ -59,13 +60,18 @@ func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Respons
 		}
 
 		// If not check if there is a response in the body
-		var data map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&data)
-		defer resp.Body.Close()
-		retryAfter, ok := data["Retry-After"].(string)
-		if ok && retryAfter != "" {
-			if retryAfterSeconds, err := time.ParseDuration(retryAfter + "s"); err == nil {
-				return retryAfterSeconds
+		var target struct {
+			RateLimit struct {
+				RetryAfter string `json:"retry_after"`
+			} `json:"rate_limit"`
+		}
+		err := json.NewDecoder(resp.Body).Decode(&target)
+		spew.Dump(target)
+		if err == nil {
+			if target.RateLimit.RetryAfter != "" {
+				if retryAfterSeconds, err := time.ParseDuration(target.RateLimit.RetryAfter + "s"); err == nil {
+					return retryAfterSeconds
+				}
 			}
 		}
 
@@ -90,16 +96,22 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	base := retryClient.StandardClient()
 
 	// The generated client won't turn validation errors into actual errors, so we do this
-	// inside of a generic middleware.
+	// // inside of a generic middleware.
 	base.Transport = Wrap(cleanhttp.DefaultTransport(), func(req *http.Request, next http.RoundTripper) (*http.Response, error) {
 		resp, err := next.RoundTrip(req)
+		if err != nil {
+			return resp, err
+		}
+		if resp.StatusCode == http.StatusTooManyRequests {
+			return resp, nil
+		}
 		if err == nil && resp.StatusCode > 299 {
 			data, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, fmt.Errorf("status %d: no response body", resp.StatusCode)
+				return resp, fmt.Errorf("status %d: no response body", resp.StatusCode)
 			}
 
-			return nil, fmt.Errorf("status %d: %s", resp.StatusCode, string(data))
+			return resp, fmt.Errorf("status %d: %s", resp.StatusCode, string(data))
 		}
 
 		return resp, err
