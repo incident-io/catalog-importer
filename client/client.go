@@ -15,7 +15,6 @@ import (
 
 // last retry will wait 64 seconds
 // will also listen to 'Retry-After' header
-// 600 RPM, spread across 60 1 second buckets
 
 const (
 	rpm              = 600
