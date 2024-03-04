@@ -47,7 +47,7 @@ func (c *RateLimitedClient) Do(req *http.Request) (*http.Response, error) {
 
 func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	// Retry for rate limits and server errors.
-	if resp != nil && resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500 {
+	if resp != nil && resp.StatusCode == http.StatusTooManyRequests {
 		// Check for a 'Retry-After' header.
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
