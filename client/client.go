@@ -13,15 +13,13 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// last retry will wait 64 seconds
-// will also listen to 'Retry-After' header
-
 const (
-	rpm              = 600
-	bucketsPerMinute = 60
-	maxRetries       = 7
-	minRetryWait     = 1 * time.Second
-	maxRetryWait     = 65 * time.Second
+	rpm = 600
+
+	// last retry will wait 64 seconds
+	maxRetries   = 7
+	minRetryWait = 1 * time.Second
+	maxRetryWait = 65 * time.Second
 )
 
 type RateLimitedClient struct {
