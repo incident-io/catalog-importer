@@ -14,7 +14,7 @@ the app running, then you can point it to your local environment using the
 following environment variable:
 
 ```
-export INCIDENT_API_KEY="inc_development_h3gHe9hegh39h3gh39He9hEgh3gh3gHe9h3gh39h3gh39hE9hegh3gh3Ghe9hEG"
+export INCIDENT_API_KEY="inc_development_YOUR_API_KEY"
 export INCIDENT_ENDPOINT="http://localhost:3001/api/public"
 ```
 
