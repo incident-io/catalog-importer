@@ -75,7 +75,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	base := retryClient.StandardClient()
 
 	// The generated client won't turn validation errors into actual errors, so we do this
-	// // inside of a generic middleware.
+	// inside of a generic middleware.
 	base.Transport = Wrap(base.Transport, func(req *http.Request, next http.RoundTripper) (*http.Response, error) {
 		resp, err := next.RoundTrip(req)
 		if err != nil {
