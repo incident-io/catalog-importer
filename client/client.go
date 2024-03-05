@@ -54,8 +54,8 @@ func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Respons
 			}
 		}
 
-		// otherwise use the default backoff
 	}
+	// otherwise use the default backoff
 	return retryablehttp.DefaultBackoff(min, max, attemptNum, resp)
 }
 
