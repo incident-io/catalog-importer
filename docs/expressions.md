@@ -88,3 +88,33 @@ The following JS expressions would evaluate to:
 - `$.details.description` => `Marketing website`
 - `$.runbooks` => `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
 - `$.runbooks[0]` => `https://github.com/incident-io/runbooks/blob/main/website.md`
+
+## Previously implemented CEL expressions
+
+Prior to v. `2.0.0`, we had implemented a handful of functions ourselves
+to make the adoption of CEL a bit easier. The migration to plain JS should
+make their replacements both user-friendly and flexible, here are some examples:
+
+### `first`
+```json
+[
+  "one", null, "two"
+]
+```
+Previously:
+`first(subject)` => `["one"]`
+
+Using JS:
+`$.subject.slice(0, 1)`
+
+### `trimPrefix` and `replace`
+```json
+"group:engineering@example.com"
+```
+Previously:
+`trimPrefix(subject, "group:")` => `engineering@example.com`
+
+Using JS:
+`$.subject.replace(/^(group\:)/,"")` => `engineering@example.com`
+`$.subject.slice(6)` => `engineering@example.com`
+`$.subject.replace(/group:|@example.com/g, "")` => `engineering`
