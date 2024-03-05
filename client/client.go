@@ -93,6 +93,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 		return resp, err
 	})
 
+	// Adding a naive rate limiter to prevent us from using the API keys entire allowance
 	rlClient := &RateLimitedClient{
 		client:      base,
 		rateLimiter: rate.NewLimiter(rpm/60, 1),
