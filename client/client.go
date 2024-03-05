@@ -79,7 +79,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	base.Transport = Wrap(base.Transport, func(req *http.Request, next http.RoundTripper) (*http.Response, error) {
 		resp, err := next.RoundTrip(req)
 		if err != nil {
-			return resp, err
+			return nil, err
 		}
 		if err == nil && resp.StatusCode > 299 {
 			data, err := io.ReadAll(resp.Body)
