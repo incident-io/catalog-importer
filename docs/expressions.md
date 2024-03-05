@@ -95,6 +95,19 @@ Prior to v. `2.0.0`, we had implemented a handful of functions ourselves
 to make the adoption of CEL a bit easier. The migration to plain JS should
 make their replacements both user-friendly and flexible, here are some examples:
 
+### `coalesce`
+```json
+[
+  "one", null, "two"
+]
+```
+Previously:
+`coalesce(subject)` => `["one", "two"]`
+
+Using JS:
+`$.subject.filter(v => v)`
+
+
 ### `first`
 ```json
 [
