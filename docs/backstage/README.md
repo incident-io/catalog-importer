@@ -104,7 +104,7 @@ If you want to load this into the incident.io catalog, you can amend the output
       id: 'github',
       name: 'GitHub',
       type: 'String',
-      source: 'metadata.annotations["github.com/user-login"]',
+      source: '$.metadata.annotations["github.com/user-login"]',
     },
   ],
 }
