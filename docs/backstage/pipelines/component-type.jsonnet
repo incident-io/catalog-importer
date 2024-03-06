@@ -33,15 +33,15 @@
       description: 'Type of a component.',
       type_name: 'Custom["BackstageComponentType"]',
       source: {
-        name: 'name',
-        external_id: 'external_id',
+        name: '$.name',
+        external_id: '$.external_id',
       },
       attributes: [
         {
           id: 'description',
           name: 'Description',
           type: 'Text',
-          source: 'description',
+          source: '$.description',
         },
       ],
     },

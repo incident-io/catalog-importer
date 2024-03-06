@@ -9,7 +9,7 @@ importer works:
 - [Understanding importer configuration](config.md)
 - [Sources for catalog data such as files, GitHub, Backstage and more](sources.md)
 - [Outputs that produce catalog types and entries](outputs.md)
-- [Using expressions to filter and adjust source data](expressions.md)
+- [Using JS expressions to filter and adjust source data](expressions.md)
 - [Run the importer from CI tools like CircleCI or GitHub Actions](deploying.md)
 
 [open-issue]: https://github.com/incident-io/catalog-importer/issues/new
@@ -22,7 +22,6 @@ with your request and we'll be happy to help out.
 [api-keys]: https://app.incident.io/settings/api-keys
 [jsonnet]: https://jsonnet.org/
 [vscode]: https://marketplace.visualstudio.com/items?itemName=Grafana.vscode-jsonnet
-[cel]: https://github.com/google/cel-spec
 
 The easiest way to get started is to copy one of the examples and tweak it to
 match your needs, which will depend on whether you already use a catalog and the

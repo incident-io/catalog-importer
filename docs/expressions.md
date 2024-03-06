@@ -1,13 +1,14 @@
 # Expressions
 
-[cel]: https://github.com/google/cel-spec
-
 The importer allows filtering source entries and for transforming fields from
 the source when mapping them into output attributes.
 
-These expressions are written in [CEL][cel], Google's Common Expression
-Lanaguage, which is a lightweight expression syntax well suited to
-transformations like this.
+These expressions are written in plain Javascript, which allows for easy field
+manipulation.
+
+Note: Prior to version `2.0.0`, we expected [CEL](https://github.com/google/cel-spec)
+for our expressions. This is no longer supported, but our migration
+to plain Javascript should make this process massively simpler!
 
 We explain how to read and write expressions in this doc, using snippets taken
 from our example configurations.
@@ -27,22 +28,22 @@ Taking an example from the Backstage config (extended slightly):
           description: 'APIs synced from Backstage.',
           type_name: 'Custom["BackstageAPI"]',
           source: {
-            filter: 'apiVersion == "backstage.io/v1alpha1" && kind == "API"',
-            name: 'metadata.name',
-            external_id: 'metadata.name',
+            filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "API"',
+            name: '$.metadata.name',
+            external_id: '$.metadata.name',
           },
           attributes: [
             {
               id: 'description',
               name: 'Description',
               type: 'Text',
-              source: 'metadata.description',
+              source: '$.metadata.description',
             },
             {
               id: 'google_group',
               name: 'Google Group',
               type: 'String',
-              source: 'trimPrefix(metadata.google_group, "group:")',
+              source: '$.metadata.google_group.replace("group:", "")',
             },
           ]
         }
@@ -64,12 +65,10 @@ The fields that use expressions are:
 - `pipelines.*.outputs.*.attributes.*.source` as above, used to determine the
   resulting value of the attribute for this catalog entry.
 
-## How does CEL work?
 
-CEL is very simple, and most of the time expressions will be simple references
-into the source entry.
+## Further examples
 
-If you take an example entry of:
+Given the example entry of:
 
 ```json
 {
@@ -83,93 +82,52 @@ If you take an example entry of:
 }
 ```
 
-The following CEL expressions would evaluate to:
+The following JS expressions would evaluate to:
 
-- `name` => `Website`
-- `details.description` => `Marketing website`
-- `runbooks` => `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
-- `runbooks[0]` => `https://github.com/incident-io/runbooks/blob/main/website.md`
+- `$.name` => `Website`
+- `$.details.description` => `Marketing website`
+- `$.runbooks` => `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
+- `$.runbooks[0]` => `https://github.com/incident-io/runbooks/blob/main/website.md`
 
-## CEL functions
+## Previously implemented CEL expressions
 
-We've added some extension functions to CEL where they help solve a common use
-case seen when syncing catalog data.
-
-These are:
-
-### `pluck`
-
-Returns a list of elements built by mapping through objects and extracting the
-value at the given selector.
-
-On a CEL variable named `subject` of value:
-
-```json
-[
-  { "key": "one", "another_key": "two" },
-  { "key": "three", "another_key": "four" }
-]
-```
-
-The following CEL expressions would evaluate to:
-
-- `pluck(subject, "key")` => `["one", "three"]`
-- `pluck(subject, "another_key")` => `["two", "four"]`
+Prior to v. `2.0.0`, we had implemented a handful of functions ourselves
+to make the adoption of CEL a bit easier. The migration to plain JS should
+make their replacements both user-friendly and flexible, here are some examples:
 
 ### `coalesce`
-
-Like the SQL aggregate function, will remove all null values from a list.
-
-On a CEL variable named `subject` of value:
-
-```json
-[
-  "one", null, "two",
-]
-```
-
-The following CEL expressions would evaluate to:
-
-- `coalesce(subject)` => `["one", "two"]`
-
-### `first`
-
-Returns the first value from a list, if it has one.
-
-On a CEL variable named `subject` of value:
-
 ```json
 [
   "one", null, "two"
 ]
 ```
+Previously:
+`coalesce(subject)` => `["one", "two"]`
 
-- `first(subject)` => `["one"]`
+Using JS:
+`$.subject.filter(v => v)`
 
-### `trimPrefix`
 
-Removes the given prefix from a string.
+### `first`
+```json
+[
+  "one", null, "two"
+]
+```
+Previously:
+`first(subject)` => `["one"]`
 
-On a CEL variable named `subject` of value:
+Using JS:
+`$.subject.slice(0, 1)`
 
+### `trimPrefix` and `replace`
 ```json
 "group:engineering@example.com"
 ```
+Previously:
+`trimPrefix(subject, "group:")` => `engineering@example.com`
 
-- `trimPrefix(subject, "something:")` => `group:engineering@example.com`
-- `trimPrefix(subject, "group:")` => `engineering@example.com`
-
-### `replace`
-
-Performs a RegEx replace on a string using [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
-If there are no pattern matches, the input string will be returned. `replace` supports group references (`$1`).
-
-On a CEL variable named `subject` of value:
-
-```json
-"group:engineering@example.com"
-```
-
-- `replace(subject, "group:([[:alpha:]]+)@.+$", "$1")` => `engineering`
-- `replace(subject, "@example\\.com", "")` => `group:engineering`
-- `replace(subject, ".+@test.example.com"` => `group:engineering@example.com` (no match)
+Using JS:
+`$.subject.replace(/^(group\:)/,"")` => `engineering@example.com`
+`$.subject.slice(6)` => `engineering@example.com`
+`$.subject.replace(/group:|@example.com/g, "")` => `engineering`

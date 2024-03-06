@@ -35,7 +35,7 @@ var _ = Describe("Parse", func() {
 				Expect(entries).To(Equal([]source.Entry{
 					{
 						"key": "value",
-						"nested": map[any]any{
+						"nested": map[string]any{
 							"another_key": "another_value",
 						},
 					},
@@ -105,7 +105,7 @@ var _ = Describe("Parse", func() {
 				Expect(entries).To(Equal([]source.Entry{
 					{
 						"key": "value",
-						"nested": map[any]any{
+						"nested": map[string]any{
 							"another_key": "another_value",
 						},
 					},
@@ -154,7 +154,7 @@ nested:
 				Expect(entries).To(Equal([]source.Entry{
 					{
 						"key": "value",
-						"nested": map[any]any{
+						"nested": map[string]any{
 							"another_key": "another_value",
 						},
 					},
@@ -177,7 +177,7 @@ we: hate yaml
 				Expect(entries).To(Equal([]source.Entry{
 					{
 						"key": "value",
-						"nested": map[any]any{
+						"nested": map[string]any{
 							"another_key": "another_value",
 						},
 					},

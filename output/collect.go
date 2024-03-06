@@ -15,17 +15,15 @@ func Collect(ctx context.Context, output *Output, entries []source.Entry) ([]sou
 		return entries, nil // no-op, the filter is blank
 	}
 
-	prg, err := expr.Compile(output.Source.Filter.String)
-	if err != nil {
-		return nil, errors.Wrap(err, "parsing output filter")
-	}
+	src := output.Source.Filter.String
 
 	filteredEntries := []source.Entry{}
 	for _, entry := range entries {
-		result, err := expr.Eval[bool](ctx, prg, entry)
+		result, err := expr.EvaluateSingleValue[bool](ctx, src, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}
+
 		if result {
 			filteredEntries = append(filteredEntries, entry)
 		}
