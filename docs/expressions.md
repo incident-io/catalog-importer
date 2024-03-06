@@ -3,12 +3,12 @@
 The importer allows filtering source entries and for transforming fields from
 the source when mapping them into output attributes.
 
-These expressions are written in plain Javascript, which allows for easy field
-manipulation.
+These expressions are written in JavaScript, which allows for easy field
+manipulation, and filtering of source data.
 
-Note: Prior to version `2.0.0`, we expected [CEL](https://github.com/google/cel-spec)
-for our expressions. This is no longer supported, but our migration
-to plain Javascript should make this process massively simpler!
+Note: Prior to version `2.0.0`, we used [CEL](https://github.com/google/cel-spec)
+for our expressions. This is no longer supported, but our migration to
+JavaScript should make this process simpler.
 
 We explain how to read and write expressions in this doc, using snippets taken
 from our example configurations.
@@ -65,10 +65,9 @@ The fields that use expressions are:
 - `pipelines.*.outputs.*.attributes.*.source` as above, used to determine the
   resulting value of the attribute for this catalog entry.
 
-
 ## Further examples
 
-Given the example entry of:
+Given an example entry of:
 
 ```json
 {
@@ -76,58 +75,64 @@ Given the example entry of:
   "details": {
     "description": "Marketing website"
   },
-  "runbooks": [
-    "https://github.com/incident-io/runbooks/blob/main/website.md"
-  ]
+  "runbooks": ["https://github.com/incident-io/runbooks/blob/main/website.md"]
 }
 ```
 
-The following JS expressions would evaluate to:
+The following expressions would evaluate to:
 
-- `$.name` => `Website`
-- `$.details.description` => `Marketing website`
-- `$.runbooks` => `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
-- `$.runbooks[0]` => `https://github.com/incident-io/runbooks/blob/main/website.md`
+- `$.name` → `Website`
+- `$.details.description` → `Marketing website`
+- `$.runbooks` → `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
+- `$.runbooks[0]` → `https://github.com/incident-io/runbooks/blob/main/website.md`
 
-## Previously implemented CEL expressions
+## Migrating from CEL
 
-Prior to v. `2.0.0`, we had implemented a handful of functions ourselves
-to make the adoption of CEL a bit easier. The migration to plain JS should
-make their replacements both user-friendly and flexible, here are some examples:
+As shown above, the main difference between CEL and JavaScript is that your
+data is in scope as the variable `$`. This means that where previously your
+source field referred to `name`, it now needs to refer to `$.name`. For most
+cases, the migration is as simple as prepending `$.`.
+
+You will also need to update the properties of the `source` in the `output` of
+your pipelines.
+
+## Outdated CEL functions
+
+Prior to version `2.0.0`, we had implemented a handful of functions ourselves
+to make the adoption of CEL a bit easier. Below is a description of each of
+the functions that we removed, along with their JavaScript equivalent:
 
 ### `coalesce`
+
 ```json
-[
-  "one", null, "two"
-]
+{ "subject": ["one", null, "two"] }
 ```
-Previously:
-`coalesce(subject)` => `["one", "two"]`
 
-Using JS:
-`$.subject.filter(v => v)`
+- Before: `coalesce(subject)`
+- After: `$.subject.filter(v => v)`
 
+Both would result in `["one", "two"]`.
 
 ### `first`
-```json
-[
-  "one", null, "two"
-]
-```
-Previously:
-`first(subject)` => `["one"]`
 
-Using JS:
-`$.subject.slice(0, 1)`
+```json
+{ "subject": ["one", null, "two"] }
+```
+
+- Before: `first(subject)` => `["one"]`
+- After: `$.subject.slice(0, 1)`
+
+Both would result in `["one"]`. You can pull out the first object from the
+array by using an index, such as `$.subject[0]`.
 
 ### `trimPrefix` and `replace`
-```json
-"group:engineering@example.com"
-```
-Previously:
-`trimPrefix(subject, "group:")` => `engineering@example.com`
 
-Using JS:
-`$.subject.replace(/^(group\:)/,"")` => `engineering@example.com`
-`$.subject.slice(6)` => `engineering@example.com`
-`$.subject.replace(/group:|@example.com/g, "")` => `engineering`
+```json
+{ "subject": "group:engineering@example.com" }
+```
+
+- Before: `trimPrefix(subject, "group:")` (gives `engineering@example.com`)
+- After:
+  - `$.subject.replace(/^(group\:)/,"")` → `engineering@example.com`
+  - `$.subject.slice(6)` → `engineering@example.com`
+  - `$.subject.replace(/group:|@example.com/g, "")` → `engineering`
