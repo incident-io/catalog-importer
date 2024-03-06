@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/incident-io/catalog-importer/client"
-	"github.com/incident-io/catalog-importer/expr"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/client"
+	"github.com/incident-io/catalog-importer/v2/expr"
+	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 )

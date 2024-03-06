@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/alecthomas/kingpin/v2"
-	"github.com/incident-io/catalog-importer/cmd/catalog-importer/cmd"
+	"github.com/incident-io/catalog-importer/v2/cmd/catalog-importer/cmd"
 )
 
 func main() {

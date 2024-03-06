@@ -1,7 +1,7 @@
 package source_test
 
 import (
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/source"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
