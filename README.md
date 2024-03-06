@@ -18,7 +18,7 @@ brew install catalog-importer
 Otherwise, ensure that the go runtime is installed and then:
 
 ```console
-go install github.com/incident-io/catalog-importer/cmd/catalog-importer/v2@latest
+go install github.com/incident-io/catalog-importer/cmd/catalog-importer@latest
 ```
 
 Once installed, see [documentation](docs) for example catalogs and CI config.
