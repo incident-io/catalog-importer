@@ -17,7 +17,7 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/go-cmp/cmp"
-	"github.com/incident-io/catalog-importer/config"
+	"github.com/incident-io/catalog-importer/v2/config"
 	"github.com/pkg/errors"
 )
 

@@ -11,7 +11,7 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/docs"
+	"github.com/incident-io/catalog-importer/v2/docs"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 )

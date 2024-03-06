@@ -6,9 +6,9 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/config"
-	"github.com/incident-io/catalog-importer/docs"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/config"
+	"github.com/incident-io/catalog-importer/v2/docs"
+	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
 )
 

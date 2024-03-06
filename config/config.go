@@ -7,8 +7,8 @@ import (
 	_ "embed"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/incident-io/catalog-importer/output"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/output"
+	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/samber/lo"
 )
 

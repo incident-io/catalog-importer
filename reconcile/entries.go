@@ -6,8 +6,8 @@ import (
 	"reflect"
 
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/client"
-	"github.com/incident-io/catalog-importer/output"
+	"github.com/incident-io/catalog-importer/v2/client"
+	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"

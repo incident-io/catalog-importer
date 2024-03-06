@@ -15,11 +15,11 @@ import (
 	"github.com/samber/lo"
 	"github.com/schollz/progressbar/v3"
 
-	"github.com/incident-io/catalog-importer/client"
-	"github.com/incident-io/catalog-importer/config"
-	"github.com/incident-io/catalog-importer/output"
-	"github.com/incident-io/catalog-importer/reconcile"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/client"
+	"github.com/incident-io/catalog-importer/v2/config"
+	"github.com/incident-io/catalog-importer/v2/output"
+	"github.com/incident-io/catalog-importer/v2/reconcile"
+	"github.com/incident-io/catalog-importer/v2/source"
 )
 
 type SyncOptions struct {

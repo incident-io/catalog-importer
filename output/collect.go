@@ -3,8 +3,8 @@ package output
 import (
 	"context"
 
-	"github.com/incident-io/catalog-importer/expr"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/expr"
+	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
 )
 

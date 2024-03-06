@@ -8,9 +8,9 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/config"
-	"github.com/incident-io/catalog-importer/output"
-	"github.com/incident-io/catalog-importer/source"
+	"github.com/incident-io/catalog-importer/v2/config"
+	"github.com/incident-io/catalog-importer/v2/output"
+	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"gopkg.in/guregu/null.v3"

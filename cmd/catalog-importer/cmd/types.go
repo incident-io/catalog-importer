@@ -8,7 +8,7 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/fatih/color"
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/client"
+	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/pkg/errors"
 	"github.com/rodaine/table"
 )
