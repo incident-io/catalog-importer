@@ -3,7 +3,9 @@ package expr
 import (
 	"context"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -53,6 +55,12 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 	// Evaluate the source (eg. the script) against the subject, set above.
 	outResult, err := vm.Run(source)
 	if err != nil {
+		if strings.Contains(err.Error(), "TypeError: Cannot access member") {
+			// If we've failed to evaluate an expression because it's trying to access the
+			// nested value of `null`, let's let the user know and continue on.
+			fmt.Fprintf(os.Stderr, "\n  Cannot access value using source: %s. Nested value is possibly undefined.\n", source)
+			return outResult, nil
+		}
 		return outResult, errors.Wrap(errors.New("failed to evaluate JS against source data"), err.Error())
 	}
 

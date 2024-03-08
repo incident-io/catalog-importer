@@ -122,7 +122,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 			var err error
 			rank, err = expr.EvaluateSingleValue[int32](ctx, rankSource, entry)
 			if err != nil {
-				return nil, errors.Wrap(err, "evaluating entry external ID")
+				return nil, errors.Wrap(err, "evaluating entry rank")
 			}
 		}
 
