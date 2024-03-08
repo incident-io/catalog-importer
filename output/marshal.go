@@ -88,7 +88,6 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry) ([]*CatalogEntryModel, error) {
 	nameSource := output.Source.Name
 	externalIDSource := output.Source.ExternalID
-	rankSource := output.Source.Rank.String
 	aliasesSource := output.Source.Aliases
 
 	var (
@@ -117,12 +116,12 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
 
-		var rank int32
-		if rankSource != "" { // TODO should this be != nil? (which fails type checking... but is this an issue? )
+		var rank int
+		if rankSource := output.Source.Rank; rankSource.Valid && rankSource.String != "" {
 			var err error
-			rank, err = expr.EvaluateSingleValue[int32](ctx, rankSource, entry)
+			rank, err = expr.EvaluateSingleValue[int](ctx, rankSource.String, entry)
 			if err != nil {
-				return nil, errors.Wrap(err, "evaluating entry external ID")
+				return nil, errors.Wrap(err, "evaluating entry rank")
 			}
 		}
 
@@ -194,7 +193,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry)
 		catalogEntryModels = append(catalogEntryModels, &CatalogEntryModel{
 			Name:            name,
 			ExternalID:      externalID,
-			Rank:            rank,
+			Rank:            int32(rank),
 			Aliases:         aliases,
 			AttributeValues: attributeValues,
 		})
