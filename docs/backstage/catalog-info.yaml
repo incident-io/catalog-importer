@@ -3,7 +3,6 @@ apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   description: The incident.io public API
-  name: api-incident-io
   namespace: default
 spec:
   definition:

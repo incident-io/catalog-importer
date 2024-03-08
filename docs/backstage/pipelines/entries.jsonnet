@@ -52,10 +52,10 @@
       type_name: 'Custom["BackstageAPI"]',
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "API"',
-        name: '$.metadata.name',
-        external_id: '$.metadata.namespace + "/" + $.metadata.name',
+        name: '_.get($.metadata, "name", "default API name")',
+        external_id: '_.get($.metadata, "namespace", "default description") + "/" + _.get($.metadata, "name", "default API name")',
         aliases: [
-          '$.metadata.name',
+          '_.get($.badKey, "name", "default alias")',
         ],
       },
       attributes: [
@@ -63,7 +63,7 @@
           id: 'description',
           name: 'Description',
           type: 'Text',
-          source: '$.metadata.description',
+          source: '_.get($.metadata, "description", "default description")',
         },
         {
           id: 'api_type',

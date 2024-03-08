@@ -8,6 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
+	underscore "github.com/robertkrimen/otto/underscore"
 )
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
@@ -23,6 +24,8 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 			}
 		}
 	}()
+
+	underscore.Enable()
 
 	// Create a Javascript virtual machine that we'll use for evaluating the source
 	// expression. We must be very careful: this is executing code on behalf of others, so

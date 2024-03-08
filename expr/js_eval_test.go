@@ -92,6 +92,13 @@ var _ = Describe("Javascript evaluation", func() {
 		Expect(evaluatedResult).To(Equal(sourceEntry["metadata"].(map[string]any)["namespace"]))
 	})
 
+	It("handles possible null values with _.get", func() {
+		nestedSrc := "_.get($.metadata, \"badKey\", \"default value\")"
+		evaluatedResult, err := EvaluateSingleValue[string](ctx, nestedSrc, sourceEntry)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(evaluatedResult).To(Equal("default value"))
+	})
+
 	When("parsing array values", func() {
 		It("returns an error if the input is not an array", func() {
 			topLevelSrc := "$.name"
