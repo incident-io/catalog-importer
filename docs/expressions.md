@@ -109,7 +109,7 @@ the functions that we removed, along with their JavaScript equivalent:
 ```
 
 - Before: `coalesce(subject)`
-- After: `$.subject.filter(v => v)`
+- After: `$.subject.filter(function(v){return v})`
 
 Both would result in `["one", "two"]`.
 
