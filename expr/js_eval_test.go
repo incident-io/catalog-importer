@@ -71,10 +71,11 @@ var _ = Describe("Javascript evaluation", func() {
 			Expect(err).To(HaveOccurred(), "could not convert result of string to int")
 		})
 
-		It("errors if the type is not supported", func() {
+		It("returns nil if the type is not supported", func() {
 			topLevelSrc := "$.metadata"
-			_, err := EvaluateSingleValue[string](ctx, topLevelSrc, sourceEntry)
-			Expect(err).To(HaveOccurred(), "Unsupported Javascript value type")
+			evaluatedResult, err := EvaluateSingleValue[string](ctx, topLevelSrc, sourceEntry)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(evaluatedResult).To(Equal(""))
 		})
 	})
 
@@ -119,11 +120,13 @@ var _ = Describe("Javascript evaluation", func() {
 			Expect(evaluatedResult).To(Equal(""))
 		})
 
-		It("gives me an actionable error if my JS is invalid", func() {
+		It("returns empty if my JS is invalid", func() {
 			topLevelSrc := "$badKey"
-			_, err := EvaluateArray[string](ctx, topLevelSrc, sourceEntryWithArray)
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("evaluating array value: ReferenceError: '$badKey' is not defined: failed to evaluate JS against source data"))
+			evaluatedResult, err := EvaluateArray[string](ctx, topLevelSrc, sourceEntryWithArray)
+			Expect(err).NotTo(HaveOccurred())
+			// Expecting an array with an empty string here, as that is the empty state for this function
+			expectedResult := []string{""}
+			Expect(evaluatedResult).To(Equal(expectedResult))
 		})
 	})
 

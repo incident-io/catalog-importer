@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -55,13 +54,9 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 	// Evaluate the source (eg. the script) against the subject, set above.
 	outResult, err := vm.Run(source)
 	if err != nil {
-		if strings.Contains(err.Error(), "TypeError: Cannot access member") {
-			// If we've failed to evaluate an expression because it's trying to access the
-			// nested value of `null`, let's let the user know and continue on.
-			fmt.Fprintf(os.Stderr, "\n  Cannot access value using source: %s. Nested value is possibly undefined.\n", source)
-			return outResult, nil
-		}
-		return outResult, errors.Wrap(errors.New("failed to evaluate JS against source data"), err.Error())
+		// If we've failed to evaluate an expression, let's let the user know and continue on.
+		fmt.Fprintf(os.Stderr, "\n  Could not evaluate expression %s: %s.\n", source, string(err.Error()))
+		return outResult, nil
 	}
 
 	return outResult, nil
@@ -104,7 +99,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	// We parsed our JS successfully, and have multiple values, as expected.
 	// Now parse each nested value and return the final slice.
 	for _, evaluatedValue := range evaluatedValues {
-		resultValue, err := EvaluateResultType[ReturnType](ctx, evaluatedValue)
+		resultValue, err := EvaluateResultType[ReturnType](ctx, source, evaluatedValue)
 		if err != nil {
 			return resultValues, nil
 		}
@@ -121,7 +116,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 		return resultValue, errors.Wrap(err, "evaluating single value")
 	}
 
-	resultValue, err = EvaluateResultType[ReturnType](ctx, result)
+	resultValue, err = EvaluateResultType[ReturnType](ctx, source, result)
 	if err != nil {
 		return resultValue, err
 	}
@@ -129,7 +124,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 	return resultValue, nil
 }
 
-func EvaluateResultType[ReturnType any](ctx context.Context, result otto.Value) (ReturnType, error) {
+func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {
 	var resultValue ReturnType
 	var ok bool
 	switch {
@@ -199,9 +194,10 @@ func EvaluateResultType[ReturnType any](ctx context.Context, result otto.Value) 
 		// do nothing, undefined gets skipped
 
 	default:
-		return resultValue, errors.New(fmt.Sprint("Unsupported Javascript value type: ", map[string]any{
+		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %s.\n", source, map[string]any{
 			"result": result,
-		}))
+		})
+		return resultValue, nil
 	}
 
 	return resultValue, nil
