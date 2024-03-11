@@ -7,13 +7,15 @@ import (
 	"strconv"
 	"time"
 
+	kitlog "github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
 )
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
 // subject into the `$` variable.
-func EvaluateJavascript(ctx context.Context, source string, subject any) (result otto.Value, err error) {
+func EvaluateJavascript(ctx context.Context, source string, subject any, logger kitlog.Logger) (result otto.Value, err error) {
 	var halted bool
 	defer func() {
 		if caught := recover(); caught != nil {
@@ -54,8 +56,8 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 	// Evaluate the source (eg. the script) against the subject, set above.
 	outResult, err := vm.Run(source)
 	if err != nil {
-		// If we've failed to evaluate an expression, let's let the user know and continue on.
-		fmt.Fprintf(os.Stderr, "\n  Could not evaluate expression %s: %s.\n", source, string(err.Error()))
+		// If we've failed to evaluate an expression, let's continue on, but give them some good debug info.
+		level.Debug(logger).Log("msg", fmt.Sprintf("Could not evaluate expression \"%s\": %s. Returning nil", source, string(err.Error())))
 		return outResult, nil
 	}
 
@@ -63,10 +65,10 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 
 }
 
-func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any) ([]ReturnType, error) {
+func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
 	resultValues := []ReturnType{}
 
-	result, err := EvaluateJavascript(ctx, source, subject)
+	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
 		return resultValues, errors.Wrap(err, "evaluating array value")
 	}
@@ -109,9 +111,9 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any) (ReturnType, error) {
+func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (ReturnType, error) {
 	var resultValue ReturnType
-	result, err := EvaluateJavascript(ctx, source, subject)
+	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
 		return resultValue, errors.Wrap(err, "evaluating single value")
 	}

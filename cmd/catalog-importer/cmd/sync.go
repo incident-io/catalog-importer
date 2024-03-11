@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/kingpin/v2"
-	kitlog "github.com/go-kit/kit/log"
+	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -334,14 +334,14 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			OUT("\n    ↻ %s", outputType.TypeName)
 
 			// Filter source for each of the output types
-			entries, err := output.Collect(ctx, outputType, sourcedEntries)
+			entries, err := output.Collect(ctx, outputType, sourcedEntries, logger)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}
 			OUT("      ✔ Building entries... (found %d entries matching filters)", len(entries))
 
 			// Marshal entries using the JS expressions.
-			entryModels, err := output.MarshalEntries(ctx, outputType, entries)
+			entryModels, err := output.MarshalEntries(ctx, outputType, entries, logger)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}
