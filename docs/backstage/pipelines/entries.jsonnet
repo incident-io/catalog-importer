@@ -10,7 +10,7 @@
     {
       'local': {
         files: [
-          'catalog-info.yaml',
+          'docs/backstage/catalog-info.yaml',
         ],
       },
     },
