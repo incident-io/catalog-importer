@@ -140,7 +140,7 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
 		if configFile == "" {
 			OUT("No config file (--config) was provided, but is required.\n")
 		} else {
-			OUT("Failed to load config file!\n")
+			OUT("Failed to load config file! It's either in an unexpected format, or we can't find it using that path.\n")
 		}
 
 		OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
