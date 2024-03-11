@@ -3,16 +3,19 @@ package expr
 import (
 	"context"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
+	kitlog "github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
 )
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
 // subject into the `$` variable.
-func EvaluateJavascript(ctx context.Context, source string, subject any) (result otto.Value, err error) {
+func EvaluateJavascript(ctx context.Context, source string, subject any, logger kitlog.Logger) (result otto.Value, err error) {
 	var halted bool
 	defer func() {
 		if caught := recover(); caught != nil {
@@ -53,17 +56,19 @@ func EvaluateJavascript(ctx context.Context, source string, subject any) (result
 	// Evaluate the source (eg. the script) against the subject, set above.
 	outResult, err := vm.Run(source)
 	if err != nil {
-		return outResult, errors.Wrap(errors.New("failed to evaluate JS against source data"), err.Error())
+		// If we've failed to evaluate an expression, let's continue on, but give them some good debug info.
+		level.Debug(logger).Log("msg", fmt.Sprintf("Could not evaluate expression \"%s\": %s. Returning nil", source, string(err.Error())))
+		return outResult, nil
 	}
 
 	return outResult, nil
 
 }
 
-func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any) ([]ReturnType, error) {
+func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
 	resultValues := []ReturnType{}
 
-	result, err := EvaluateJavascript(ctx, source, subject)
+	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
 		return resultValues, errors.Wrap(err, "evaluating array value")
 	}
@@ -96,7 +101,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	// We parsed our JS successfully, and have multiple values, as expected.
 	// Now parse each nested value and return the final slice.
 	for _, evaluatedValue := range evaluatedValues {
-		resultValue, err := EvaluateResultType[ReturnType](ctx, evaluatedValue)
+		resultValue, err := EvaluateResultType[ReturnType](ctx, source, evaluatedValue)
 		if err != nil {
 			return resultValues, nil
 		}
@@ -106,14 +111,14 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any) (ReturnType, error) {
+func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (ReturnType, error) {
 	var resultValue ReturnType
-	result, err := EvaluateJavascript(ctx, source, subject)
+	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
 		return resultValue, errors.Wrap(err, "evaluating single value")
 	}
 
-	resultValue, err = EvaluateResultType[ReturnType](ctx, result)
+	resultValue, err = EvaluateResultType[ReturnType](ctx, source, result)
 	if err != nil {
 		return resultValue, err
 	}
@@ -121,7 +126,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 	return resultValue, nil
 }
 
-func EvaluateResultType[ReturnType any](ctx context.Context, result otto.Value) (ReturnType, error) {
+func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {
 	var resultValue ReturnType
 	var ok bool
 	switch {
@@ -191,9 +196,10 @@ func EvaluateResultType[ReturnType any](ctx context.Context, result otto.Value) 
 		// do nothing, undefined gets skipped
 
 	default:
-		return resultValue, errors.New(fmt.Sprint("Unsupported Javascript value type: ", map[string]any{
+		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %s.\n", source, map[string]any{
 			"result": result,
-		}))
+		})
+		return resultValue, nil
 	}
 
 	return resultValue, nil

@@ -3,6 +3,7 @@ package output
 import (
 	"context"
 
+	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/expr"
 	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
@@ -10,7 +11,7 @@ import (
 
 // Collect filters the list of entries against the source filter on the output, returning
 // a list of all entries which pass the filter.
-func Collect(ctx context.Context, output *Output, entries []source.Entry) ([]source.Entry, error) {
+func Collect(ctx context.Context, output *Output, entries []source.Entry, logger kitlog.Logger) ([]source.Entry, error) {
 	if !output.Source.Filter.Valid {
 		return entries, nil // no-op, the filter is blank
 	}
@@ -19,7 +20,7 @@ func Collect(ctx context.Context, output *Output, entries []source.Entry) ([]sou
 
 	filteredEntries := []source.Entry{}
 	for _, entry := range entries {
-		result, err := expr.EvaluateSingleValue[bool](ctx, src, entry)
+		result, err := expr.EvaluateSingleValue[bool](ctx, src, entry, logger)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}
