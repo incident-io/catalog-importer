@@ -11,7 +11,22 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
+	underscore "github.com/robertkrimen/otto/underscore"
 )
+
+var vm *otto.Otto
+
+func init() {
+
+	underscore.Enable()
+
+	// Create a Javascript virtual machine that we'll use for evaluating the source
+	// expression. We must be very careful: this is executing code on behalf of others, so
+	// comes with all normal warnings.
+	vm = otto.New()
+	vm.Interrupt = make(chan func(), 1)
+
+}
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
 // subject into the `$` variable.
@@ -27,11 +42,9 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 		}
 	}()
 
-	// Create a Javascript virtual machine that we'll use for evaluating the source
-	// expression. We must be very careful: this is executing code on behalf of others, so
-	// comes with all normal warnings.
-	vm := otto.New()
-	vm.Interrupt = make(chan func(), 1)
+	if vm == nil {
+		panic("Javascript virtual machine not initialised")
+	}
 
 	// Start a new function bounded context.
 	ctx, cancel := context.WithCancel(ctx)

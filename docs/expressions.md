@@ -86,6 +86,17 @@ The following expressions would evaluate to:
 - `$.runbooks` → `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
 - `$.runbooks[0]` → `https://github.com/incident-io/runbooks/blob/main/website.md`
 
+
+You can also use `get` to evaluate nested fields that may be null.
+For the example entry above, the following expressions would evaluate to:
+
+- `_.get($.metadata, "name")` → `null`
+- `_.get($.metadata, "name", "default name")` → `default name`
+- `_.get($.details, "alias")` → `null`
+- `_.get($.details, "alias", "default alias")` → `default alias`
+- `_.get($.details, "description")` → `Marketing website`
+
+
 ## Migrating from CEL
 
 As shown above, the main difference between CEL and JavaScript is that your

@@ -248,7 +248,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 			}
 		}
 
-		logger.Log("msg", fmt.Sprintf("found %d entries that need updated", len(toUpdate)))
+		logger.Log("msg", fmt.Sprintf("found %d entries that need updating", len(toUpdate)))
 
 		g, ctx := errgroup.WithContext(ctx)
 		g.SetLimit(10)
