@@ -19,7 +19,7 @@ type CatalogTypeModel struct {
 	Ranked          bool
 	Attributes      []client.CatalogTypeAttributePayloadV2
 	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
-	SourceRepoUrl string
+	SourceRepoUrl   string
 }
 
 type CatalogEntryModel struct {
@@ -130,23 +130,31 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		// Try to parse each alias as either a string or a string array, then concat and
 		// dedupe them together.
 		aliases := []string{}
-		for idx, aliasSource := range aliasesSource {
-			toAdd := []string{}
-
-			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
+		if aliasesSource[0] == "$.aliases" && len(aliasesSource) == 1 {
+			result, err := expr.EvaluateArray[string](ctx, aliasesSource[0], entry, logger)
 			if err != nil {
-				aliasArray, arrayErr := expr.EvaluateSingleValue[[]string](ctx, aliasSource, entry, logger)
-				if arrayErr != nil {
-					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
-				}
-				toAdd = append(toAdd, aliasArray...)
-			} else {
-				toAdd = append(toAdd, alias)
+				return nil, errors.Wrap(err, "evaluating entry alias array")
 			}
+			aliases = result
+		} else {
+			for idx, aliasSource := range aliasesSource {
+				toAdd := []string{}
 
-			for _, alias := range toAdd {
-				if alias != "" {
-					aliases = append(aliases, alias)
+				alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
+				if err != nil {
+					aliasArray, arrayErr := expr.EvaluateSingleValue[[]string](ctx, aliasSource, entry, logger)
+					if arrayErr != nil {
+						return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
+					}
+					toAdd = append(toAdd, aliasArray...)
+				} else {
+					toAdd = append(toAdd, alias)
+				}
+
+				for _, alias := range toAdd {
+					if alias != "" {
+						aliases = append(aliases, alias)
+					}
 				}
 			}
 		}
