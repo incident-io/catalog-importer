@@ -31,6 +31,7 @@ type SyncOptions struct {
 	DryRun         bool
 	Prune          bool
 	AllowDeleteAll bool
+	SourceRepoUrl  string
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -43,6 +44,9 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 	cmd.Flag("api-key", "API key for incident.io").
 		Envar("INCIDENT_API_KEY").
 		StringVar(&opt.APIKey)
+	cmd.Flag("source-repo-url", "URL of repo where catalog is being managed").
+		Envar("SOURCE_REPO_URL").
+		StringVar(&opt.SourceRepoUrl)
 	cmd.Flag("target", `Restrict running to only these outputs (e.g. Custom["Customer"])`).
 		StringsVar(&opt.Targets)
 	cmd.Flag("sample-length", "How many character to sample when logging about invalid source entries (for --debug only)").
@@ -187,19 +191,21 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			if opt.DryRun {
 				logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
 				createdCatalogType = client.CatalogTypeV2{
-					Id:          fmt.Sprintf("DRY-RUN-%s", model.TypeName),
-					Name:        model.Name,
-					Description: model.Description,
-					TypeName:    model.TypeName,
+					Id:            fmt.Sprintf("DRY-RUN-%s", model.TypeName),
+					Name:          model.Name,
+					Description:   model.Description,
+					TypeName:      model.TypeName,
+					SourceRepoUrl: &opt.SourceRepoUrl,
 				}
 			} else {
 				logger.Log("msg", "catalog type does not already exist, creating")
 				result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
-					Name:        model.Name,
-					Description: model.Description,
-					Ranked:      &model.Ranked,
-					TypeName:    lo.ToPtr(model.TypeName),
-					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
+					Name:          model.Name,
+					Description:   model.Description,
+					Ranked:        &model.Ranked,
+					TypeName:      lo.ToPtr(model.TypeName),
+					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
+					SourceRepoUrl: &opt.SourceRepoUrl,
 				})
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("creating catalog type with name %s", model.TypeName))
@@ -263,10 +269,11 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			} else {
 				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
 				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
-					Name:        model.Name,
-					Description: model.Description,
-					Ranked:      &model.Ranked,
-					Annotations: lo.ToPtr(getAnnotations(cfg.SyncID)),
+					Name:          model.Name,
+					Description:   model.Description,
+					Ranked:        &model.Ranked,
+					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
+					SourceRepoUrl: &opt.SourceRepoUrl,
 				})
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("updating catalog type with name %s", model.TypeName))

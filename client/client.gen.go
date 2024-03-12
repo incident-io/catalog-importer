@@ -587,6 +587,9 @@ type CatalogTypeV2 struct {
 	// SemanticType Semantic type of this resource
 	SemanticType string `json:"semantic_type"`
 
+	// SourceRepoUrl The url of the external repository where this type is managed
+	SourceRepoUrl *string `json:"source_repo_url,omitempty"`
+
 	// TypeName The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom["SomeName "]
 	TypeName string `json:"type_name"`
 
@@ -859,6 +862,9 @@ type CreateTypeRequestBody struct {
 
 	// SemanticType Semantic type of this resource
 	SemanticType *string `json:"semantic_type,omitempty"`
+
+	// SourceRepoUrl The url of the external repository where this type is managed
+	SourceRepoUrl *string `json:"source_repo_url,omitempty"`
 
 	// TypeName The type name of this catalog type, to be used when defining attributes. This is immutable once a CatalogType has been created. For non-externally sync types, it must follow the pattern Custom["SomeName "]
 	TypeName *string `json:"type_name,omitempty"`
@@ -1697,6 +1703,9 @@ type UpdateTypeRequestBody struct {
 
 	// SemanticType Semantic type of this resource
 	SemanticType *string `json:"semantic_type,omitempty"`
+
+	// SourceRepoUrl The url of the external repository where this type is managed
+	SourceRepoUrl *string `json:"source_repo_url,omitempty"`
 }
 
 // UpdateTypeRequestBodyColor Sets the display color of this type in the dashboard
@@ -4873,7 +4882,7 @@ func NewCatalogV2CreateTypeRequest(server string, body CatalogV2CreateTypeJSONRe
 // NewCatalogV2CreateTypeRequestWithBody generates requests for CatalogV2CreateType with any type of body
 func NewCatalogV2CreateTypeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
-
+	
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err

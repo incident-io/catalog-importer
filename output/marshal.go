@@ -19,6 +19,7 @@ type CatalogTypeModel struct {
 	Ranked          bool
 	Attributes      []client.CatalogTypeAttributePayloadV2
 	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
+	SourceRepoUrl string
 }
 
 type CatalogEntryModel struct {
