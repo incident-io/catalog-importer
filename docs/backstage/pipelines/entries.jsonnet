@@ -10,7 +10,7 @@
     {
       'local': {
         files: [
-          'docs/backstage/catalog-info.yaml',
+          'catalog-info.yaml',
         ],
       },
     },
@@ -55,7 +55,7 @@
         name: '_.get($.metadata, "name", "default API name")',
         external_id: '_.get($.metadata, "namespace", "default description") + "/" + _.get($.metadata, "name", "default API name")',
         aliases: [
-          '_.get($.badKey, "name", "default alias")',
+          '_.get($.name, "name", "default alias")',
         ],
       },
       attributes: [
