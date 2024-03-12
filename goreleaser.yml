@@ -38,3 +38,4 @@ dockers:
   - image_templates:
     - incidentio/{{ .ProjectName }}:latest
     - incidentio/{{ .ProjectName }}:{{ .Tag }}
+    - incidentio/{{ .ProjectName }}:{{ .Major }}
