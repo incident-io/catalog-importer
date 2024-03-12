@@ -36,6 +36,6 @@ brews:
 
 dockers:
   - image_templates:
-    - incidentio/{{ .ProjectName }}:latest
-    - incidentio/{{ .ProjectName }}:{{ .Tag }}
-    - incidentio/{{ .ProjectName }}:{{ .Major }}
+      - incidentio/{{ .ProjectName }}:latest
+      - incidentio/{{ .ProjectName }}:{{ .Tag }}
+      - incidentio/{{ .ProjectName }}:v{{ .Major }}
