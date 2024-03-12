@@ -5,9 +5,9 @@
 
   // Load pipelines.
   pipelines: [
-    import 'api-type.jsonnet',
-    import 'component-type.jsonnet',
-    import 'lifecycle.jsonnet',
-    import 'entries.jsonnet',
+    import 'pipelines/api-type.jsonnet',
+    import 'pipelines/component-type.jsonnet',
+    import 'pipelines/entries.jsonnet',
+    import 'pipelines/lifecycle.jsonnet',
   ],
 }
