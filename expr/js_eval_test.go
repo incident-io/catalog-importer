@@ -100,7 +100,7 @@ var _ = Describe("Javascript evaluation", func() {
 
 	It("handles possible null values with _.get", func() {
 		nestedSrc := "_.get($.metadata, \"badKey\", \"default value\")"
-		evaluatedResult, err := EvaluateSingleValue[string](ctx, nestedSrc, sourceEntry)
+		evaluatedResult, err := EvaluateSingleValue[string](ctx, nestedSrc, sourceEntry, logger)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(evaluatedResult).To(Equal("default value"))
 	})
