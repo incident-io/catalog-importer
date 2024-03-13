@@ -14,34 +14,10 @@ var _ = Describe("Marshalling data", func() {
 	var (
 		ctx               context.Context
 		catalogTypeOutput *Output
-		entries           []source.Entry
 		logger            kitlog.Logger
 	)
 
 	ctx = context.Background()
-
-	sourceEntry1 := source.Entry{
-		"id":               "P123",
-		"name":             "Component name",
-		"important":        true,
-		"importance_score": 100,
-		"description":      "A super important component. A structurally integral component tbh.",
-		"metadata": map[string]any{
-			"namespace": "Infrastructure",
-			"aliases":   []string{"oneAlias", "anotherAlias"},
-		},
-	}
-	sourceEntry2 := source.Entry{
-		"id":               "P123",
-		"name":             "Component name",
-		"important":        true,
-		"importance_score": 100,
-		"description":      "A super important component. A structurally integral component tbh.",
-		"metadata": map[string]any{
-			"namespace": "Infrastructure",
-		},
-		"aliases": []string{"andAnotherAlias"},
-	}
 
 	sourceConfig := SourceConfig{
 		Name:       "$.name",
@@ -55,17 +31,41 @@ var _ = Describe("Marshalling data", func() {
 		Source:      sourceConfig,
 	}
 
-	entries = append(entries, sourceEntry1, sourceEntry2)
-
 	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
 
-	When("doing the thing with the aliases", func() {
-		It("does the right shit", func() {
-			res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
-			expectedResult := []string{"oneAlias", "anotherAlias"}
-			Expect(err).NotTo(HaveOccurred())
-			Expect(res[0].Aliases).To(Equal(expectedResult))
-		})
+	When("Marshalling alias data where the entry has an array of aliases", func() {
+		It("correctly populates the array on the resulting entry with all values", func() {
+			sourceEntry := source.Entry{
+				"id":          "P1234",
+				"name":        "Component name 1",
+				"description": "A super important component. A structurally integral component tbh.",
+				"aliases":     []string{"aliasInAnArray", "anotherAliasInAnArray"},
+			}
 
+			entries := []source.Entry{sourceEntry}
+
+			res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
+
+			expectedAliasResult := []string{"aliasInAnArray", "anotherAliasInAnArray"}
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res[0].Aliases).To(Equal(expectedAliasResult))
+
+		})
+	})
+
+	When("Marshalling alias data where the entry has a single string alias", func() {
+		It("correctly populates the alias array on the resulting entry with the single value", func() {
+			sourceEntry := source.Entry{
+				"id":          "P1235",
+				"name":        "Component name 2",
+				"description": "A super important component. A structurally integral component tbh.",
+				"aliases":     "singleAlias",
+			}
+			entries := []source.Entry{sourceEntry}
+			res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
+			expectedAliasResult := []string{"singleAlias"}
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res[0].Aliases).To(Equal(expectedAliasResult))
+		})
 	})
 })

@@ -139,7 +139,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			if alias == "" {
 				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
 				if arrayErr != nil {
-					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias array", idx))
+					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
 				toAdd = append(toAdd, aliasArray...)
 			} else {
