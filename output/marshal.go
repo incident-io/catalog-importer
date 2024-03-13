@@ -130,31 +130,25 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		// Try to parse each alias as either a string or a string array, then concat and
 		// dedupe them together.
 		aliases := []string{}
-		if aliasesSource[0] == "$.aliases" && len(aliasesSource) == 1 {
-			result, err := expr.EvaluateArray[string](ctx, aliasesSource[0], entry, logger)
+		for idx, aliasSource := range aliasesSource {
+			toAdd := []string{}
+			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
 			if err != nil {
-				return nil, errors.Wrap(err, "evaluating entry alias array")
+				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 			}
-			aliases = result
-		} else {
-			for idx, aliasSource := range aliasesSource {
-				toAdd := []string{}
-
-				alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
-				if err != nil {
-					aliasArray, arrayErr := expr.EvaluateSingleValue[[]string](ctx, aliasSource, entry, logger)
-					if arrayErr != nil {
-						return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
-					}
-					toAdd = append(toAdd, aliasArray...)
-				} else {
-					toAdd = append(toAdd, alias)
+			if alias == "" {
+				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
+				if arrayErr != nil {
+					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias array", idx))
 				}
+				toAdd = append(toAdd, aliasArray...)
+			} else {
+				toAdd = append(toAdd, alias)
+			}
 
-				for _, alias := range toAdd {
-					if alias != "" {
-						aliases = append(aliases, alias)
-					}
+			for _, alias := range toAdd {
+				if alias != "" {
+					aliases = append(aliases, alias)
 				}
 			}
 		}
