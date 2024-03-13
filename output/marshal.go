@@ -19,7 +19,7 @@ type CatalogTypeModel struct {
 	Ranked          bool
 	Attributes      []client.CatalogTypeAttributePayloadV2
 	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
-	SourceRepoUrl string
+	SourceRepoUrl   string
 }
 
 type CatalogEntryModel struct {
@@ -132,10 +132,12 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		aliases := []string{}
 		for idx, aliasSource := range aliasesSource {
 			toAdd := []string{}
-
 			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
 			if err != nil {
-				aliasArray, arrayErr := expr.EvaluateSingleValue[[]string](ctx, aliasSource, entry, logger)
+				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
+			}
+			if alias == "" {
+				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
