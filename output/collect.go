@@ -20,12 +20,12 @@ func Collect(ctx context.Context, output *Output, entries []source.Entry, logger
 
 	filteredEntries := []source.Entry{}
 	for _, entry := range entries {
-		result, err := expr.EvaluateSingleValue[bool](ctx, src, entry, logger)
+		result, err := expr.EvaluateSingleValue[*bool](ctx, src, entry, logger)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}
 
-		if result {
+		if result != nil {
 			filteredEntries = append(filteredEntries, entry)
 		}
 	}

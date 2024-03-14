@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
@@ -78,7 +79,7 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 
 }
 
-func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
+func EvaluateArray[ReturnType *Q, Q any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
 	resultValues := []ReturnType{}
 
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
@@ -124,7 +125,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (ReturnType, error) {
+func EvaluateSingleValue[ReturnType *Q, Q any](ctx context.Context, source string, subject any, logger kitlog.Logger) (ReturnType, error) {
 	var resultValue ReturnType
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
@@ -139,7 +140,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 	return resultValue, nil
 }
 
-func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {
+func EvaluateResultType[ReturnType *Q, Q any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {
 	var resultValue ReturnType
 	var ok bool
 	switch {
@@ -169,6 +170,7 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		return resultValue, nil
 
 	case result.IsNumber():
+		spew.Dump("RESULT", result)
 		resultInt, err := strconv.Atoi(fmt.Sprintf("%v", result))
 		if err != nil {
 			return resultValue, err
@@ -184,6 +186,7 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 			typeAgnosticResult := any(intValue)
 			resultValue, ok = typeAgnosticResult.(ReturnType)
 			if !ok {
+				spew.Dump("MEH", resultValue)
 				return resultValue, fmt.Errorf("could not convert result of int to %T", resultValue)
 			}
 		}
@@ -206,6 +209,8 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		}
 
 	case result.IsUndefined():
+		spew.Dump("HI", result)
+		return nil, nil
 		// do nothing, undefined gets skipped
 
 	default:

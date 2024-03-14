@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/davecgh/go-spew/spew"
 	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/incident-io/catalog-importer/v2/expr"
@@ -108,20 +109,20 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 
 	catalogEntryModels := []*CatalogEntryModel{}
 	for _, entry := range entries {
-		name, err := expr.EvaluateSingleValue[string](ctx, nameSource, entry, logger)
+		name, err := expr.EvaluateSingleValue[*string](ctx, nameSource, entry, logger)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry name")
 		}
 
-		externalID, err := expr.EvaluateSingleValue[string](ctx, externalIDSource, entry, logger)
+		externalID, err := expr.EvaluateSingleValue[*string](ctx, externalIDSource, entry, logger)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
 
-		var rank int
+		var rank *int
 		if rankSource := output.Source.Rank; rankSource.Valid && rankSource.String != "" {
 			var err error
-			rank, err = expr.EvaluateSingleValue[int](ctx, rankSource.String, entry, logger)
+			rank, err = expr.EvaluateSingleValue[*int](ctx, rankSource.String, entry, logger)
 			if err != nil {
 				return nil, errors.Wrap(err, "evaluating entry rank")
 			}
@@ -131,13 +132,13 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		// dedupe them together.
 		aliases := []string{}
 		for idx, aliasSource := range aliasesSource {
-			toAdd := []string{}
-			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
+			toAdd := []*string{}
+			alias, err := expr.EvaluateSingleValue[*string](ctx, aliasSource, entry, logger)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 			}
-			if alias == "" {
-				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
+			if alias == nil {
+				aliasArray, arrayErr := expr.EvaluateArray[*string](ctx, aliasSource, entry, logger)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
@@ -147,8 +148,8 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			}
 
 			for _, alias := range toAdd {
-				if alias != "" {
-					aliases = append(aliases, alias)
+				if alias != nil {
+					aliases = append(aliases, *alias)
 				}
 			}
 		}
@@ -161,14 +162,14 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			binding := client.CatalogAttributeBindingPayloadV2{}
 
 			if attributeByID[attributeID].Array {
-				valueLiterals, err := expr.EvaluateArray[any](ctx, src, entry, logger)
+				valueLiterals, err := expr.EvaluateArray[*any](ctx, src, entry, logger)
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
 
 				arrayValue := []client.CatalogAttributeValuePayloadV2{}
 				for _, literalAny := range valueLiterals {
-					literal, ok := literalAny.(string)
+					literal, ok := (*literalAny).(string)
 					if !ok {
 						continue
 					}
@@ -181,13 +182,14 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 				binding.ArrayValue = &arrayValue
 			} else {
 				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger)
+				spew.Dump(literal)
 
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
 
 				binding.Value = &client.CatalogAttributeValuePayloadV2{
-					Literal: lo.ToPtr(literal),
+					Literal: literal,
 				}
 			}
 
@@ -195,9 +197,9 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		}
 
 		catalogEntryModels = append(catalogEntryModels, &CatalogEntryModel{
-			Name:            name,
-			ExternalID:      externalID,
-			Rank:            int32(rank),
+			Name:            *name,
+			ExternalID:      *externalID,
+			Rank:            int32(*rank),
 			Aliases:         aliases,
 			AttributeValues: attributeValues,
 		})
@@ -206,28 +208,29 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 	return catalogEntryModels, nil
 }
 
-func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger) (string, error) {
-	var literal string
+func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger) (*string, error) {
+	var literal *string
 
 	// If we have an attribute type of type Bool or Number, we can try to evaluate the program against the scope
 	// with the appropriate type.
 	// If that fails, we'll fall back to a string literal since we accept passing a boolean or numeric value
 	// as a string literal.
+	spew.Dump(src)
 	if attribute != nil && attribute.Type.Valid {
 		switch attribute.Type.String {
 		case "Bool":
-			literal, _ = evaluateEntryWithType[bool](ctx, src, entry, logger)
-			if literal != "" {
+			literal, _ = evaluateEntryWithType[*bool](ctx, src, entry, logger)
+			if literal != nil {
 				return literal, nil
 			}
 		case "Number":
 			// Number accepts float or int, so we'll try to evaluate as a float first.
-			literal, _ = evaluateEntryWithType[float64](ctx, src, entry, logger)
-			if literal != "" {
+			literal, _ = evaluateEntryWithType[*float64](ctx, src, entry, logger)
+			if literal != nil {
 				return literal, nil
 			}
-			literal, _ = evaluateEntryWithType[int64](ctx, src, entry, logger)
-			if literal != "" {
+			literal, _ = evaluateEntryWithType[*int64](ctx, src, entry, logger)
+			if literal != nil {
 				return literal, nil
 			}
 		}
@@ -235,14 +238,18 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 
 	// If we have an attribute type of type String, or we failed to evaluate the program against the scope
 	// with the appropriate type, we'll try to evaluate as a string literal.
-	return evaluateEntryWithType[string](ctx, src, entry, logger)
+	return evaluateEntryWithType[*string](ctx, src, entry, logger)
 }
 
-func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (string, error) {
+func evaluateEntryWithType[ReturnType *Q, Q any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (*string, error) {
 	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, src, entry, logger)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	spew.Dump("WAT", literal)
+	if literal == nil {
+		return nil, nil
 	}
 
-	return fmt.Sprintf("%v", literal), nil
+	return lo.ToPtr(fmt.Sprintf("%v", literal)), nil
 }
