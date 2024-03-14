@@ -79,11 +79,12 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 }
 
 func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
-	resultValues := []ReturnType{}
-
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
-		return resultValues, errors.Wrap(err, "evaluating array value")
+		return nil, errors.Wrap(err, "evaluating array value")
+	}
+	if result.IsNull() || result.IsUndefined() {
+		return nil, nil
 	}
 
 	// Although we've parameterised ReturnType in both EvaluateArray and EvaluateSingleValue,
@@ -99,7 +100,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 				// This should always work, as we just asked for the available keys.
 				element, err := result.Object().Get(key)
 				if err != nil {
-					return resultValues, err
+					return nil, err
 				}
 
 				evaluatedValues = append(evaluatedValues, element)
@@ -113,10 +114,11 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 
 	// We parsed our JS successfully, and have multiple values, as expected.
 	// Now parse each nested value and return the final slice.
+	resultValues := []ReturnType{}
 	for _, evaluatedValue := range evaluatedValues {
 		resultValue, err := EvaluateResultType[ReturnType](ctx, source, evaluatedValue)
 		if err != nil {
-			return resultValues, nil
+			return nil, nil
 		}
 		resultValues = append(resultValues, resultValue)
 	}
@@ -124,19 +126,22 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (ReturnType, error) {
-	var resultValue ReturnType
+func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (*ReturnType, error) {
+	var emptyResult *ReturnType
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
-		return resultValue, errors.Wrap(err, "evaluating single value")
+		return emptyResult, errors.Wrap(err, "evaluating single value")
+	}
+	if result.IsNull() || result.IsUndefined() {
+		return nil, nil
 	}
 
-	resultValue, err = EvaluateResultType[ReturnType](ctx, source, result)
+	resultValue, err := EvaluateResultType[ReturnType](ctx, source, result)
 	if err != nil {
-		return resultValue, err
+		return nil, err
 	}
 
-	return resultValue, nil
+	return &resultValue, nil
 }
 
 func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {

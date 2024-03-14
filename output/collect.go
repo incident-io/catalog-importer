@@ -25,7 +25,7 @@ func Collect(ctx context.Context, output *Output, entries []source.Entry, logger
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}
 
-		if result {
+		if result != nil && *result {
 			filteredEntries = append(filteredEntries, entry)
 		}
 	}
