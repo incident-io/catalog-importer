@@ -118,7 +118,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
 
-		var rank int
+		var rank *int
 		if rankSource := output.Source.Rank; rankSource.Valid && rankSource.String != "" {
 			var err error
 			rank, err = expr.EvaluateSingleValue[int](ctx, rankSource.String, entry, logger)
@@ -136,14 +136,14 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 			}
-			if alias == "" {
+			if alias == nil {
 				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
 				toAdd = append(toAdd, aliasArray...)
 			} else {
-				toAdd = append(toAdd, alias)
+				toAdd = append(toAdd, *alias)
 			}
 
 			for _, alias := range toAdd {
@@ -165,6 +165,9 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
+				if valueLiterals == nil {
+					continue
+				}
 
 				arrayValue := []client.CatalogAttributeValuePayloadV2{}
 				for _, literalAny := range valueLiterals {
@@ -181,33 +184,42 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 				binding.ArrayValue = &arrayValue
 			} else {
 				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger)
-
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
+				if literal == nil {
+					continue
+				}
 
 				binding.Value = &client.CatalogAttributeValuePayloadV2{
-					Literal: lo.ToPtr(literal),
+					Literal: literal,
 				}
 			}
 
 			attributeValues[attributeID] = binding
 		}
 
-		catalogEntryModels = append(catalogEntryModels, &CatalogEntryModel{
-			Name:            name,
-			ExternalID:      externalID,
-			Rank:            int32(rank),
+		catalogEntryModel := CatalogEntryModel{
 			Aliases:         aliases,
 			AttributeValues: attributeValues,
-		})
+		}
+		if name != nil {
+			catalogEntryModel.Name = *name
+		}
+		if externalID != nil {
+			catalogEntryModel.ExternalID = *externalID
+		}
+		if rank != nil {
+			catalogEntryModel.Rank = int32(*rank)
+		}
+		catalogEntryModels = append(catalogEntryModels, &catalogEntryModel)
 	}
 
 	return catalogEntryModels, nil
 }
 
-func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger) (string, error) {
-	var literal string
+func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger) (*string, error) {
+	var literal *string
 
 	// If we have an attribute type of type Bool or Number, we can try to evaluate the program against the scope
 	// with the appropriate type.
@@ -217,17 +229,17 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 		switch attribute.Type.String {
 		case "Bool":
 			literal, _ = evaluateEntryWithType[bool](ctx, src, entry, logger)
-			if literal != "" {
+			if literal != nil {
 				return literal, nil
 			}
 		case "Number":
 			// Number accepts float or int, so we'll try to evaluate as a float first.
 			literal, _ = evaluateEntryWithType[float64](ctx, src, entry, logger)
-			if literal != "" {
+			if literal != nil {
 				return literal, nil
 			}
 			literal, _ = evaluateEntryWithType[int64](ctx, src, entry, logger)
-			if literal != "" {
+			if literal != nil {
 				return literal, nil
 			}
 		}
@@ -238,11 +250,14 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 	return evaluateEntryWithType[string](ctx, src, entry, logger)
 }
 
-func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (string, error) {
+func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (*string, error) {
 	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, src, entry, logger)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	if literal == nil {
+		return nil, nil
 	}
 
-	return fmt.Sprintf("%v", literal), nil
+	return lo.ToPtr(fmt.Sprintf("%v", *literal)), nil
 }
