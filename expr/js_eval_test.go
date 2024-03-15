@@ -80,7 +80,7 @@ var _ = Describe("Javascript evaluation", func() {
 			topLevelSrc := "$.metadata"
 			evaluatedResult, err := EvaluateSingleValue[string](ctx, topLevelSrc, sourceEntry, logger)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(*evaluatedResult).To(Equal(""))
+			Expect(evaluatedResult).To(BeNil())
 		})
 	})
 

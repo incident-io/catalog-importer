@@ -120,7 +120,9 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 		if err != nil {
 			return nil, nil
 		}
-		resultValues = append(resultValues, resultValue)
+		if resultValue != nil {
+			resultValues = append(resultValues, *resultValue)
+		}
 	}
 
 	return resultValues, nil
@@ -141,17 +143,16 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 		return nil, err
 	}
 
-	return &resultValue, nil
+	return resultValue, nil
 }
 
-func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (ReturnType, error) {
-	var resultValue ReturnType
-	var ok bool
+func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (*ReturnType, error) {
+	var resultValue *ReturnType
 	switch {
 	case result.IsBoolean():
 		resultBool, err := result.ToBoolean()
 		if err != nil {
-			return resultValue, err
+			return nil, err
 		}
 
 		// This is a pattern we'll employ in each of the checks below
@@ -167,11 +168,11 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 			typeAgnosticResult := any(boolValue)
 			resultValue, ok = typeAgnosticResult.(ReturnType)
 			if !ok {
-				return resultValue, fmt.Errorf("could not convert result of bool to %T", resultValue)
+				return nil, fmt.Errorf("could not convert result of bool to %T", resultValue)
 			}
 		}
 
-		return resultValue, nil
+		return &resultValue, nil
 
 	case result.IsNumber():
 		resultInt, err := strconv.Atoi(fmt.Sprintf("%v", result))
@@ -182,18 +183,18 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		typeAgnosticResult := any(resultInt)
 
 		// If OK, this is supported by Number.
-		resultValue, ok = typeAgnosticResult.(ReturnType)
+		resultValue, ok := typeAgnosticResult.(ReturnType)
 		if !ok {
 			// In number's case, if not ok, try the value again as a string.
 			intValue := fmt.Sprintf("%v", resultInt)
 			typeAgnosticResult := any(intValue)
 			resultValue, ok = typeAgnosticResult.(ReturnType)
 			if !ok {
-				return resultValue, fmt.Errorf("could not convert result of int to %T", resultValue)
+				return nil, fmt.Errorf("could not convert result of int to %T", resultValue)
 			}
 		}
 
-		return resultValue, nil
+		return &resultValue, nil
 
 	case result.IsString():
 		resultString, err := result.ToString()
@@ -205,10 +206,12 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		typeAgnosticResult := any(stringValue)
 
 		// If OK, this is supported by String.
-		resultValue, ok = typeAgnosticResult.(ReturnType)
+		resultValue, ok := typeAgnosticResult.(ReturnType)
 		if !ok {
-			return resultValue, fmt.Errorf("could not convert result of string to %T", resultValue)
+			return nil, fmt.Errorf("could not convert result of string to %T", resultValue)
 		}
+
+		return &resultValue, nil
 
 	case result.IsUndefined():
 		// do nothing, undefined gets skipped
