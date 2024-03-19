@@ -78,6 +78,11 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 
 }
 
+func isArray(value otto.Value) bool {
+	return value.IsObject() &&
+		(value.Object().Class() == "Array" || value.Object().Class() == "GoSlice")
+}
+
 func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
@@ -94,8 +99,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	evaluatedValues := []otto.Value{}
 
 	if result.IsObject() {
-		switch result.Object().Class() {
-		case "GoSlice", "Array":
+		if isArray(result) {
 			for _, key := range result.Object().Keys() {
 				// This should always work, as we just asked for the available keys.
 				element, err := result.Object().Get(key)
@@ -217,9 +221,8 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		// do nothing, undefined gets skipped
 		return resultValue, nil
 
-	case result.IsObject():
-		// objects / slices need to be handled explicitly elsewhere
-		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an object or array. Falling through\n", source)
+	case isArray(result):
+		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an array. Handling separately\n", source)
 		return resultValue, nil
 
 	default:
