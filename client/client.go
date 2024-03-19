@@ -66,7 +66,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...Clien
 	}
 
 	retryClient := retryablehttp.NewClient()
-
+	retryClient.Logger = nil
 	retryClient.RetryMax = maxRetries
 	retryClient.RetryWaitMin = minRetryWait
 	retryClient.RetryWaitMax = maxRetryWait
