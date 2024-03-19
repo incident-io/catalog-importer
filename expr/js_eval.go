@@ -94,8 +94,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	evaluatedValues := []otto.Value{}
 
 	if result.IsObject() {
-		switch result.Object().Class() {
-		case "GoSlice", "Array":
+		if isArray(result) {
 			for _, key := range result.Object().Keys() {
 				// This should always work, as we just asked for the available keys.
 				element, err := result.Object().Get(key)
@@ -215,15 +214,16 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 
 	case result.IsUndefined():
 		// do nothing, undefined gets skipped
+		return resultValue, nil
+
+	case isArray(result):
+		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an array. Assuming this is handled separately\n", source)
+		return resultValue, nil
 
 	default:
-		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %s.\n", source, map[string]any{
-			"result": result,
-		})
+		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %+v.\n", source, result)
 		return resultValue, nil
 	}
-
-	return resultValue, nil
 }
 
 func SafelyGo(do func()) {
@@ -234,4 +234,9 @@ func SafelyGo(do func()) {
 
 		do()
 	}()
+}
+
+func isArray(value otto.Value) bool {
+	return value.IsObject() &&
+		(value.Object().Class() == "Array" || value.Object().Class() == "GoSlice")
 }
