@@ -217,7 +217,7 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		return resultValue, nil
 
 	case isArray(result):
-		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an array. Handling separately\n", source)
+		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an array. Assuming this is handled separately\n", source)
 		return resultValue, nil
 
 	default:
