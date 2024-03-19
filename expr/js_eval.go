@@ -78,11 +78,6 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 
 }
 
-func isArray(value otto.Value) bool {
-	return value.IsObject() &&
-		(value.Object().Class() == "Array" || value.Object().Class() == "GoSlice")
-}
-
 func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
 	result, err := EvaluateJavascript(ctx, source, subject, logger)
 	if err != nil {
@@ -239,4 +234,9 @@ func SafelyGo(do func()) {
 
 		do()
 	}()
+}
+
+func isArray(value otto.Value) bool {
+	return value.IsObject() &&
+		(value.Object().Class() == "Array" || value.Object().Class() == "GoSlice")
 }
