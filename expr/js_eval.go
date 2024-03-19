@@ -215,15 +215,17 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 
 	case result.IsUndefined():
 		// do nothing, undefined gets skipped
+		return resultValue, nil
+
+	case result.IsObject():
+		// objects / slices need to be handled explicitly elsewhere
+		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an object or array. Falling through\n", source)
+		return resultValue, nil
 
 	default:
-		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %s.\n", source, map[string]any{
-			"result": result,
-		})
+		fmt.Fprintf(os.Stderr, "\n  Unsupported Javascript value type found by expression %s: %+v.\n", source, result)
 		return resultValue, nil
 	}
-
-	return resultValue, nil
 }
 
 func SafelyGo(do func()) {
