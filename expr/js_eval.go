@@ -30,7 +30,7 @@ func init() {
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
 // subject into the `$` variable.
-func EvaluateJavascript(ctx context.Context, source string, subject any, logger kitlog.Logger) (result otto.Value, err error) {
+func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string, subject any) (result otto.Value, err error) {
 	var halted bool
 	defer func() {
 		if caught := recover(); caught != nil {
@@ -78,8 +78,8 @@ func EvaluateJavascript(ctx context.Context, source string, subject any, logger 
 
 }
 
-func EvaluateArray[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) ([]ReturnType, error) {
-	result, err := EvaluateJavascript(ctx, source, subject, logger)
+func EvaluateArray[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any) ([]ReturnType, error) {
+	result, err := EvaluateJavascript(ctx, logger, source, subject)
 	if err != nil {
 		return nil, errors.Wrap(err, "evaluating array value")
 	}
@@ -115,7 +115,7 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	// Now parse each nested value and return the final slice.
 	resultValues := []ReturnType{}
 	for _, evaluatedValue := range evaluatedValues {
-		resultValue, err := EvaluateResultType[ReturnType](ctx, source, evaluatedValue)
+		resultValue, err := EvaluateResultType[ReturnType](ctx, logger, source, evaluatedValue)
 		if err != nil {
 			return nil, nil
 		}
@@ -127,9 +127,9 @@ func EvaluateArray[ReturnType any](ctx context.Context, source string, subject a
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, subject any, logger kitlog.Logger) (*ReturnType, error) {
+func EvaluateSingleValue[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any) (*ReturnType, error) {
 	var emptyResult *ReturnType
-	result, err := EvaluateJavascript(ctx, source, subject, logger)
+	result, err := EvaluateJavascript(ctx, logger, source, subject)
 	if err != nil {
 		return emptyResult, errors.Wrap(err, "evaluating single value")
 	}
@@ -137,7 +137,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 		return nil, nil
 	}
 
-	resultValue, err := EvaluateResultType[ReturnType](ctx, source, result)
+	resultValue, err := EvaluateResultType[ReturnType](ctx, logger, source, result)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func EvaluateSingleValue[ReturnType any](ctx context.Context, source string, sub
 	return resultValue, nil
 }
 
-func EvaluateResultType[ReturnType any](ctx context.Context, source string, result otto.Value) (*ReturnType, error) {
+func EvaluateResultType[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, result otto.Value) (*ReturnType, error) {
 	var resultValue *ReturnType
 	switch {
 	case result.IsBoolean():
@@ -217,7 +217,7 @@ func EvaluateResultType[ReturnType any](ctx context.Context, source string, resu
 		return resultValue, nil
 
 	case isArray(result):
-		fmt.Fprintf(os.Stdout, "\n  Source %s evaluates to an array. Assuming this is handled separately\n", source)
+		logger.Log("\n  Source %s evaluates to an array. Assuming this is handled separately\n", source)
 		return resultValue, nil
 
 	default:
