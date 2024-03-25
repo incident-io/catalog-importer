@@ -98,7 +98,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 	)
 	for _, attr := range output.Attributes {
 		// Use the attribute ID by default if source isn't explicitly provided.
-		source := attr.ID
+		source := "$." + attr.ID
 		if attr.Source.Valid {
 			source = attr.Source.String
 		}
