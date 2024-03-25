@@ -51,12 +51,19 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 			attrType = attr.Type.String
 		}
 
+		mode := client.CatalogTypeAttributePayloadV2ModeManual
+		if attr.BacklinkAttribute.Valid {
+			mode = client.CatalogTypeAttributePayloadV2ModeBacklink
+		}
+
 		base.Attributes = append(
 			base.Attributes, client.CatalogTypeAttributePayloadV2{
-				Id:    lo.ToPtr(attr.ID),
-				Name:  attr.Name,
-				Type:  attrType,
-				Array: attr.Array,
+				Id:                lo.ToPtr(attr.ID),
+				Name:              attr.Name,
+				Type:              attrType,
+				Array:             attr.Array,
+				BacklinkAttribute: attr.BacklinkAttribute.Ptr(),
+				Mode:              lo.ToPtr(mode),
 			})
 
 		// The enums we generate should be returned as types too, as we'll need to sync them
@@ -72,6 +79,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 						Id:   lo.ToPtr("description"),
 						Name: "Description",
 						Type: "String",
+						Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeManual),
 					},
 				},
 				SourceAttribute: lo.ToPtr(*attr),

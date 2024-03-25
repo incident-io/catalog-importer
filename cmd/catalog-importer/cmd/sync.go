@@ -240,33 +240,73 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		}
 	}
 
-	// Update type schemas to match config (excluding backlinks)
 	OUT("\n↻ Syncing catalog type schemas...")
-	for _, outputType := range cfg.Outputs() {
-		baseModel, enumModels := output.MarshalType(outputType)
-		for _, model := range append(enumModels, baseModel) {
-			catalogType := catalogTypesByOutput[model.TypeName]
+	if opt.DryRun {
+		for _, outputType := range cfg.Outputs() {
+			baseModel, enumModels := output.MarshalType(outputType)
+			for _, model := range append(enumModels, baseModel) {
+				catalogType := catalogTypesByOutput[model.TypeName]
 
-			var updatedCatalogType client.CatalogTypeV2
-			if opt.DryRun {
-				logger.Log("msg", "dry-run active, which means we fake a response")
-				updatedCatalogType = *catalogType // they start the same
+				var updatedCatalogType client.CatalogTypeV2
+				if opt.DryRun {
+					logger.Log("msg", "dry-run active, which means we fake a response")
+					updatedCatalogType = *catalogType // they start the same
 
-				// Then we pretend like we've already updated the schema, which means we rebuild the
-				// attributes.
-				updatedCatalogType.Schema = client.CatalogTypeSchemaV2{
-					Version:    updatedCatalogType.Schema.Version,
-					Attributes: []client.CatalogTypeAttributeV2{},
+					// Then we pretend like we've already updated the schema, which means we rebuild the
+					// attributes.
+					updatedCatalogType.Schema = client.CatalogTypeSchemaV2{
+						Version:    updatedCatalogType.Schema.Version,
+						Attributes: []client.CatalogTypeAttributeV2{},
+					}
+					for _, attr := range model.Attributes {
+						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
+							Id:                *attr.Id,
+							Name:              attr.Name,
+							Type:              attr.Type,
+							Array:             attr.Array,
+							Mode:              client.CatalogTypeAttributeV2Mode(*attr.Mode),
+							BacklinkAttribute: attr.BacklinkAttribute,
+						})
+					}
 				}
+				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+				DIFF("  ", *catalogType, updatedCatalogType)
+			}
+		}
+	} else {
+		// Update all the type schemas except for new backlinks, which could reference
+		// attributes that don't exist yet.
+		catalogTypeVersions := map[string]int64{}
+		for _, outputType := range cfg.Outputs() {
+			baseModel, enumModels := output.MarshalType(outputType)
+			for _, model := range append(enumModels, baseModel) {
+				catalogType := catalogTypesByOutput[model.TypeName]
+
+				attributesWithoutNewBacklinks := []client.CatalogTypeAttributePayloadV2{}
 				for _, attr := range model.Attributes {
-					updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
-						Id:    *attr.Id,
-						Name:  attr.Name,
-						Type:  attr.Type,
-						Array: attr.Array,
-					})
+					if attr.Mode != nil && *attr.Mode == client.CatalogTypeAttributePayloadV2ModeBacklink {
+						inCurrentSchema := false
+						// Does it exist in the current schema?
+						if attr.Id == nil {
+							logger.Log("msg", "attribute ID is empty, which shouldn't be possible")
+							continue
+						}
+
+						for _, existingAttr := range catalogType.Schema.Attributes {
+							if existingAttr.Id == *attr.Id {
+								inCurrentSchema = true
+								break
+							}
+						}
+
+						if !inCurrentSchema {
+							// We can't add new backlinks yet in case the attribute it refers to doesn't exist yet.
+							continue
+						}
+					}
+					attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
 				}
-			} else {
+
 				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
 				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
 					Name:          model.Name,
@@ -281,7 +321,57 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				version := result.JSON200.CatalogType.Schema.Version
 				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
-				schemaResult, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
+				schema, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
+					Version:    version,
+					Attributes: attributesWithoutNewBacklinks,
+				})
+				if err != nil {
+					return errors.Wrap(err, "updating catalog type schema")
+				}
+
+				catalogTypeVersions[catalogType.Id] = schema.JSON200.CatalogType.Schema.Version
+
+				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+			}
+		}
+
+		// Then go through again and create any types that do have new backlinks
+		OUT("\n↻ Syncing backlink attributes...")
+		for _, outputType := range cfg.Outputs() {
+			baseModel, enumModels := output.MarshalType(outputType)
+			for _, model := range append(enumModels, baseModel) {
+				catalogType := catalogTypesByOutput[model.TypeName]
+
+				hasNewBacklinks := false
+				for _, attr := range model.Attributes {
+					if attr.Mode != nil && attr.BacklinkAttribute != nil {
+						inCurrentSchema := false
+						// Does it exist in the current schema?
+						if attr.Id == nil {
+							logger.Log("msg", "attribute ID is empty, which shouldn't be possible")
+							continue
+						}
+
+						for _, existingAttr := range catalogType.Schema.Attributes {
+							if existingAttr.Id == *attr.Id {
+								inCurrentSchema = true
+								break
+							}
+						}
+
+						if !inCurrentSchema {
+							hasNewBacklinks = true
+						}
+					}
+				}
+
+				if !hasNewBacklinks {
+					continue
+				}
+				version := catalogTypeVersions[catalogType.Id]
+				logger.Log("msg", "updating catalog type schema: creating backlink attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
+
+				_, err = cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
 					Attributes: model.Attributes,
 				})
@@ -289,11 +379,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					return errors.Wrap(err, "updating catalog type schema")
 				}
 
-				updatedCatalogType = schemaResult.JSON200.CatalogType
-			}
-			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
-			if opt.DryRun {
-				DIFF("  ", *catalogType, updatedCatalogType)
+				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 			}
 		}
 	}
