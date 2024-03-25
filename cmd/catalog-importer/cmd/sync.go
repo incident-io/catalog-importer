@@ -284,27 +284,17 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				attributesWithoutNewBacklinks := []client.CatalogTypeAttributePayloadV2{}
 				for _, attr := range model.Attributes {
-					if attr.Mode != nil && *attr.Mode == client.CatalogTypeAttributePayloadV2ModeBacklink {
-						inCurrentSchema := false
-						// Does it exist in the current schema?
-						if attr.Id == nil {
-							logger.Log("msg", "attribute ID is empty, which shouldn't be possible")
-							continue
+					isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV2ModeBacklink
+					if isBacklink {
+						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
+							return existingAttr.Id == *attr.Id
+						})
+						if inCurrentSchema {
+							attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
 						}
-
-						for _, existingAttr := range catalogType.Schema.Attributes {
-							if existingAttr.Id == *attr.Id {
-								inCurrentSchema = true
-								break
-							}
-						}
-
-						if !inCurrentSchema {
-							// We can't add new backlinks yet in case the attribute it refers to doesn't exist yet.
-							continue
-						}
+					} else {
+						attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
 					}
-					attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
 				}
 
 				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
@@ -345,19 +335,9 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				hasNewBacklinks := false
 				for _, attr := range model.Attributes {
 					if attr.Mode != nil && attr.BacklinkAttribute != nil {
-						inCurrentSchema := false
-						// Does it exist in the current schema?
-						if attr.Id == nil {
-							logger.Log("msg", "attribute ID is empty, which shouldn't be possible")
-							continue
-						}
-
-						for _, existingAttr := range catalogType.Schema.Attributes {
-							if existingAttr.Id == *attr.Id {
-								inCurrentSchema = true
-								break
-							}
-						}
+						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
+							return existingAttr.Id == *attr.Id
+						})
 
 						if !inCurrentSchema {
 							hasNewBacklinks = true
