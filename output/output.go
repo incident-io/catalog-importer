@@ -48,12 +48,13 @@ func (s SourceConfig) Validate() error {
 }
 
 type Attribute struct {
-	ID     string         `json:"id"`
-	Name   string         `json:"name"`
-	Type   null.String    `json:"type"`
-	Array  bool           `json:"array"`
-	Source null.String    `json:"source"`
-	Enum   *AttributeEnum `json:"enum"`
+	ID                string         `json:"id"`
+	Name              string         `json:"name"`
+	Type              null.String    `json:"type"`
+	Array             bool           `json:"array"`
+	Source            null.String    `json:"source"`
+	Enum              *AttributeEnum `json:"enum"`
+	BacklinkAttribute null.String    `json:"backlink_attribute"`
 }
 
 func (a Attribute) Validate() error {

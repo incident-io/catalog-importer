@@ -213,24 +213,24 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 					entry.Name == model.Name &&
 						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank == model.Rank
 
-				currentBindings := map[string]client.CatalogAttributeBindingPayloadV2{}
+				currentBindings := map[string]client.EngineParamBindingPayloadV2{}
 				for attributeID, value := range entry.AttributeValues {
-					current := client.CatalogAttributeBindingPayloadV2{}
+					current := client.EngineParamBindingPayloadV2{}
 					// Our API behaves strangely with empty arrays, and will omit them. This patch
 					// ensures the array is present so our comparison doesn't trigger falsly.
 					if value.ArrayValue == nil && value.Value == nil {
-						value.ArrayValue = lo.ToPtr([]client.CatalogAttributeValueV2{})
+						value.ArrayValue = lo.ToPtr([]client.EngineParamBindingValueV2{})
 					}
 
 					if value.ArrayValue != nil {
-						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogAttributeValueV2, _ int) client.CatalogAttributeValuePayloadV2 {
-							return client.CatalogAttributeValuePayloadV2{
+						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.EngineParamBindingValueV2, _ int) client.EngineParamBindingValuePayloadV2 {
+							return client.EngineParamBindingValuePayloadV2{
 								Literal: binding.Literal,
 							}
 						}))
 					}
 					if value.Value != nil {
-						current.Value = &client.CatalogAttributeValuePayloadV2{
+						current.Value = &client.EngineParamBindingValuePayloadV2{
 							Literal: value.Value.Literal,
 						}
 					}
@@ -301,7 +301,7 @@ func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogType
 	for {
 		result, err := cl.CatalogV2ListEntriesWithResponse(ctx, &client.CatalogV2ListEntriesParams{
 			CatalogTypeId: catalogTypeID,
-			PageSize:      lo.ToPtr(int(250)),
+			PageSize:      lo.ToPtr(int64(250)),
 			After:         after,
 		})
 		if err != nil {

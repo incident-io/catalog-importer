@@ -240,7 +240,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		}
 	}
 
-	// Update type schemas to match config
+	// Update type schemas to match config (excluding backlinks)
 	OUT("\n↻ Syncing catalog type schemas...")
 	for _, outputType := range cfg.Outputs() {
 		baseModel, enumModels := output.MarshalType(outputType)
@@ -396,7 +396,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 						ExternalID:      value,
 						Name:            value,
 						Aliases:         []string{},
-						AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{},
+						AttributeValues: map[string]client.EngineParamBindingPayloadV2{},
 					})
 				}
 
@@ -455,7 +455,7 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 		Update: func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error) {
 			existingPayload := client.UpdateEntryRequestBody{
 				Aliases:         lo.ToPtr(entry.Aliases),
-				AttributeValues: map[string]client.CatalogAttributeBindingPayloadV2{},
+				AttributeValues: map[string]client.EngineParamBindingPayloadV2{},
 				ExternalId:      entry.ExternalId,
 				Name:            entry.Name,
 				Rank:            &entry.Rank,
@@ -464,16 +464,16 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 				existingPayload.Rank = nil
 			}
 			for attrID, attr := range entry.AttributeValues {
-				result := client.CatalogAttributeBindingPayloadV2{}
+				result := client.EngineParamBindingPayloadV2{}
 				if attr.Value != nil {
-					result.Value = &client.CatalogAttributeValuePayloadV2{
+					result.Value = &client.EngineParamBindingValuePayloadV2{
 						Literal: attr.Value.Literal,
 					}
 				}
 				if attr.ArrayValue != nil {
-					arrayValue := []client.CatalogAttributeValuePayloadV2{}
+					arrayValue := []client.EngineParamBindingValuePayloadV2{}
 					for _, elementValue := range *attr.ArrayValue {
-						arrayValue = append(arrayValue, client.CatalogAttributeValuePayloadV2{
+						arrayValue = append(arrayValue, client.EngineParamBindingValuePayloadV2{
 							Literal: elementValue.Literal,
 						})
 					}

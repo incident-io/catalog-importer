@@ -20,10 +20,18 @@ import (
 
 // Defines values for ActionV1Status.
 const (
-	Completed   ActionV1Status = "completed"
-	Deleted     ActionV1Status = "deleted"
-	NotDoing    ActionV1Status = "not_doing"
-	Outstanding ActionV1Status = "outstanding"
+	ActionV1StatusCompleted   ActionV1Status = "completed"
+	ActionV1StatusDeleted     ActionV1Status = "deleted"
+	ActionV1StatusNotDoing    ActionV1Status = "not_doing"
+	ActionV1StatusOutstanding ActionV1Status = "outstanding"
+)
+
+// Defines values for ActionV2Status.
+const (
+	ActionV2StatusCompleted   ActionV2Status = "completed"
+	ActionV2StatusDeleted     ActionV2Status = "deleted"
+	ActionV2StatusNotDoing    ActionV2Status = "not_doing"
+	ActionV2StatusOutstanding ActionV2Status = "outstanding"
 )
 
 // Defines values for CatalogResourceV2Category.
@@ -33,34 +41,98 @@ const (
 	CatalogResourceV2CategoryPrimitive CatalogResourceV2Category = "primitive"
 )
 
+// Defines values for CatalogTypeAttributePayloadV2Mode.
+const (
+	CatalogTypeAttributePayloadV2ModeBacklink CatalogTypeAttributePayloadV2Mode = "backlink"
+	CatalogTypeAttributePayloadV2ModeDynamic  CatalogTypeAttributePayloadV2Mode = "dynamic"
+	CatalogTypeAttributePayloadV2ModeEmpty    CatalogTypeAttributePayloadV2Mode = ""
+	CatalogTypeAttributePayloadV2ModeExternal CatalogTypeAttributePayloadV2Mode = "external"
+	CatalogTypeAttributePayloadV2ModeInternal CatalogTypeAttributePayloadV2Mode = "internal"
+	CatalogTypeAttributePayloadV2ModeManual   CatalogTypeAttributePayloadV2Mode = "manual"
+)
+
+// Defines values for CatalogTypeAttributeV2Mode.
+const (
+	Backlink CatalogTypeAttributeV2Mode = "backlink"
+	Dynamic  CatalogTypeAttributeV2Mode = "dynamic"
+	Empty    CatalogTypeAttributeV2Mode = ""
+	External CatalogTypeAttributeV2Mode = "external"
+	Internal CatalogTypeAttributeV2Mode = "internal"
+	Manual   CatalogTypeAttributeV2Mode = "manual"
+)
+
 // Defines values for CatalogTypeV2Color.
 const (
 	CatalogTypeV2ColorBlue   CatalogTypeV2Color = "blue"
+	CatalogTypeV2ColorCyan   CatalogTypeV2Color = "cyan"
 	CatalogTypeV2ColorGreen  CatalogTypeV2Color = "green"
-	CatalogTypeV2ColorRed    CatalogTypeV2Color = "red"
-	CatalogTypeV2ColorSlate  CatalogTypeV2Color = "slate"
+	CatalogTypeV2ColorOrange CatalogTypeV2Color = "orange"
+	CatalogTypeV2ColorPink   CatalogTypeV2Color = "pink"
 	CatalogTypeV2ColorViolet CatalogTypeV2Color = "violet"
 	CatalogTypeV2ColorYellow CatalogTypeV2Color = "yellow"
 )
 
 // Defines values for CatalogTypeV2Icon.
 const (
-	CatalogTypeV2IconBolt      CatalogTypeV2Icon = "bolt"
-	CatalogTypeV2IconBox       CatalogTypeV2Icon = "box"
-	CatalogTypeV2IconBriefcase CatalogTypeV2Icon = "briefcase"
-	CatalogTypeV2IconBrowser   CatalogTypeV2Icon = "browser"
-	CatalogTypeV2IconBulb      CatalogTypeV2Icon = "bulb"
-	CatalogTypeV2IconClock     CatalogTypeV2Icon = "clock"
-	CatalogTypeV2IconCog       CatalogTypeV2Icon = "cog"
-	CatalogTypeV2IconDatabase  CatalogTypeV2Icon = "database"
-	CatalogTypeV2IconDoc       CatalogTypeV2Icon = "doc"
-	CatalogTypeV2IconEmail     CatalogTypeV2Icon = "email"
-	CatalogTypeV2IconServer    CatalogTypeV2Icon = "server"
-	CatalogTypeV2IconSeverity  CatalogTypeV2Icon = "severity"
-	CatalogTypeV2IconStar      CatalogTypeV2Icon = "star"
-	CatalogTypeV2IconTag       CatalogTypeV2Icon = "tag"
-	CatalogTypeV2IconUser      CatalogTypeV2Icon = "user"
-	CatalogTypeV2IconUsers     CatalogTypeV2Icon = "users"
+	CatalogTypeV2IconBolt       CatalogTypeV2Icon = "bolt"
+	CatalogTypeV2IconBox        CatalogTypeV2Icon = "box"
+	CatalogTypeV2IconBriefcase  CatalogTypeV2Icon = "briefcase"
+	CatalogTypeV2IconBrowser    CatalogTypeV2Icon = "browser"
+	CatalogTypeV2IconBulb       CatalogTypeV2Icon = "bulb"
+	CatalogTypeV2IconCalendar   CatalogTypeV2Icon = "calendar"
+	CatalogTypeV2IconClock      CatalogTypeV2Icon = "clock"
+	CatalogTypeV2IconCog        CatalogTypeV2Icon = "cog"
+	CatalogTypeV2IconComponents CatalogTypeV2Icon = "components"
+	CatalogTypeV2IconDatabase   CatalogTypeV2Icon = "database"
+	CatalogTypeV2IconDoc        CatalogTypeV2Icon = "doc"
+	CatalogTypeV2IconEmail      CatalogTypeV2Icon = "email"
+	CatalogTypeV2IconFiles      CatalogTypeV2Icon = "files"
+	CatalogTypeV2IconFlag       CatalogTypeV2Icon = "flag"
+	CatalogTypeV2IconFolder     CatalogTypeV2Icon = "folder"
+	CatalogTypeV2IconGlobe      CatalogTypeV2Icon = "globe"
+	CatalogTypeV2IconMoney      CatalogTypeV2Icon = "money"
+	CatalogTypeV2IconServer     CatalogTypeV2Icon = "server"
+	CatalogTypeV2IconSeverity   CatalogTypeV2Icon = "severity"
+	CatalogTypeV2IconStar       CatalogTypeV2Icon = "star"
+	CatalogTypeV2IconStore      CatalogTypeV2Icon = "store"
+	CatalogTypeV2IconTag        CatalogTypeV2Icon = "tag"
+	CatalogTypeV2IconUser       CatalogTypeV2Icon = "user"
+	CatalogTypeV2IconUsers      CatalogTypeV2Icon = "users"
+)
+
+// Defines values for CreateHTTPRequestBodyStatus.
+const (
+	Firing   CreateHTTPRequestBodyStatus = "firing"
+	Resolved CreateHTTPRequestBodyStatus = "resolved"
+)
+
+// Defines values for CreateHTTPResponseBodyDeduplicationKey.
+const (
+	UniqueKey CreateHTTPResponseBodyDeduplicationKey = "unique-key"
+)
+
+// Defines values for CreateHTTPResponseBodyMessage.
+const (
+	EventAcceptedForProcessing CreateHTTPResponseBodyMessage = "Event accepted for processing"
+)
+
+// Defines values for CreateHTTPResponseBodyStatus.
+const (
+	Success CreateHTTPResponseBodyStatus = "success"
+)
+
+// Defines values for CreateRequestBody10Mode.
+const (
+	CreateRequestBody10ModeRetrospective CreateRequestBody10Mode = "retrospective"
+	CreateRequestBody10ModeStandard      CreateRequestBody10Mode = "standard"
+	CreateRequestBody10ModeTest          CreateRequestBody10Mode = "test"
+	CreateRequestBody10ModeTutorial      CreateRequestBody10Mode = "tutorial"
+)
+
+// Defines values for CreateRequestBody10Visibility.
+const (
+	CreateRequestBody10VisibilityPrivate CreateRequestBody10Visibility = "private"
+	CreateRequestBody10VisibilityPublic  CreateRequestBody10Visibility = "public"
 )
 
 // Defines values for CreateRequestBody2FieldType.
@@ -79,88 +151,103 @@ const (
 	CreateRequestBody2RequiredNever         CreateRequestBody2Required = "never"
 )
 
-// Defines values for CreateRequestBody3ResourceResourceType.
+// Defines values for CreateRequestBody2RequiredV2.
 const (
-	CreateRequestBody3ResourceResourceTypeAtlassianStatuspageIncident CreateRequestBody3ResourceResourceType = "atlassian_statuspage_incident"
-	CreateRequestBody3ResourceResourceTypeDatadogMonitorAlert         CreateRequestBody3ResourceResourceType = "datadog_monitor_alert"
-	CreateRequestBody3ResourceResourceTypeGithubPullRequest           CreateRequestBody3ResourceResourceType = "github_pull_request"
-	CreateRequestBody3ResourceResourceTypeOpsgenieAlert               CreateRequestBody3ResourceResourceType = "opsgenie_alert"
-	CreateRequestBody3ResourceResourceTypePagerDutyIncident           CreateRequestBody3ResourceResourceType = "pager_duty_incident"
-	CreateRequestBody3ResourceResourceTypeSentryIssue                 CreateRequestBody3ResourceResourceType = "sentry_issue"
-	CreateRequestBody3ResourceResourceTypeStatuspageIncident          CreateRequestBody3ResourceResourceType = "statuspage_incident"
-	CreateRequestBody3ResourceResourceTypeZendeskTicket               CreateRequestBody3ResourceResourceType = "zendesk_ticket"
+	CreateRequestBody2RequiredV2Always           CreateRequestBody2RequiredV2 = "always"
+	CreateRequestBody2RequiredV2BeforeResolution CreateRequestBody2RequiredV2 = "before_resolution"
+	CreateRequestBody2RequiredV2Never            CreateRequestBody2RequiredV2 = "never"
 )
 
-// Defines values for CreateRequestBody5Category.
+// Defines values for CreateRequestBody3FieldType.
 const (
-	CreateRequestBody5CategoryClosed CreateRequestBody5Category = "closed"
-	CreateRequestBody5CategoryLive   CreateRequestBody5Category = "live"
+	CreateRequestBody3FieldTypeLink         CreateRequestBody3FieldType = "link"
+	CreateRequestBody3FieldTypeMultiSelect  CreateRequestBody3FieldType = "multi_select"
+	CreateRequestBody3FieldTypeNumeric      CreateRequestBody3FieldType = "numeric"
+	CreateRequestBody3FieldTypeSingleSelect CreateRequestBody3FieldType = "single_select"
+	CreateRequestBody3FieldTypeText         CreateRequestBody3FieldType = "text"
 )
 
-// Defines values for CreateRequestBody6Mode.
+// Defines values for CreateRequestBody4ResourceResourceType.
 const (
-	CreateRequestBody6ModeReal CreateRequestBody6Mode = "real"
-	CreateRequestBody6ModeTest CreateRequestBody6Mode = "test"
+	CreateRequestBody4ResourceResourceTypeAtlassianStatuspageIncident CreateRequestBody4ResourceResourceType = "atlassian_statuspage_incident"
+	CreateRequestBody4ResourceResourceTypeDatadogMonitorAlert         CreateRequestBody4ResourceResourceType = "datadog_monitor_alert"
+	CreateRequestBody4ResourceResourceTypeGithubPullRequest           CreateRequestBody4ResourceResourceType = "github_pull_request"
+	CreateRequestBody4ResourceResourceTypeGitlabMergeRequest          CreateRequestBody4ResourceResourceType = "gitlab_merge_request"
+	CreateRequestBody4ResourceResourceTypeGoogleCalendarEvent         CreateRequestBody4ResourceResourceType = "google_calendar_event"
+	CreateRequestBody4ResourceResourceTypeOpsgenieAlert               CreateRequestBody4ResourceResourceType = "opsgenie_alert"
+	CreateRequestBody4ResourceResourceTypePagerDutyIncident           CreateRequestBody4ResourceResourceType = "pager_duty_incident"
+	CreateRequestBody4ResourceResourceTypeScrubbed                    CreateRequestBody4ResourceResourceType = "scrubbed"
+	CreateRequestBody4ResourceResourceTypeSentryIssue                 CreateRequestBody4ResourceResourceType = "sentry_issue"
+	CreateRequestBody4ResourceResourceTypeStatuspageIncident          CreateRequestBody4ResourceResourceType = "statuspage_incident"
+	CreateRequestBody4ResourceResourceTypeZendeskTicket               CreateRequestBody4ResourceResourceType = "zendesk_ticket"
 )
 
-// Defines values for CreateRequestBody6Status.
+// Defines values for CreateRequestBody8Category.
 const (
-	CreateRequestBody6StatusClosed        CreateRequestBody6Status = "closed"
-	CreateRequestBody6StatusDeclined      CreateRequestBody6Status = "declined"
-	CreateRequestBody6StatusFixing        CreateRequestBody6Status = "fixing"
-	CreateRequestBody6StatusInvestigating CreateRequestBody6Status = "investigating"
-	CreateRequestBody6StatusMonitoring    CreateRequestBody6Status = "monitoring"
-	CreateRequestBody6StatusTriage        CreateRequestBody6Status = "triage"
+	CreateRequestBody8CategoryClosed   CreateRequestBody8Category = "closed"
+	CreateRequestBody8CategoryLearning CreateRequestBody8Category = "learning"
+	CreateRequestBody8CategoryLive     CreateRequestBody8Category = "live"
 )
 
-// Defines values for CreateRequestBody6Visibility.
+// Defines values for CreateRequestBody9Mode.
 const (
-	CreateRequestBody6VisibilityPrivate CreateRequestBody6Visibility = "private"
-	CreateRequestBody6VisibilityPublic  CreateRequestBody6Visibility = "public"
+	CreateRequestBody9ModeReal CreateRequestBody9Mode = "real"
+	CreateRequestBody9ModeTest CreateRequestBody9Mode = "test"
 )
 
-// Defines values for CreateRequestBody7Mode.
+// Defines values for CreateRequestBody9Status.
 const (
-	CreateRequestBody7ModeRetrospective CreateRequestBody7Mode = "retrospective"
-	CreateRequestBody7ModeStandard      CreateRequestBody7Mode = "standard"
-	CreateRequestBody7ModeTest          CreateRequestBody7Mode = "test"
-	CreateRequestBody7ModeTutorial      CreateRequestBody7Mode = "tutorial"
+	CreateRequestBody9StatusClosed        CreateRequestBody9Status = "closed"
+	CreateRequestBody9StatusDeclined      CreateRequestBody9Status = "declined"
+	CreateRequestBody9StatusFixing        CreateRequestBody9Status = "fixing"
+	CreateRequestBody9StatusInvestigating CreateRequestBody9Status = "investigating"
+	CreateRequestBody9StatusMonitoring    CreateRequestBody9Status = "monitoring"
+	CreateRequestBody9StatusTriage        CreateRequestBody9Status = "triage"
 )
 
-// Defines values for CreateRequestBody7Visibility.
+// Defines values for CreateRequestBody9Visibility.
 const (
-	CreateRequestBody7VisibilityPrivate CreateRequestBody7Visibility = "private"
-	CreateRequestBody7VisibilityPublic  CreateRequestBody7Visibility = "public"
+	CreateRequestBody9VisibilityPrivate CreateRequestBody9Visibility = "private"
+	CreateRequestBody9VisibilityPublic  CreateRequestBody9Visibility = "public"
 )
 
 // Defines values for CreateTypeRequestBodyColor.
 const (
 	CreateTypeRequestBodyColorBlue   CreateTypeRequestBodyColor = "blue"
+	CreateTypeRequestBodyColorCyan   CreateTypeRequestBodyColor = "cyan"
 	CreateTypeRequestBodyColorGreen  CreateTypeRequestBodyColor = "green"
-	CreateTypeRequestBodyColorRed    CreateTypeRequestBodyColor = "red"
-	CreateTypeRequestBodyColorSlate  CreateTypeRequestBodyColor = "slate"
+	CreateTypeRequestBodyColorOrange CreateTypeRequestBodyColor = "orange"
+	CreateTypeRequestBodyColorPink   CreateTypeRequestBodyColor = "pink"
 	CreateTypeRequestBodyColorViolet CreateTypeRequestBodyColor = "violet"
 	CreateTypeRequestBodyColorYellow CreateTypeRequestBodyColor = "yellow"
 )
 
 // Defines values for CreateTypeRequestBodyIcon.
 const (
-	CreateTypeRequestBodyIconBolt      CreateTypeRequestBodyIcon = "bolt"
-	CreateTypeRequestBodyIconBox       CreateTypeRequestBodyIcon = "box"
-	CreateTypeRequestBodyIconBriefcase CreateTypeRequestBodyIcon = "briefcase"
-	CreateTypeRequestBodyIconBrowser   CreateTypeRequestBodyIcon = "browser"
-	CreateTypeRequestBodyIconBulb      CreateTypeRequestBodyIcon = "bulb"
-	CreateTypeRequestBodyIconClock     CreateTypeRequestBodyIcon = "clock"
-	CreateTypeRequestBodyIconCog       CreateTypeRequestBodyIcon = "cog"
-	CreateTypeRequestBodyIconDatabase  CreateTypeRequestBodyIcon = "database"
-	CreateTypeRequestBodyIconDoc       CreateTypeRequestBodyIcon = "doc"
-	CreateTypeRequestBodyIconEmail     CreateTypeRequestBodyIcon = "email"
-	CreateTypeRequestBodyIconServer    CreateTypeRequestBodyIcon = "server"
-	CreateTypeRequestBodyIconSeverity  CreateTypeRequestBodyIcon = "severity"
-	CreateTypeRequestBodyIconStar      CreateTypeRequestBodyIcon = "star"
-	CreateTypeRequestBodyIconTag       CreateTypeRequestBodyIcon = "tag"
-	CreateTypeRequestBodyIconUser      CreateTypeRequestBodyIcon = "user"
-	CreateTypeRequestBodyIconUsers     CreateTypeRequestBodyIcon = "users"
+	CreateTypeRequestBodyIconBolt       CreateTypeRequestBodyIcon = "bolt"
+	CreateTypeRequestBodyIconBox        CreateTypeRequestBodyIcon = "box"
+	CreateTypeRequestBodyIconBriefcase  CreateTypeRequestBodyIcon = "briefcase"
+	CreateTypeRequestBodyIconBrowser    CreateTypeRequestBodyIcon = "browser"
+	CreateTypeRequestBodyIconBulb       CreateTypeRequestBodyIcon = "bulb"
+	CreateTypeRequestBodyIconCalendar   CreateTypeRequestBodyIcon = "calendar"
+	CreateTypeRequestBodyIconClock      CreateTypeRequestBodyIcon = "clock"
+	CreateTypeRequestBodyIconCog        CreateTypeRequestBodyIcon = "cog"
+	CreateTypeRequestBodyIconComponents CreateTypeRequestBodyIcon = "components"
+	CreateTypeRequestBodyIconDatabase   CreateTypeRequestBodyIcon = "database"
+	CreateTypeRequestBodyIconDoc        CreateTypeRequestBodyIcon = "doc"
+	CreateTypeRequestBodyIconEmail      CreateTypeRequestBodyIcon = "email"
+	CreateTypeRequestBodyIconFiles      CreateTypeRequestBodyIcon = "files"
+	CreateTypeRequestBodyIconFlag       CreateTypeRequestBodyIcon = "flag"
+	CreateTypeRequestBodyIconFolder     CreateTypeRequestBodyIcon = "folder"
+	CreateTypeRequestBodyIconGlobe      CreateTypeRequestBodyIcon = "globe"
+	CreateTypeRequestBodyIconMoney      CreateTypeRequestBodyIcon = "money"
+	CreateTypeRequestBodyIconServer     CreateTypeRequestBodyIcon = "server"
+	CreateTypeRequestBodyIconSeverity   CreateTypeRequestBodyIcon = "severity"
+	CreateTypeRequestBodyIconStar       CreateTypeRequestBodyIcon = "star"
+	CreateTypeRequestBodyIconStore      CreateTypeRequestBodyIcon = "store"
+	CreateTypeRequestBodyIconTag        CreateTypeRequestBodyIcon = "tag"
+	CreateTypeRequestBodyIconUser       CreateTypeRequestBodyIcon = "user"
+	CreateTypeRequestBodyIconUsers      CreateTypeRequestBodyIcon = "users"
 )
 
 // Defines values for CustomFieldTypeInfoV1FieldType.
@@ -174,11 +261,11 @@ const (
 
 // Defines values for CustomFieldV1FieldType.
 const (
-	Link         CustomFieldV1FieldType = "link"
-	MultiSelect  CustomFieldV1FieldType = "multi_select"
-	Numeric      CustomFieldV1FieldType = "numeric"
-	SingleSelect CustomFieldV1FieldType = "single_select"
-	Text         CustomFieldV1FieldType = "text"
+	CustomFieldV1FieldTypeLink         CustomFieldV1FieldType = "link"
+	CustomFieldV1FieldTypeMultiSelect  CustomFieldV1FieldType = "multi_select"
+	CustomFieldV1FieldTypeNumeric      CustomFieldV1FieldType = "numeric"
+	CustomFieldV1FieldTypeSingleSelect CustomFieldV1FieldType = "single_select"
+	CustomFieldV1FieldTypeText         CustomFieldV1FieldType = "text"
 )
 
 // Defines values for CustomFieldV1Required.
@@ -188,10 +275,28 @@ const (
 	CustomFieldV1RequiredNever         CustomFieldV1Required = "never"
 )
 
+// Defines values for CustomFieldV1RequiredV2.
+const (
+	CustomFieldV1RequiredV2Always           CustomFieldV1RequiredV2 = "always"
+	CustomFieldV1RequiredV2BeforeResolution CustomFieldV1RequiredV2 = "before_resolution"
+	CustomFieldV1RequiredV2Never            CustomFieldV1RequiredV2 = "never"
+)
+
+// Defines values for CustomFieldV2FieldType.
+const (
+	Link         CustomFieldV2FieldType = "link"
+	MultiSelect  CustomFieldV2FieldType = "multi_select"
+	Numeric      CustomFieldV2FieldType = "numeric"
+	SingleSelect CustomFieldV2FieldType = "single_select"
+	Text         CustomFieldV2FieldType = "text"
+)
+
 // Defines values for ExternalIssueReferenceV1Provider.
 const (
 	ExternalIssueReferenceV1ProviderAsana      ExternalIssueReferenceV1Provider = "asana"
+	ExternalIssueReferenceV1ProviderClickUp    ExternalIssueReferenceV1Provider = "click_up"
 	ExternalIssueReferenceV1ProviderGithub     ExternalIssueReferenceV1Provider = "github"
+	ExternalIssueReferenceV1ProviderGitlab     ExternalIssueReferenceV1Provider = "gitlab"
 	ExternalIssueReferenceV1ProviderJira       ExternalIssueReferenceV1Provider = "jira"
 	ExternalIssueReferenceV1ProviderJiraServer ExternalIssueReferenceV1Provider = "jira_server"
 	ExternalIssueReferenceV1ProviderLinear     ExternalIssueReferenceV1Provider = "linear"
@@ -201,7 +306,9 @@ const (
 // Defines values for ExternalIssueReferenceV2Provider.
 const (
 	ExternalIssueReferenceV2ProviderAsana      ExternalIssueReferenceV2Provider = "asana"
+	ExternalIssueReferenceV2ProviderClickUp    ExternalIssueReferenceV2Provider = "click_up"
 	ExternalIssueReferenceV2ProviderGithub     ExternalIssueReferenceV2Provider = "github"
+	ExternalIssueReferenceV2ProviderGitlab     ExternalIssueReferenceV2Provider = "gitlab"
 	ExternalIssueReferenceV2ProviderJira       ExternalIssueReferenceV2Provider = "jira"
 	ExternalIssueReferenceV2ProviderJiraServer ExternalIssueReferenceV2Provider = "jira_server"
 	ExternalIssueReferenceV2ProviderLinear     ExternalIssueReferenceV2Provider = "linear"
@@ -213,22 +320,34 @@ const (
 	ExternalResourceV1ResourceTypeAtlassianStatuspageIncident ExternalResourceV1ResourceType = "atlassian_statuspage_incident"
 	ExternalResourceV1ResourceTypeDatadogMonitorAlert         ExternalResourceV1ResourceType = "datadog_monitor_alert"
 	ExternalResourceV1ResourceTypeGithubPullRequest           ExternalResourceV1ResourceType = "github_pull_request"
+	ExternalResourceV1ResourceTypeGitlabMergeRequest          ExternalResourceV1ResourceType = "gitlab_merge_request"
+	ExternalResourceV1ResourceTypeGoogleCalendarEvent         ExternalResourceV1ResourceType = "google_calendar_event"
 	ExternalResourceV1ResourceTypeOpsgenieAlert               ExternalResourceV1ResourceType = "opsgenie_alert"
 	ExternalResourceV1ResourceTypePagerDutyIncident           ExternalResourceV1ResourceType = "pager_duty_incident"
+	ExternalResourceV1ResourceTypeScrubbed                    ExternalResourceV1ResourceType = "scrubbed"
 	ExternalResourceV1ResourceTypeSentryIssue                 ExternalResourceV1ResourceType = "sentry_issue"
 	ExternalResourceV1ResourceTypeStatuspageIncident          ExternalResourceV1ResourceType = "statuspage_incident"
 	ExternalResourceV1ResourceTypeZendeskTicket               ExternalResourceV1ResourceType = "zendesk_ticket"
 )
 
+// Defines values for FollowUpV2Status.
+const (
+	Completed   FollowUpV2Status = "completed"
+	Deleted     FollowUpV2Status = "deleted"
+	NotDoing    FollowUpV2Status = "not_doing"
+	Outstanding FollowUpV2Status = "outstanding"
+)
+
 // Defines values for IdentityV1Roles.
 const (
-	IdentityV1RolesCatalogEditor   IdentityV1Roles = "catalog_editor"
-	IdentityV1RolesCatalogViewer   IdentityV1Roles = "catalog_viewer"
-	IdentityV1RolesGlobalAccess    IdentityV1Roles = "global_access"
-	IdentityV1RolesIncidentCreator IdentityV1Roles = "incident_creator"
-	IdentityV1RolesIncidentEditor  IdentityV1Roles = "incident_editor"
-	IdentityV1RolesManageSettings  IdentityV1Roles = "manage_settings"
-	IdentityV1RolesViewer          IdentityV1Roles = "viewer"
+	IdentityV1RolesCatalogEditor             IdentityV1Roles = "catalog_editor"
+	IdentityV1RolesCatalogViewer             IdentityV1Roles = "catalog_viewer"
+	IdentityV1RolesGlobalAccess              IdentityV1Roles = "global_access"
+	IdentityV1RolesIncidentCreator           IdentityV1Roles = "incident_creator"
+	IdentityV1RolesIncidentEditor            IdentityV1Roles = "incident_editor"
+	IdentityV1RolesIncidentMembershipsEditor IdentityV1Roles = "incident_memberships_editor"
+	IdentityV1RolesManageSettings            IdentityV1Roles = "manage_settings"
+	IdentityV1RolesViewer                    IdentityV1Roles = "viewer"
 )
 
 // Defines values for IncidentRoleV1RoleType.
@@ -238,12 +357,22 @@ const (
 	IncidentRoleV1RoleTypeReporter IncidentRoleV1RoleType = "reporter"
 )
 
+// Defines values for IncidentRoleV2RoleType.
+const (
+	IncidentRoleV2RoleTypeCustom   IncidentRoleV2RoleType = "custom"
+	IncidentRoleV2RoleTypeLead     IncidentRoleV2RoleType = "lead"
+	IncidentRoleV2RoleTypeReporter IncidentRoleV2RoleType = "reporter"
+)
+
 // Defines values for IncidentStatusV1Category.
 const (
+	IncidentStatusV1CategoryCanceled IncidentStatusV1Category = "canceled"
 	IncidentStatusV1CategoryClosed   IncidentStatusV1Category = "closed"
 	IncidentStatusV1CategoryDeclined IncidentStatusV1Category = "declined"
+	IncidentStatusV1CategoryLearning IncidentStatusV1Category = "learning"
 	IncidentStatusV1CategoryLive     IncidentStatusV1Category = "live"
 	IncidentStatusV1CategoryMerged   IncidentStatusV1Category = "merged"
+	IncidentStatusV1CategoryPaused   IncidentStatusV1Category = "paused"
 	IncidentStatusV1CategoryTriage   IncidentStatusV1Category = "triage"
 )
 
@@ -297,34 +426,50 @@ const (
 	UpdateRequestBody2RequiredNever         UpdateRequestBody2Required = "never"
 )
 
+// Defines values for UpdateRequestBody2RequiredV2.
+const (
+	Always           UpdateRequestBody2RequiredV2 = "always"
+	BeforeResolution UpdateRequestBody2RequiredV2 = "before_resolution"
+	Never            UpdateRequestBody2RequiredV2 = "never"
+)
+
 // Defines values for UpdateTypeRequestBodyColor.
 const (
 	Blue   UpdateTypeRequestBodyColor = "blue"
+	Cyan   UpdateTypeRequestBodyColor = "cyan"
 	Green  UpdateTypeRequestBodyColor = "green"
-	Red    UpdateTypeRequestBodyColor = "red"
-	Slate  UpdateTypeRequestBodyColor = "slate"
+	Orange UpdateTypeRequestBodyColor = "orange"
+	Pink   UpdateTypeRequestBodyColor = "pink"
 	Violet UpdateTypeRequestBodyColor = "violet"
 	Yellow UpdateTypeRequestBodyColor = "yellow"
 )
 
 // Defines values for UpdateTypeRequestBodyIcon.
 const (
-	Bolt      UpdateTypeRequestBodyIcon = "bolt"
-	Box       UpdateTypeRequestBodyIcon = "box"
-	Briefcase UpdateTypeRequestBodyIcon = "briefcase"
-	Browser   UpdateTypeRequestBodyIcon = "browser"
-	Bulb      UpdateTypeRequestBodyIcon = "bulb"
-	Clock     UpdateTypeRequestBodyIcon = "clock"
-	Cog       UpdateTypeRequestBodyIcon = "cog"
-	Database  UpdateTypeRequestBodyIcon = "database"
-	Doc       UpdateTypeRequestBodyIcon = "doc"
-	Email     UpdateTypeRequestBodyIcon = "email"
-	Server    UpdateTypeRequestBodyIcon = "server"
-	Severity  UpdateTypeRequestBodyIcon = "severity"
-	Star      UpdateTypeRequestBodyIcon = "star"
-	Tag       UpdateTypeRequestBodyIcon = "tag"
-	User      UpdateTypeRequestBodyIcon = "user"
-	Users     UpdateTypeRequestBodyIcon = "users"
+	Bolt       UpdateTypeRequestBodyIcon = "bolt"
+	Box        UpdateTypeRequestBodyIcon = "box"
+	Briefcase  UpdateTypeRequestBodyIcon = "briefcase"
+	Browser    UpdateTypeRequestBodyIcon = "browser"
+	Bulb       UpdateTypeRequestBodyIcon = "bulb"
+	Calendar   UpdateTypeRequestBodyIcon = "calendar"
+	Clock      UpdateTypeRequestBodyIcon = "clock"
+	Cog        UpdateTypeRequestBodyIcon = "cog"
+	Components UpdateTypeRequestBodyIcon = "components"
+	Database   UpdateTypeRequestBodyIcon = "database"
+	Doc        UpdateTypeRequestBodyIcon = "doc"
+	Email      UpdateTypeRequestBodyIcon = "email"
+	Files      UpdateTypeRequestBodyIcon = "files"
+	Flag       UpdateTypeRequestBodyIcon = "flag"
+	Folder     UpdateTypeRequestBodyIcon = "folder"
+	Globe      UpdateTypeRequestBodyIcon = "globe"
+	Money      UpdateTypeRequestBodyIcon = "money"
+	Server     UpdateTypeRequestBodyIcon = "server"
+	Severity   UpdateTypeRequestBodyIcon = "severity"
+	Star       UpdateTypeRequestBodyIcon = "star"
+	Store      UpdateTypeRequestBodyIcon = "store"
+	Tag        UpdateTypeRequestBodyIcon = "tag"
+	User       UpdateTypeRequestBodyIcon = "user"
+	Users      UpdateTypeRequestBodyIcon = "users"
 )
 
 // Defines values for UserV1Role.
@@ -336,11 +481,20 @@ const (
 	UserV1RoleViewer        UserV1Role = "viewer"
 )
 
+// Defines values for UserWithRolesV2Role.
+const (
+	Administrator UserWithRolesV2Role = "administrator"
+	Owner         UserWithRolesV2Role = "owner"
+	Responder     UserWithRolesV2Role = "responder"
+	Unset         UserWithRolesV2Role = "unset"
+	Viewer        UserWithRolesV2Role = "viewer"
+)
+
 // Defines values for ActionsV1ListParamsIncidentMode.
 const (
-	Real     ActionsV1ListParamsIncidentMode = "real"
-	Test     ActionsV1ListParamsIncidentMode = "test"
-	Tutorial ActionsV1ListParamsIncidentMode = "tutorial"
+	ActionsV1ListParamsIncidentModeReal     ActionsV1ListParamsIncidentMode = "real"
+	ActionsV1ListParamsIncidentModeTest     ActionsV1ListParamsIncidentMode = "test"
+	ActionsV1ListParamsIncidentModeTutorial ActionsV1ListParamsIncidentMode = "tutorial"
 )
 
 // Defines values for IncidentAttachmentsV1ListParamsResourceType.
@@ -348,11 +502,30 @@ const (
 	AtlassianStatuspageIncident IncidentAttachmentsV1ListParamsResourceType = "atlassian_statuspage_incident"
 	DatadogMonitorAlert         IncidentAttachmentsV1ListParamsResourceType = "datadog_monitor_alert"
 	GithubPullRequest           IncidentAttachmentsV1ListParamsResourceType = "github_pull_request"
+	GitlabMergeRequest          IncidentAttachmentsV1ListParamsResourceType = "gitlab_merge_request"
+	GoogleCalendarEvent         IncidentAttachmentsV1ListParamsResourceType = "google_calendar_event"
 	OpsgenieAlert               IncidentAttachmentsV1ListParamsResourceType = "opsgenie_alert"
 	PagerDutyIncident           IncidentAttachmentsV1ListParamsResourceType = "pager_duty_incident"
+	Scrubbed                    IncidentAttachmentsV1ListParamsResourceType = "scrubbed"
 	SentryIssue                 IncidentAttachmentsV1ListParamsResourceType = "sentry_issue"
 	StatuspageIncident          IncidentAttachmentsV1ListParamsResourceType = "statuspage_incident"
 	ZendeskTicket               IncidentAttachmentsV1ListParamsResourceType = "zendesk_ticket"
+)
+
+// Defines values for ActionsV2ListParamsIncidentMode.
+const (
+	ActionsV2ListParamsIncidentModeRetrospective ActionsV2ListParamsIncidentMode = "retrospective"
+	ActionsV2ListParamsIncidentModeStandard      ActionsV2ListParamsIncidentMode = "standard"
+	ActionsV2ListParamsIncidentModeTest          ActionsV2ListParamsIncidentMode = "test"
+	ActionsV2ListParamsIncidentModeTutorial      ActionsV2ListParamsIncidentMode = "tutorial"
+)
+
+// Defines values for FollowUpsV2ListParamsIncidentMode.
+const (
+	Retrospective FollowUpsV2ListParamsIncidentMode = "retrospective"
+	Standard      FollowUpsV2ListParamsIncidentMode = "standard"
+	Test          FollowUpsV2ListParamsIncidentMode = "test"
+	Tutorial      FollowUpsV2ListParamsIncidentMode = "tutorial"
 )
 
 // APIKeyV2 defines model for APIKeyV2.
@@ -397,54 +570,46 @@ type ActionV1 struct {
 // ActionV1Status Status of the action
 type ActionV1Status string
 
+// ActionV2 defines model for ActionV2.
+type ActionV2 struct {
+	Assignee *UserV1 `json:"assignee,omitempty"`
+
+	// CompletedAt When the action was completed
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
+
+	// CreatedAt When the action was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Description of the action
+	Description string `json:"description"`
+
+	// Id Unique identifier for the action
+	Id string `json:"id"`
+
+	// IncidentId Unique identifier of the incident the action belongs to
+	IncidentId string `json:"incident_id"`
+
+	// Status Status of the action
+	Status ActionV2Status `json:"status"`
+
+	// UpdatedAt When the action was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ActionV2Status Status of the action
+type ActionV2Status string
+
 // ActorV2 defines model for ActorV2.
 type ActorV2 struct {
 	ApiKey *APIKeyV2 `json:"api_key,omitempty"`
 	User   *UserV1   `json:"user,omitempty"`
 }
 
-// CatalogAttributeBindingPayloadV2 defines model for CatalogAttributeBindingPayloadV2.
-type CatalogAttributeBindingPayloadV2 struct {
-	// ArrayValue If set, this is the array value of the attribute
-	ArrayValue *[]CatalogAttributeValuePayloadV2 `json:"array_value,omitempty"`
-	Value      *CatalogAttributeValuePayloadV2   `json:"value,omitempty"`
-}
-
-// CatalogAttributeBindingV2 defines model for CatalogAttributeBindingV2.
-type CatalogAttributeBindingV2 struct {
-	// ArrayValue If array_value is set, this helps render the values
-	ArrayValue *[]CatalogAttributeValueV2 `json:"array_value,omitempty"`
-	Value      *CatalogAttributeValueV2   `json:"value,omitempty"`
-}
-
-// CatalogAttributeValuePayloadV2 defines model for CatalogAttributeValuePayloadV2.
-type CatalogAttributeValuePayloadV2 struct {
-	// Literal The literal value of this attribute
-	Literal *string `json:"literal,omitempty"`
-}
-
-// CatalogAttributeValueV2 defines model for CatalogAttributeValueV2.
-type CatalogAttributeValueV2 struct {
-	CatalogEntry *CatalogEntryReferenceV2 `json:"catalog_entry,omitempty"`
-
-	// ImageUrl If appropriate, URL to an image that can be displayed alongside the option
-	ImageUrl *string `json:"image_url,omitempty"`
-
-	// IsImageSlackIcon If true, the image_url is a Slack icon and should be displayed as such
-	IsImageSlackIcon *bool `json:"is_image_slack_icon,omitempty"`
-
-	// Label Human readable label to be displayed for user to select
-	Label string `json:"label"`
-
-	// Literal If set, this is the literal value of the step parameter
-	Literal *string `json:"literal,omitempty"`
-
-	// SortKey Gives an indication of how to sort the options when displayed to the user
-	SortKey string `json:"sort_key"`
-}
-
 // CatalogEntryReferenceV2 defines model for CatalogEntryReferenceV2.
 type CatalogEntryReferenceV2 struct {
+	// ArchivedAt When this entry was archived
+	ArchivedAt *time.Time `json:"archived_at,omitempty"`
+
 	// CatalogEntryId ID of this catalog entry
 	CatalogEntryId string `json:"catalog_entry_id"`
 
@@ -460,8 +625,11 @@ type CatalogEntryV2 struct {
 	// Aliases Optional aliases that can be used to reference this entry
 	Aliases []string `json:"aliases"`
 
+	// ArchivedAt When this entry was archived
+	ArchivedAt *time.Time `json:"archived_at,omitempty"`
+
 	// AttributeValues Values of this entry
-	AttributeValues map[string]CatalogAttributeBindingV2 `json:"attribute_values"`
+	AttributeValues map[string]EngineParamBindingV2 `json:"attribute_values"`
 
 	// CatalogTypeId ID of this catalog type
 	CatalogTypeId string `json:"catalog_type_id"`
@@ -472,7 +640,7 @@ type CatalogEntryV2 struct {
 	// ExternalId An optional alternative ID for this entry, which is ensured to be unique for the type
 	ExternalId *string `json:"external_id,omitempty"`
 
-	// Id ID of this resource
+	// Id ID of this catalog entry
 	Id string `json:"id"`
 
 	// Name Name is the human readable name of this entry
@@ -511,8 +679,14 @@ type CatalogTypeAttributePayloadV2 struct {
 	// Array Whether this attribute is an array
 	Array bool `json:"array"`
 
+	// BacklinkAttribute The attribute to use (if this is a backlink)
+	BacklinkAttribute *string `json:"backlink_attribute,omitempty"`
+
 	// Id The ID of this attribute
 	Id *string `json:"id,omitempty"`
+
+	// Mode Controls how this attribute is modified
+	Mode *CatalogTypeAttributePayloadV2Mode `json:"mode,omitempty"`
 
 	// Name Unique name of this attribute
 	Name string `json:"name"`
@@ -520,14 +694,23 @@ type CatalogTypeAttributePayloadV2 struct {
 	// Type Catalog type name for this attribute
 	Type string `json:"type"`
 }
+
+// CatalogTypeAttributePayloadV2Mode Controls how this attribute is modified
+type CatalogTypeAttributePayloadV2Mode string
 
 // CatalogTypeAttributeV2 defines model for CatalogTypeAttributeV2.
 type CatalogTypeAttributeV2 struct {
 	// Array Whether this attribute is an array
 	Array bool `json:"array"`
 
+	// BacklinkAttribute The attribute to use (if this is a backlink)
+	BacklinkAttribute *string `json:"backlink_attribute,omitempty"`
+
 	// Id The ID of this attribute
 	Id string `json:"id"`
+
+	// Mode Controls how this attribute is modified
+	Mode CatalogTypeAttributeV2Mode `json:"mode"`
 
 	// Name Unique name of this attribute
 	Name string `json:"name"`
@@ -535,6 +718,9 @@ type CatalogTypeAttributeV2 struct {
 	// Type Catalog type name for this attribute
 	Type string `json:"type"`
 }
+
+// CatalogTypeAttributeV2Mode Controls how this attribute is modified
+type CatalogTypeAttributeV2Mode string
 
 // CatalogTypeSchemaV2 defines model for CatalogTypeSchemaV2.
 type CatalogTypeSchemaV2 struct {
@@ -559,20 +745,23 @@ type CatalogTypeV2 struct {
 	// Description Human readble description of this type
 	Description string `json:"description"`
 
+	// DynamicResourceParameter If this is a dynamic catalog type, this will be the unique parameter for identitfying this resource externally.
+	DynamicResourceParameter *string `json:"dynamic_resource_parameter,omitempty"`
+
 	// EstimatedCount If populated, gives an estimated count of entries for this type
 	EstimatedCount *int64 `json:"estimated_count,omitempty"`
-
-	// ExternalType The external resource this type is synced from, if any
-	ExternalType *string `json:"external_type,omitempty"`
 
 	// Icon Sets the display icon of this type in the dashboard
 	Icon CatalogTypeV2Icon `json:"icon"`
 
-	// Id ID of this resource
+	// Id ID of this catalog type
 	Id string `json:"id"`
 
 	// IsEditable Catalog types that are synced with external resources can't be edited
 	IsEditable bool `json:"is_editable"`
+
+	// LastSyncedAt When this type was last synced (if it's ever been sync'd)
+	LastSyncedAt *time.Time `json:"last_synced_at,omitempty"`
 
 	// Name Name is the human readable name of this type
 	Name string `json:"name"`
@@ -580,11 +769,14 @@ type CatalogTypeV2 struct {
 	// Ranked If this type should be ranked
 	Ranked bool `json:"ranked"`
 
+	// RegistryType The registry resource this type is synced from, if any
+	RegistryType *string `json:"registry_type,omitempty"`
+
 	// RequiredIntegrations If populated, the integrations required for this type
 	RequiredIntegrations *[]string           `json:"required_integrations,omitempty"`
 	Schema               CatalogTypeSchemaV2 `json:"schema"`
 
-	// SemanticType Semantic type of this resource
+	// SemanticType Semantic type of this resource (unused)
 	SemanticType string `json:"semantic_type"`
 
 	// SourceRepoUrl The url of the external repository where this type is managed
@@ -609,7 +801,7 @@ type CreateEntryRequestBody struct {
 	Aliases *[]string `json:"aliases,omitempty"`
 
 	// AttributeValues Values of this entry
-	AttributeValues map[string]CatalogAttributeBindingPayloadV2 `json:"attribute_values"`
+	AttributeValues map[string]EngineParamBindingPayloadV2 `json:"attribute_values"`
 
 	// CatalogTypeId ID of this catalog type
 	CatalogTypeId string `json:"catalog_type_id"`
@@ -629,6 +821,51 @@ type CreateEntryResponseBody struct {
 	CatalogEntry CatalogEntryV2 `json:"catalog_entry"`
 }
 
+// CreateHTTPRequestBody defines model for CreateHTTPRequestBody.
+type CreateHTTPRequestBody struct {
+	// DeduplicationKey A deduplication key can be provided to uniquely reference this alert from your alert source. If you send an event with the same deduplication_key multiple times, only one alert will be created in incident.io for this alert source config.
+	DeduplicationKey *string `json:"deduplication_key,omitempty"`
+
+	// Description Description that optionally adds more detail to title
+	Description *string `json:"description,omitempty"`
+
+	// Metadata Any additional metadata that you've configured your alert source to parse
+	Metadata *map[string]interface{} `json:"metadata,omitempty"`
+
+	// SourceUrl If applicable, a link to the alert in the upstream system
+	SourceUrl *string `json:"source_url,omitempty"`
+
+	// Status Current status of this alert
+	Status CreateHTTPRequestBodyStatus `json:"status"`
+
+	// Title Alert title which is used when summarising the alert
+	Title string `json:"title"`
+}
+
+// CreateHTTPRequestBodyStatus Current status of this alert
+type CreateHTTPRequestBodyStatus string
+
+// CreateHTTPResponseBody defines model for CreateHTTPResponseBody.
+type CreateHTTPResponseBody struct {
+	// DeduplicationKey The deduplication key that the event has been processed with
+	DeduplicationKey CreateHTTPResponseBodyDeduplicationKey `json:"deduplication_key"`
+
+	// Message Human readable message giving detail about the event
+	Message CreateHTTPResponseBodyMessage `json:"message"`
+
+	// Status Status of the event
+	Status CreateHTTPResponseBodyStatus `json:"status"`
+}
+
+// CreateHTTPResponseBodyDeduplicationKey The deduplication key that the event has been processed with
+type CreateHTTPResponseBodyDeduplicationKey string
+
+// CreateHTTPResponseBodyMessage Human readable message giving detail about the event
+type CreateHTTPResponseBodyMessage string
+
+// CreateHTTPResponseBodyStatus Status of the event
+type CreateHTTPResponseBodyStatus string
+
 // CreateRequestBody defines model for CreateRequestBody.
 type CreateRequestBody struct {
 	// CustomFieldId ID of the custom field this option belongs to
@@ -641,141 +878,8 @@ type CreateRequestBody struct {
 	Value string `json:"value"`
 }
 
-// CreateRequestBody2 defines model for CreateRequestBody2.
-type CreateRequestBody2 struct {
-	// Description Description of the custom field
-	Description string `json:"description"`
-
-	// FieldType Type of custom field
-	FieldType CreateRequestBody2FieldType `json:"field_type"`
-
-	// Name Human readable name for the custom field
-	Name string `json:"name"`
-
-	// Required When this custom field must be set during the incident lifecycle.
-	Required CreateRequestBody2Required `json:"required"`
-
-	// ShowBeforeClosure Whether a custom field should be shown in the incident close modal. If this custom field is required before closure, but no value has been set for it, the field will be shown in the closure modal whatever the value of this setting.
-	ShowBeforeClosure bool `json:"show_before_closure"`
-
-	// ShowBeforeCreation Whether a custom field should be shown in the incident creation modal. This must be true if the field is always required.
-	ShowBeforeCreation bool `json:"show_before_creation"`
-
-	// ShowBeforeUpdate Whether a custom field should be shown in the incident update modal.
-	ShowBeforeUpdate bool `json:"show_before_update"`
-
-	// ShowInAnnouncementPost Whether a custom field should be shown in the list of fields as part of the announcement post when set.
-	ShowInAnnouncementPost *bool `json:"show_in_announcement_post,omitempty"`
-}
-
-// CreateRequestBody2FieldType Type of custom field
-type CreateRequestBody2FieldType string
-
-// CreateRequestBody2Required When this custom field must be set during the incident lifecycle.
-type CreateRequestBody2Required string
-
-// CreateRequestBody3 defines model for CreateRequestBody3.
-type CreateRequestBody3 struct {
-	// IncidentId ID of the incident to add an attachment to
-	IncidentId string `json:"incident_id"`
-	Resource   struct {
-		// ExternalId ID of the resource in the external system
-		ExternalId string `json:"external_id"`
-
-		// ResourceType E.g. PagerDuty: the external system that holds the resource
-		ResourceType CreateRequestBody3ResourceResourceType `json:"resource_type"`
-	} `json:"resource"`
-}
-
-// CreateRequestBody3ResourceResourceType E.g. PagerDuty: the external system that holds the resource
-type CreateRequestBody3ResourceResourceType string
-
-// CreateRequestBody4 defines model for CreateRequestBody4.
-type CreateRequestBody4 struct {
-	// Description Describes the purpose of the role
-	Description string `json:"description"`
-
-	// Instructions Provided to whoever is nominated for the role
-	Instructions string `json:"instructions"`
-
-	// Name Human readable name of the incident role
-	Name string `json:"name"`
-
-	// Required Whether incident require this role to be set
-	Required bool `json:"required"`
-
-	// Shortform Short human readable name for Slack
-	Shortform string `json:"shortform"`
-}
-
-// CreateRequestBody5 defines model for CreateRequestBody5.
-type CreateRequestBody5 struct {
-	// Category Whether the status should be considered 'live' or 'closed'. The triage and declined statuses cannot be created or modified.
-	Category CreateRequestBody5Category `json:"category"`
-
-	// Description Rich text description of the incident status
-	Description string `json:"description"`
-
-	// Name Unique name of this status
-	Name string `json:"name"`
-}
-
-// CreateRequestBody5Category Whether the status should be considered 'live' or 'closed'. The triage and declined statuses cannot be created or modified.
-type CreateRequestBody5Category string
-
-// CreateRequestBody6 defines model for CreateRequestBody6.
-type CreateRequestBody6 struct {
-	// CustomFieldEntries Set the incident's custom fields to these values
-	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
-
-	// IdempotencyKey Unique string used to de-duplicate incident create requests
-	IdempotencyKey string `json:"idempotency_key"`
-
-	// IncidentRoleAssignments Assign incident roles to these people
-	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV1 `json:"incident_role_assignments,omitempty"`
-
-	// IncidentTypeId Incident type to create this incident as
-	IncidentTypeId *string `json:"incident_type_id,omitempty"`
-
-	// Mode Whether the incident is real or test
-	Mode *CreateRequestBody6Mode `json:"mode,omitempty"`
-
-	// Name Explanation of the incident
-	Name *string `json:"name,omitempty"`
-
-	// SeverityId Severity to create incident as
-	SeverityId *string `json:"severity_id,omitempty"`
-
-	// SlackTeamId ID of the Slack team / workspace
-	SlackTeamId *string `json:"slack_team_id,omitempty"`
-
-	// SourceMessageChannelId Channel ID of the source message, if this incident was created from one
-	SourceMessageChannelId *string `json:"source_message_channel_id,omitempty"`
-
-	// SourceMessageTimestamp Timestamp of the source message, if this incident was created from one
-	SourceMessageTimestamp *string `json:"source_message_timestamp,omitempty"`
-
-	// Status Current status of the incident
-	Status *CreateRequestBody6Status `json:"status,omitempty"`
-
-	// Summary Detailed description of the incident
-	Summary *string `json:"summary,omitempty"`
-
-	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-	Visibility CreateRequestBody6Visibility `json:"visibility"`
-}
-
-// CreateRequestBody6Mode Whether the incident is real or test
-type CreateRequestBody6Mode string
-
-// CreateRequestBody6Status Current status of the incident
-type CreateRequestBody6Status string
-
-// CreateRequestBody6Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-type CreateRequestBody6Visibility string
-
-// CreateRequestBody7 defines model for CreateRequestBody7.
-type CreateRequestBody7 struct {
+// CreateRequestBody10 defines model for CreateRequestBody10.
+type CreateRequestBody10 struct {
 	// CustomFieldEntries Set the incident's custom fields to these values
 	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
 
@@ -798,7 +902,7 @@ type CreateRequestBody7 struct {
 	IncidentTypeId *string `json:"incident_type_id,omitempty"`
 
 	// Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
-	Mode *CreateRequestBody7Mode `json:"mode,omitempty"`
+	Mode *CreateRequestBody10Mode `json:"mode,omitempty"`
 
 	// Name Explanation of the incident
 	Name                         *string                         `json:"name,omitempty"`
@@ -807,6 +911,9 @@ type CreateRequestBody7 struct {
 	// SeverityId Severity to create incident as
 	SeverityId *string `json:"severity_id,omitempty"`
 
+	// SlackChannelNameOverride Name of the Slack channel to create for this incident
+	SlackChannelNameOverride *string `json:"slack_channel_name_override,omitempty"`
+
 	// SlackTeamId Slack Team to create the incident in
 	SlackTeamId *string `json:"slack_team_id,omitempty"`
 
@@ -814,17 +921,17 @@ type CreateRequestBody7 struct {
 	Summary *string `json:"summary,omitempty"`
 
 	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-	Visibility CreateRequestBody7Visibility `json:"visibility"`
+	Visibility CreateRequestBody10Visibility `json:"visibility"`
 }
 
-// CreateRequestBody7Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
-type CreateRequestBody7Mode string
+// CreateRequestBody10Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
+type CreateRequestBody10Mode string
 
-// CreateRequestBody7Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-type CreateRequestBody7Visibility string
+// CreateRequestBody10Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+type CreateRequestBody10Visibility string
 
-// CreateRequestBody8 defines model for CreateRequestBody8.
-type CreateRequestBody8 struct {
+// CreateRequestBody11 defines model for CreateRequestBody11.
+type CreateRequestBody11 struct {
 	// Description Description of the severity
 	Description string `json:"description"`
 
@@ -835,9 +942,189 @@ type CreateRequestBody8 struct {
 	Rank *int64 `json:"rank,omitempty"`
 }
 
+// CreateRequestBody2 defines model for CreateRequestBody2.
+type CreateRequestBody2 struct {
+	// Description Description of the custom field
+	Description string `json:"description"`
+
+	// FieldType Type of custom field
+	FieldType CreateRequestBody2FieldType `json:"field_type"`
+
+	// Name Human readable name for the custom field
+	Name string `json:"name"`
+
+	// Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
+	Required *CreateRequestBody2Required `json:"required,omitempty"`
+
+	// RequiredV2 When this custom field must be set during the incident lifecycle.
+	RequiredV2 *CreateRequestBody2RequiredV2 `json:"required_v2,omitempty"`
+
+	// ShowBeforeClosure Whether a custom field should be shown in the incident resolve modal. If this custom field is required before resolution, but no value has been set for it, the field will be shown in the resolve modal whatever the value of this setting.
+	ShowBeforeClosure bool `json:"show_before_closure"`
+
+	// ShowBeforeCreation Whether a custom field should be shown in the incident creation modal. This must be true if the field is always required.
+	ShowBeforeCreation bool `json:"show_before_creation"`
+
+	// ShowBeforeUpdate Whether a custom field should be shown in the incident update modal.
+	ShowBeforeUpdate bool `json:"show_before_update"`
+
+	// ShowInAnnouncementPost Whether a custom field should be shown in the list of fields as part of the announcement post when set.
+	ShowInAnnouncementPost *bool `json:"show_in_announcement_post,omitempty"`
+}
+
+// CreateRequestBody2FieldType Type of custom field
+type CreateRequestBody2FieldType string
+
+// CreateRequestBody2Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
+type CreateRequestBody2Required string
+
+// CreateRequestBody2RequiredV2 When this custom field must be set during the incident lifecycle.
+type CreateRequestBody2RequiredV2 string
+
+// CreateRequestBody3 defines model for CreateRequestBody3.
+type CreateRequestBody3 struct {
+	// Description Description of the custom field
+	Description string `json:"description"`
+
+	// FieldType Type of custom field
+	FieldType CreateRequestBody3FieldType `json:"field_type"`
+
+	// Name Human readable name for the custom field
+	Name string `json:"name"`
+}
+
+// CreateRequestBody3FieldType Type of custom field
+type CreateRequestBody3FieldType string
+
+// CreateRequestBody4 defines model for CreateRequestBody4.
+type CreateRequestBody4 struct {
+	// IncidentId ID of the incident to add an attachment to
+	IncidentId string `json:"incident_id"`
+	Resource   struct {
+		// ExternalId ID of the resource in the external system
+		ExternalId string `json:"external_id"`
+
+		// ResourceType E.g. PagerDuty: the external system that holds the resource
+		ResourceType CreateRequestBody4ResourceResourceType `json:"resource_type"`
+	} `json:"resource"`
+}
+
+// CreateRequestBody4ResourceResourceType E.g. PagerDuty: the external system that holds the resource
+type CreateRequestBody4ResourceResourceType string
+
+// CreateRequestBody5 defines model for CreateRequestBody5.
+type CreateRequestBody5 struct {
+	IncidentId string `json:"incident_id"`
+	UserId     string `json:"user_id"`
+}
+
+// CreateRequestBody6 defines model for CreateRequestBody6.
+type CreateRequestBody6 struct {
+	// Description Describes the purpose of the role
+	Description string `json:"description"`
+
+	// Instructions Provided to whoever is nominated for the role
+	Instructions string `json:"instructions"`
+
+	// Name Human readable name of the incident role
+	Name string `json:"name"`
+
+	// Required DEPRECATED: this will always be false.
+	Required bool `json:"required"`
+
+	// Shortform Short human readable name for Slack
+	Shortform string `json:"shortform"`
+}
+
+// CreateRequestBody7 defines model for CreateRequestBody7.
+type CreateRequestBody7 struct {
+	// Description Describes the purpose of the role
+	Description string `json:"description"`
+
+	// Instructions Provided to whoever is nominated for the role
+	Instructions string `json:"instructions"`
+
+	// Name Human readable name of the incident role
+	Name string `json:"name"`
+
+	// Shortform Short human readable name for Slack
+	Shortform string `json:"shortform"`
+}
+
+// CreateRequestBody8 defines model for CreateRequestBody8.
+type CreateRequestBody8 struct {
+	// Category Whether the status should be considered 'live' (now renamed to active), 'learning' (now renamed to post-incident) or 'closed'. The triage and declined statuses cannot be created or modified.
+	Category CreateRequestBody8Category `json:"category"`
+
+	// Description Rich text description of the incident status
+	Description string `json:"description"`
+
+	// Name Unique name of this status
+	Name string `json:"name"`
+}
+
+// CreateRequestBody8Category Whether the status should be considered 'live' (now renamed to active), 'learning' (now renamed to post-incident) or 'closed'. The triage and declined statuses cannot be created or modified.
+type CreateRequestBody8Category string
+
+// CreateRequestBody9 defines model for CreateRequestBody9.
+type CreateRequestBody9 struct {
+	// CustomFieldEntries Set the incident's custom fields to these values
+	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
+
+	// IdempotencyKey Unique string used to de-duplicate incident create requests
+	IdempotencyKey string `json:"idempotency_key"`
+
+	// IncidentRoleAssignments Assign incident roles to these people
+	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV1 `json:"incident_role_assignments,omitempty"`
+
+	// IncidentTypeId Incident type to create this incident as
+	IncidentTypeId *string `json:"incident_type_id,omitempty"`
+
+	// Mode Whether the incident is real or test
+	Mode *CreateRequestBody9Mode `json:"mode,omitempty"`
+
+	// Name Explanation of the incident
+	Name *string `json:"name,omitempty"`
+
+	// SeverityId Severity to create incident as
+	SeverityId *string `json:"severity_id,omitempty"`
+
+	// SlackTeamId ID of the Slack team / workspace. This is only required if you are using a Slack Enterprise Grid with multiple teams.
+	SlackTeamId *string `json:"slack_team_id,omitempty"`
+
+	// SourceMessageChannelId Channel ID of the source message, if this incident was created from one
+	SourceMessageChannelId *string `json:"source_message_channel_id,omitempty"`
+
+	// SourceMessageTimestamp Timestamp of the source message, if this incident was created from one
+	SourceMessageTimestamp *string `json:"source_message_timestamp,omitempty"`
+
+	// Status Current status of the incident
+	Status *CreateRequestBody9Status `json:"status,omitempty"`
+
+	// Summary Detailed description of the incident
+	Summary *string `json:"summary,omitempty"`
+
+	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+	Visibility CreateRequestBody9Visibility `json:"visibility"`
+}
+
+// CreateRequestBody9Mode Whether the incident is real or test
+type CreateRequestBody9Mode string
+
+// CreateRequestBody9Status Current status of the incident
+type CreateRequestBody9Status string
+
+// CreateRequestBody9Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+type CreateRequestBody9Visibility string
+
 // CreateResponseBody defines model for CreateResponseBody.
 type CreateResponseBody struct {
 	IncidentAttachment IncidentAttachmentV1 `json:"incident_attachment"`
+}
+
+// CreateResponseBody2 defines model for CreateResponseBody2.
+type CreateResponseBody2 struct {
+	IncidentMembership IncidentMembership `json:"incident_membership"`
 }
 
 // CreateTypeRequestBody defines model for CreateTypeRequestBody.
@@ -859,9 +1146,6 @@ type CreateTypeRequestBody struct {
 
 	// Ranked If this type should be ranked
 	Ranked *bool `json:"ranked,omitempty"`
-
-	// SemanticType Semantic type of this resource
-	SemanticType *string `json:"semantic_type,omitempty"`
 
 	// SourceRepoUrl The url of the external repository where this type is managed
 	SourceRepoUrl *string `json:"source_repo_url,omitempty"`
@@ -886,7 +1170,7 @@ type CustomFieldEntryPayloadV1 struct {
 	// CustomFieldId ID of the custom field this entry is linked against
 	CustomFieldId string `json:"custom_field_id"`
 
-	// Values List of values to associate with this entry
+	// Values List of values to associate with this entry. Use an empty array to unset the value of the custom field.
 	Values []CustomFieldValuePayloadV1 `json:"values"`
 }
 
@@ -936,6 +1220,9 @@ type CustomFieldTypeInfoV1FieldType string
 
 // CustomFieldV1 defines model for CustomFieldV1.
 type CustomFieldV1 struct {
+	// CatalogTypeId For catalog fields, the ID of the associated catalog type
+	CatalogTypeId *string `json:"catalog_type_id,omitempty"`
+
 	// CreatedAt When the action was created
 	CreatedAt time.Time `json:"created_at"`
 
@@ -954,10 +1241,13 @@ type CustomFieldV1 struct {
 	// Options What options are available for this custom field, if this field has options
 	Options []CustomFieldOptionV1 `json:"options"`
 
-	// Required When this custom field must be set during the incident lifecycle.
-	Required CustomFieldV1Required `json:"required"`
+	// Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
+	Required *CustomFieldV1Required `json:"required,omitempty"`
 
-	// ShowBeforeClosure Whether a custom field should be shown in the incident close modal. If this custom field is required before closure, but no value has been set for it, the field will be shown in the closure modal whatever the value of this setting.
+	// RequiredV2 When this custom field must be set during the incident lifecycle.
+	RequiredV2 *CustomFieldV1RequiredV2 `json:"required_v2,omitempty"`
+
+	// ShowBeforeClosure Whether a custom field should be shown in the incident resolve modal. If this custom field is required before resolution, but no value has been set for it, the field will be shown in the resolve modal whatever the value of this setting.
 	ShowBeforeClosure bool `json:"show_before_closure"`
 
 	// ShowBeforeCreation Whether a custom field should be shown in the incident creation modal. This must be true if the field is always required.
@@ -976,13 +1266,46 @@ type CustomFieldV1 struct {
 // CustomFieldV1FieldType Type of custom field
 type CustomFieldV1FieldType string
 
-// CustomFieldV1Required When this custom field must be set during the incident lifecycle.
+// CustomFieldV1Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
 type CustomFieldV1Required string
+
+// CustomFieldV1RequiredV2 When this custom field must be set during the incident lifecycle.
+type CustomFieldV1RequiredV2 string
+
+// CustomFieldV2 defines model for CustomFieldV2.
+type CustomFieldV2 struct {
+	// CatalogTypeId For catalog fields, the ID of the associated catalog type
+	CatalogTypeId *string `json:"catalog_type_id,omitempty"`
+
+	// CreatedAt When the action was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Description of the custom field
+	Description string `json:"description"`
+
+	// FieldType Type of custom field
+	FieldType CustomFieldV2FieldType `json:"field_type"`
+
+	// Id Unique identifier for the custom field
+	Id string `json:"id"`
+
+	// Name Human readable name for the custom field
+	Name string `json:"name"`
+
+	// UpdatedAt When the action was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// CustomFieldV2FieldType Type of custom field
+type CustomFieldV2FieldType string
 
 // CustomFieldValuePayloadV1 defines model for CustomFieldValuePayloadV1.
 type CustomFieldValuePayloadV1 struct {
 	// Id Unique identifier for the custom field value
 	Id *string `json:"id,omitempty"`
+
+	// ValueCatalogEntryId ID of the catalog entry. You can also use an ExternalID or an Alias of the catalog entry.
+	ValueCatalogEntryId *string `json:"value_catalog_entry_id,omitempty"`
 
 	// ValueLink If the custom field type is 'link', this will contain the value assigned.
 	ValueLink *string `json:"value_link,omitempty"`
@@ -1002,6 +1325,8 @@ type CustomFieldValuePayloadV1 struct {
 
 // CustomFieldValueV1 defines model for CustomFieldValueV1.
 type CustomFieldValueV1 struct {
+	ValueCatalogEntry *EmbeddedCatalogEntryV1 `json:"value_catalog_entry,omitempty"`
+
 	// ValueLink If the custom field type is 'link', this will contain the value assigned.
 	ValueLink *string `json:"value_link,omitempty"`
 
@@ -1019,6 +1344,76 @@ type EditRequestBody struct {
 
 	// NotifyIncidentChannel Should we send Slack channel notifications to inform responders of this update? Note that this won't work if the Slack channel has already been archived.
 	NotifyIncidentChannel bool `json:"notify_incident_channel"`
+}
+
+// EmbeddedCatalogEntryV1 defines model for EmbeddedCatalogEntryV1.
+type EmbeddedCatalogEntryV1 struct {
+	// Aliases Optional aliases that can be used to reference this entry
+	Aliases *[]string `json:"aliases,omitempty"`
+
+	// ExternalId An optional alternative ID for this entry, which is ensured to be unique for the type
+	ExternalId *string `json:"external_id,omitempty"`
+
+	// Id ID of this catalog entry
+	Id string `json:"id"`
+
+	// Name Name is the human readable name of this entry
+	Name string `json:"name"`
+}
+
+// EngineParamBindingPayloadV2 defines model for EngineParamBindingPayloadV2.
+type EngineParamBindingPayloadV2 struct {
+	// ArrayValue If set, this is the array value of the step parameter
+	ArrayValue *[]EngineParamBindingValuePayloadV2 `json:"array_value,omitempty"`
+	Value      *EngineParamBindingValuePayloadV2   `json:"value,omitempty"`
+}
+
+// EngineParamBindingV2 defines model for EngineParamBindingV2.
+type EngineParamBindingV2 struct {
+	// ArrayValue If array_value is set, this helps render the values
+	ArrayValue *[]EngineParamBindingValueV2 `json:"array_value,omitempty"`
+	Value      *EngineParamBindingValueV2   `json:"value,omitempty"`
+}
+
+// EngineParamBindingValuePayloadV2 defines model for EngineParamBindingValuePayloadV2.
+type EngineParamBindingValuePayloadV2 struct {
+	// Literal If set, this is the literal value of the step parameter
+	Literal *string `json:"literal,omitempty"`
+
+	// Reference If set, this is the reference into the trigger scope that is the value of this parameter
+	Reference *string `json:"reference,omitempty"`
+}
+
+// EngineParamBindingValueV2 defines model for EngineParamBindingValueV2.
+type EngineParamBindingValueV2 struct {
+	CatalogEntry *CatalogEntryReferenceV2 `json:"catalog_entry,omitempty"`
+
+	// Helptext Gives a description of the option to the user
+	Helptext *string `json:"helptext,omitempty"`
+
+	// ImageUrl If appropriate, URL to an image that can be displayed alongside the option
+	ImageUrl *string `json:"image_url,omitempty"`
+
+	// IsImageSlackIcon If true, the image_url is a Slack icon and should be displayed as such
+	IsImageSlackIcon *bool `json:"is_image_slack_icon,omitempty"`
+
+	// Label Human readable label to be displayed for user to select
+	Label string `json:"label"`
+
+	// Literal If set, this is the literal value of the step parameter
+	Literal *string `json:"literal,omitempty"`
+
+	// Reference If set, this is the reference into the trigger scope that is the value of this parameter
+	Reference *string `json:"reference,omitempty"`
+
+	// SortKey Gives an indication of how to sort the options when displayed to the user
+	SortKey string `json:"sort_key"`
+
+	// Unavailable Unavailable is true if we've failed to build the value for this binding
+	Unavailable *bool `json:"unavailable,omitempty"`
+
+	// Value Either the reference or the literal: this field is designed purely to make working with react-select easier
+	Value *string `json:"value,omitempty"`
 }
 
 // ExternalIssueReferenceV1 defines model for ExternalIssueReferenceV1.
@@ -1069,6 +1464,55 @@ type ExternalResourceV1 struct {
 // ExternalResourceV1ResourceType E.g. PagerDuty: the external system that holds the resource
 type ExternalResourceV1ResourceType string
 
+// FollowUpPriorityV2 defines model for FollowUpPriorityV2.
+type FollowUpPriorityV2 struct {
+	// Description Description of the follow-up priority option
+	Description *string `json:"description,omitempty"`
+
+	// Id Unique identifier for the follow-up priority option
+	Id string `json:"id"`
+
+	// Name Name of the follow-up priority option
+	Name string `json:"name"`
+
+	// Rank Rank is used to order the follow-up priority options correctly
+	Rank int64 `json:"rank"`
+}
+
+// FollowUpV2 defines model for FollowUpV2.
+type FollowUpV2 struct {
+	Assignee *UserV1 `json:"assignee,omitempty"`
+
+	// CompletedAt When the follow-up was completed
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
+
+	// CreatedAt When the follow-up was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Description of the follow-up
+	Description            *string                   `json:"description,omitempty"`
+	ExternalIssueReference *ExternalIssueReferenceV2 `json:"external_issue_reference,omitempty"`
+
+	// Id Unique identifier for the follow-up
+	Id string `json:"id"`
+
+	// IncidentId Unique identifier of the incident the follow-up belongs to
+	IncidentId string              `json:"incident_id"`
+	Priority   *FollowUpPriorityV2 `json:"priority,omitempty"`
+
+	// Status Status of the follow-up
+	Status FollowUpV2Status `json:"status"`
+
+	// Title Title of the follow-up
+	Title string `json:"title"`
+
+	// UpdatedAt When the follow-up was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// FollowUpV2Status Status of the follow-up
+type FollowUpV2Status string
+
 // IdentityResponseBody defines model for IdentityResponseBody.
 type IdentityResponseBody struct {
 	Identity IdentityV1 `json:"identity"`
@@ -1076,6 +1520,9 @@ type IdentityResponseBody struct {
 
 // IdentityV1 defines model for IdentityV1.
 type IdentityV1 struct {
+	// DashboardUrl The dashboard URL for this organisation
+	DashboardUrl string `json:"dashboard_url"`
+
 	// Name The name assigned to the current API Key
 	Name string `json:"name"`
 
@@ -1096,10 +1543,36 @@ type IncidentAttachmentV1 struct {
 	Resource   ExternalResourceV1 `json:"resource"`
 }
 
+// IncidentDurationMetricV2 defines model for IncidentDurationMetricV2.
+type IncidentDurationMetricV2 struct {
+	// Id Unique ID of this incident duration metric
+	Id string `json:"id"`
+
+	// Name Unique name of this duration metric
+	Name string `json:"name"`
+}
+
+// IncidentDurationMetricWithValueV2 defines model for IncidentDurationMetricWithValueV2.
+type IncidentDurationMetricWithValueV2 struct {
+	DurationMetric IncidentDurationMetricV2 `json:"duration_metric"`
+
+	// ValueSeconds The calculated durations for this metric
+	ValueSeconds *int64 `json:"value_seconds,omitempty"`
+}
+
 // IncidentEditPayloadV2 defines model for IncidentEditPayloadV2.
 type IncidentEditPayloadV2 struct {
+	// CallUrl The call URL attached to this incident
+	CallUrl *string `json:"call_url,omitempty"`
+
 	// CustomFieldEntries Set the incident's custom fields to these values
 	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
+
+	// IncidentRoleAssignments Assign incident roles to these people
+	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV2 `json:"incident_role_assignments,omitempty"`
+
+	// IncidentStatusId Incident status to change incident to (you can only change an incident from one active status to another, any other lifecycle changes must be taken via the app.)
+	IncidentStatusId *string `json:"incident_status_id,omitempty"`
 
 	// IncidentTimestampValues Assign the incident's timestamps to these values
 	IncidentTimestampValues *[]IncidentTimestampValuePayloadV2 `json:"incident_timestamp_values,omitempty"`
@@ -1112,6 +1585,22 @@ type IncidentEditPayloadV2 struct {
 
 	// Summary Detailed description of the incident
 	Summary *string `json:"summary,omitempty"`
+}
+
+// IncidentMembership defines model for IncidentMembership.
+type IncidentMembership struct {
+	// CreatedAt When the membership was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id Unique identifier of this incident membership
+	Id string `json:"id"`
+
+	// IncidentId Unique identifier of the incident
+	IncidentId string `json:"incident_id"`
+
+	// UpdatedAt When the membership was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+	User      UserV1    `json:"user"`
 }
 
 // IncidentRoleAssignmentPayloadV1 defines model for IncidentRoleAssignmentPayloadV1.
@@ -1153,8 +1642,8 @@ type IncidentRoleV1 struct {
 	// Name Human readable name of the incident role
 	Name string `json:"name"`
 
-	// Required Whether incident require this role to be set
-	Required bool `json:"required"`
+	// Required DEPRECATED: this will always be false.
+	Required *bool `json:"required,omitempty"`
 
 	// RoleType Type of incident role
 	RoleType IncidentRoleV1RoleType `json:"role_type"`
@@ -1169,9 +1658,39 @@ type IncidentRoleV1 struct {
 // IncidentRoleV1RoleType Type of incident role
 type IncidentRoleV1RoleType string
 
+// IncidentRoleV2 defines model for IncidentRoleV2.
+type IncidentRoleV2 struct {
+	// CreatedAt When the action was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Describes the purpose of the role
+	Description string `json:"description"`
+
+	// Id Unique identifier for the role
+	Id string `json:"id"`
+
+	// Instructions Provided to whoever is nominated for the role
+	Instructions string `json:"instructions"`
+
+	// Name Human readable name of the incident role
+	Name string `json:"name"`
+
+	// RoleType Type of incident role
+	RoleType IncidentRoleV2RoleType `json:"role_type"`
+
+	// Shortform Short human readable name for Slack
+	Shortform string `json:"shortform"`
+
+	// UpdatedAt When the action was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// IncidentRoleV2RoleType Type of incident role
+type IncidentRoleV2RoleType string
+
 // IncidentStatusV1 defines model for IncidentStatusV1.
 type IncidentStatusV1 struct {
-	// Category Whether this status is a live or closed status. If you have enabled auto-create, there will also be 'triage' and 'declined' statuses, which cannot be modified.
+	// Category What category of status it is. All statuses apart from live (renamed in the app to Active) and learning (renamed in the app to Post-incident) are managed by incident.io and cannot be configured
 	Category  IncidentStatusV1Category `json:"category"`
 	CreatedAt time.Time                `json:"created_at"`
 
@@ -1189,7 +1708,7 @@ type IncidentStatusV1 struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// IncidentStatusV1Category Whether this status is a live or closed status. If you have enabled auto-create, there will also be 'triage' and 'declined' statuses, which cannot be modified.
+// IncidentStatusV1Category What category of status it is. All statuses apart from live (renamed in the app to Active) and learning (renamed in the app to Post-incident) are managed by incident.io and cannot be configured
 type IncidentStatusV1Category string
 
 // IncidentTimestampV1 defines model for IncidentTimestampV1.
@@ -1323,7 +1842,7 @@ type IncidentV1 struct {
 	// SlackChannelName Name of the slack channel
 	SlackChannelName *string `json:"slack_channel_name,omitempty"`
 
-	// SlackTeamId ID of the Slack team / workspace
+	// SlackTeamId ID of the Slack team / workspace. This is only required if you are using a Slack Enterprise Grid with multiple teams.
 	SlackTeamId string `json:"slack_team_id"`
 
 	// Status Current status of the incident
@@ -1361,8 +1880,11 @@ type IncidentV2 struct {
 	Creator   ActorV2   `json:"creator"`
 
 	// CustomFieldEntries Custom field entries for this incident
-	CustomFieldEntries     []CustomFieldEntryV1      `json:"custom_field_entries"`
-	ExternalIssueReference *ExternalIssueReferenceV2 `json:"external_issue_reference,omitempty"`
+	CustomFieldEntries []CustomFieldEntryV1 `json:"custom_field_entries"`
+
+	// DurationMetrics Incident duration metrics and their measurements for this incident
+	DurationMetrics        *[]IncidentDurationMetricWithValueV2 `json:"duration_metrics,omitempty"`
+	ExternalIssueReference *ExternalIssueReferenceV2            `json:"external_issue_reference,omitempty"`
 
 	// Id Unique identifier for the incident
 	Id string `json:"id"`
@@ -1397,7 +1919,7 @@ type IncidentV2 struct {
 	// SlackChannelName Name of the slack channel
 	SlackChannelName *string `json:"slack_channel_name,omitempty"`
 
-	// SlackTeamId ID of the Slack team / workspace
+	// SlackTeamId ID of the Slack team / workspace. This is only required if you are using a Slack Enterprise Grid with multiple teams.
 	SlackTeamId string `json:"slack_team_id"`
 
 	// Summary Detailed description of the incident
@@ -1408,6 +1930,18 @@ type IncidentV2 struct {
 
 	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
 	Visibility IncidentV2Visibility `json:"visibility"`
+
+	// WorkloadMinutesLate Amount of time spent on the incident in late hours
+	WorkloadMinutesLate *float64 `json:"workload_minutes_late,omitempty"`
+
+	// WorkloadMinutesSleeping Amount of time spent on the incident in sleeping hours
+	WorkloadMinutesSleeping *float64 `json:"workload_minutes_sleeping,omitempty"`
+
+	// WorkloadMinutesTotal Amount of time spent on the incident in total
+	WorkloadMinutesTotal *float64 `json:"workload_minutes_total,omitempty"`
+
+	// WorkloadMinutesWorking Amount of time spent on the incident in working hours
+	WorkloadMinutesWorking *float64 `json:"workload_minutes_working,omitempty"`
 }
 
 // IncidentV2Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
@@ -1435,60 +1969,87 @@ type ListResponseBody struct {
 
 // ListResponseBody10 defines model for ListResponseBody10.
 type ListResponseBody10 struct {
-	Incidents      []IncidentV1                   `json:"incidents"`
-	PaginationMeta *PaginationMetaResultWithTotal `json:"pagination_meta,omitempty"`
+	IncidentStatuses []IncidentStatusV1 `json:"incident_statuses"`
 }
 
 // ListResponseBody11 defines model for ListResponseBody11.
 type ListResponseBody11 struct {
-	Incidents      []IncidentV2                   `json:"incidents"`
-	PaginationMeta *PaginationMetaResultWithTotal `json:"pagination_meta,omitempty"`
+	IncidentTimestamps []IncidentTimestampV2 `json:"incident_timestamps"`
 }
 
 // ListResponseBody12 defines model for ListResponseBody12.
 type ListResponseBody12 struct {
+	IncidentTypes []IncidentTypeV1 `json:"incident_types"`
+}
+
+// ListResponseBody13 defines model for ListResponseBody13.
+type ListResponseBody13 struct {
+	IncidentUpdates []IncidentUpdateV2    `json:"incident_updates"`
+	PaginationMeta  *PaginationMetaResult `json:"pagination_meta,omitempty"`
+}
+
+// ListResponseBody14 defines model for ListResponseBody14.
+type ListResponseBody14 struct {
+	Incidents      []IncidentV1                   `json:"incidents"`
+	PaginationMeta *PaginationMetaResultWithTotal `json:"pagination_meta,omitempty"`
+}
+
+// ListResponseBody15 defines model for ListResponseBody15.
+type ListResponseBody15 struct {
+	Incidents      []IncidentV2                   `json:"incidents"`
+	PaginationMeta *PaginationMetaResultWithTotal `json:"pagination_meta,omitempty"`
+}
+
+// ListResponseBody16 defines model for ListResponseBody16.
+type ListResponseBody16 struct {
 	Severities []SeverityV2 `json:"severities"`
+}
+
+// ListResponseBody17 defines model for ListResponseBody17.
+type ListResponseBody17 struct {
+	PaginationMeta PaginationMetaResult `json:"pagination_meta"`
+	Users          []UserWithRolesV2    `json:"users"`
 }
 
 // ListResponseBody2 defines model for ListResponseBody2.
 type ListResponseBody2 struct {
-	CustomFieldOptions []CustomFieldOptionV1 `json:"custom_field_options"`
+	Actions []ActionV2 `json:"actions"`
 }
 
 // ListResponseBody3 defines model for ListResponseBody3.
 type ListResponseBody3 struct {
-	CustomFields []CustomFieldV1 `json:"custom_fields"`
+	CustomFieldOptions []CustomFieldOptionV1 `json:"custom_field_options"`
+	PaginationMeta     PaginationMetaResult  `json:"pagination_meta"`
 }
 
 // ListResponseBody4 defines model for ListResponseBody4.
 type ListResponseBody4 struct {
-	IncidentAttachments []IncidentAttachmentV1 `json:"incident_attachments"`
+	CustomFields []CustomFieldV1 `json:"custom_fields"`
 }
 
 // ListResponseBody5 defines model for ListResponseBody5.
 type ListResponseBody5 struct {
-	IncidentRoles []IncidentRoleV1 `json:"incident_roles"`
+	CustomFields []CustomFieldV2 `json:"custom_fields"`
 }
 
 // ListResponseBody6 defines model for ListResponseBody6.
 type ListResponseBody6 struct {
-	IncidentStatuses []IncidentStatusV1 `json:"incident_statuses"`
+	FollowUps []FollowUpV2 `json:"follow_ups"`
 }
 
 // ListResponseBody7 defines model for ListResponseBody7.
 type ListResponseBody7 struct {
-	IncidentTimestamps []IncidentTimestampV2 `json:"incident_timestamps"`
+	IncidentAttachments []IncidentAttachmentV1 `json:"incident_attachments"`
 }
 
 // ListResponseBody8 defines model for ListResponseBody8.
 type ListResponseBody8 struct {
-	IncidentTypes []IncidentTypeV1 `json:"incident_types"`
+	IncidentRoles []IncidentRoleV1 `json:"incident_roles"`
 }
 
 // ListResponseBody9 defines model for ListResponseBody9.
 type ListResponseBody9 struct {
-	IncidentUpdates []IncidentUpdateV2    `json:"incident_updates"`
-	PaginationMeta  *PaginationMetaResult `json:"pagination_meta,omitempty"`
+	IncidentRoles []IncidentRoleV2 `json:"incident_roles"`
 }
 
 // ListTypesResponseBody defines model for ListTypesResponseBody.
@@ -1515,6 +2076,21 @@ type PaginationMetaResultWithTotal struct {
 
 	// TotalRecordCount How many matching records were there in total, if known
 	TotalRecordCount *int64 `json:"total_record_count,omitempty"`
+}
+
+// RBACRoleV2 defines model for RBACRoleV2.
+type RBACRoleV2 struct {
+	// Description Description of the purpose for the RBAC role
+	Description *string `json:"description,omitempty"`
+
+	// Id Unique identifier of the RBAC role
+	Id string `json:"id"`
+
+	// Name Name of the RBAC role
+	Name string `json:"name"`
+
+	// Slug Unique human-readable slug for the RBAC role
+	Slug string `json:"slug"`
 }
 
 // RetrospectiveIncidentOptionsV2 defines model for RetrospectiveIncidentOptionsV2.
@@ -1557,47 +2133,72 @@ type ShowResponseBody struct {
 
 // ShowResponseBody10 defines model for ShowResponseBody10.
 type ShowResponseBody10 struct {
+	IncidentTimestamp IncidentTimestampV2 `json:"incident_timestamp"`
+}
+
+// ShowResponseBody11 defines model for ShowResponseBody11.
+type ShowResponseBody11 struct {
+	IncidentType IncidentTypeV1 `json:"incident_type"`
+}
+
+// ShowResponseBody12 defines model for ShowResponseBody12.
+type ShowResponseBody12 struct {
+	Incident IncidentV1 `json:"incident"`
+}
+
+// ShowResponseBody13 defines model for ShowResponseBody13.
+type ShowResponseBody13 struct {
+	Incident IncidentV2 `json:"incident"`
+}
+
+// ShowResponseBody14 defines model for ShowResponseBody14.
+type ShowResponseBody14 struct {
 	Severity SeverityV2 `json:"severity"`
+}
+
+// ShowResponseBody15 defines model for ShowResponseBody15.
+type ShowResponseBody15 struct {
+	User UserWithRolesV2 `json:"user"`
 }
 
 // ShowResponseBody2 defines model for ShowResponseBody2.
 type ShowResponseBody2 struct {
-	CustomFieldOption CustomFieldOptionV1 `json:"custom_field_option"`
+	Action ActionV2 `json:"action"`
 }
 
 // ShowResponseBody3 defines model for ShowResponseBody3.
 type ShowResponseBody3 struct {
-	CustomField CustomFieldV1 `json:"custom_field"`
+	CustomFieldOption CustomFieldOptionV1 `json:"custom_field_option"`
 }
 
 // ShowResponseBody4 defines model for ShowResponseBody4.
 type ShowResponseBody4 struct {
-	IncidentRole IncidentRoleV1 `json:"incident_role"`
+	CustomField CustomFieldV1 `json:"custom_field"`
 }
 
 // ShowResponseBody5 defines model for ShowResponseBody5.
 type ShowResponseBody5 struct {
-	IncidentStatus IncidentStatusV1 `json:"incident_status"`
+	CustomField CustomFieldV2 `json:"custom_field"`
 }
 
 // ShowResponseBody6 defines model for ShowResponseBody6.
 type ShowResponseBody6 struct {
-	IncidentTimestamp IncidentTimestampV2 `json:"incident_timestamp"`
+	FollowUp FollowUpV2 `json:"follow_up"`
 }
 
 // ShowResponseBody7 defines model for ShowResponseBody7.
 type ShowResponseBody7 struct {
-	IncidentType IncidentTypeV1 `json:"incident_type"`
+	IncidentRole IncidentRoleV1 `json:"incident_role"`
 }
 
 // ShowResponseBody8 defines model for ShowResponseBody8.
 type ShowResponseBody8 struct {
-	Incident IncidentV1 `json:"incident"`
+	IncidentRole IncidentRoleV2 `json:"incident_role"`
 }
 
 // ShowResponseBody9 defines model for ShowResponseBody9.
 type ShowResponseBody9 struct {
-	Incident IncidentV2 `json:"incident"`
+	IncidentStatus IncidentStatusV1 `json:"incident_status"`
 }
 
 // UpdateEntryRequestBody defines model for UpdateEntryRequestBody.
@@ -1606,7 +2207,7 @@ type UpdateEntryRequestBody struct {
 	Aliases *[]string `json:"aliases,omitempty"`
 
 	// AttributeValues Values of this entry
-	AttributeValues map[string]CatalogAttributeBindingPayloadV2 `json:"attribute_values"`
+	AttributeValues map[string]EngineParamBindingPayloadV2 `json:"attribute_values"`
 
 	// ExternalId An optional alternative ID for this entry, which is ensured to be unique for the type
 	ExternalId *string `json:"external_id,omitempty"`
@@ -1635,10 +2236,13 @@ type UpdateRequestBody2 struct {
 	// Name Human readable name for the custom field
 	Name string `json:"name"`
 
-	// Required When this custom field must be set during the incident lifecycle.
-	Required UpdateRequestBody2Required `json:"required"`
+	// Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
+	Required *UpdateRequestBody2Required `json:"required,omitempty"`
 
-	// ShowBeforeClosure Whether a custom field should be shown in the incident close modal. If this custom field is required before closure, but no value has been set for it, the field will be shown in the closure modal whatever the value of this setting.
+	// RequiredV2 When this custom field must be set during the incident lifecycle.
+	RequiredV2 *UpdateRequestBody2RequiredV2 `json:"required_v2,omitempty"`
+
+	// ShowBeforeClosure Whether a custom field should be shown in the incident resolve modal. If this custom field is required before resolution, but no value has been set for it, the field will be shown in the resolve modal whatever the value of this setting.
 	ShowBeforeClosure bool `json:"show_before_closure"`
 
 	// ShowBeforeCreation Whether a custom field should be shown in the incident creation modal. This must be true if the field is always required.
@@ -1651,11 +2255,23 @@ type UpdateRequestBody2 struct {
 	ShowInAnnouncementPost *bool `json:"show_in_announcement_post,omitempty"`
 }
 
-// UpdateRequestBody2Required When this custom field must be set during the incident lifecycle.
+// UpdateRequestBody2Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
 type UpdateRequestBody2Required string
+
+// UpdateRequestBody2RequiredV2 When this custom field must be set during the incident lifecycle.
+type UpdateRequestBody2RequiredV2 string
 
 // UpdateRequestBody3 defines model for UpdateRequestBody3.
 type UpdateRequestBody3 struct {
+	// Description Description of the custom field
+	Description string `json:"description"`
+
+	// Name Human readable name for the custom field
+	Name string `json:"name"`
+}
+
+// UpdateRequestBody4 defines model for UpdateRequestBody4.
+type UpdateRequestBody4 struct {
 	// Description Describes the purpose of the role
 	Description string `json:"description"`
 
@@ -1665,15 +2281,30 @@ type UpdateRequestBody3 struct {
 	// Name Human readable name of the incident role
 	Name string `json:"name"`
 
-	// Required Whether incident require this role to be set
-	Required bool `json:"required"`
+	// Required DEPRECATED: this will always be false.
+	Required *bool `json:"required,omitempty"`
 
 	// Shortform Short human readable name for Slack
 	Shortform string `json:"shortform"`
 }
 
-// UpdateRequestBody4 defines model for UpdateRequestBody4.
-type UpdateRequestBody4 struct {
+// UpdateRequestBody5 defines model for UpdateRequestBody5.
+type UpdateRequestBody5 struct {
+	// Description Describes the purpose of the role
+	Description string `json:"description"`
+
+	// Instructions Provided to whoever is nominated for the role
+	Instructions string `json:"instructions"`
+
+	// Name Human readable name of the incident role
+	Name string `json:"name"`
+
+	// Shortform Short human readable name for Slack
+	Shortform string `json:"shortform"`
+}
+
+// UpdateRequestBody6 defines model for UpdateRequestBody6.
+type UpdateRequestBody6 struct {
 	// Description Rich text description of the incident status
 	Description string `json:"description"`
 
@@ -1700,9 +2331,6 @@ type UpdateTypeRequestBody struct {
 
 	// Ranked If this type should be ranked
 	Ranked *bool `json:"ranked,omitempty"`
-
-	// SemanticType Semantic type of this resource
-	SemanticType *string `json:"semantic_type,omitempty"`
 
 	// SourceRepoUrl The url of the external repository where this type is managed
 	SourceRepoUrl *string `json:"source_repo_url,omitempty"`
@@ -1753,6 +2381,30 @@ type UserV1 struct {
 // UserV1Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
 type UserV1Role string
 
+// UserWithRolesV2 defines model for UserWithRolesV2.
+type UserWithRolesV2 struct {
+	BaseRole    RBACRoleV2   `json:"base_role"`
+	CustomRoles []RBACRoleV2 `json:"custom_roles"`
+
+	// Email Email address of the user.
+	Email *string `json:"email,omitempty"`
+
+	// Id Unique identifier of the user
+	Id string `json:"id"`
+
+	// Name Name of the user
+	Name string `json:"name"`
+
+	// Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
+	Role UserWithRolesV2Role `json:"role"`
+
+	// SlackUserId Slack ID of the user
+	SlackUserId *string `json:"slack_user_id,omitempty"`
+}
+
+// UserWithRolesV2Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
+type UserWithRolesV2Role string
+
 // ActionsV1ListParams defines parameters for ActionsV1List.
 type ActionsV1ListParams struct {
 	// IncidentId Find actions related to this incident
@@ -1798,7 +2450,7 @@ type IncidentAttachmentsV1ListParamsResourceType string
 // IncidentsV1ListParams defines parameters for IncidentsV1List.
 type IncidentsV1ListParams struct {
 	// PageSize Integer number of records to return
-	PageSize *int `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageSize *int64 `form:"page_size,omitempty" json:"page_size,omitempty"`
 
 	// After An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
 	After *string `form:"after,omitempty" json:"after,omitempty"`
@@ -1807,17 +2459,47 @@ type IncidentsV1ListParams struct {
 	Status *[]string `form:"status,omitempty" json:"status,omitempty"`
 }
 
+// ActionsV2ListParams defines parameters for ActionsV2List.
+type ActionsV2ListParams struct {
+	// IncidentId Find actions related to this incident
+	IncidentId *string `form:"incident_id,omitempty" json:"incident_id,omitempty"`
+
+	// IncidentMode Filter to actions from incidents of the given mode. If not set, only actions from `standard` and `retrospective` incidents are returned
+	IncidentMode *ActionsV2ListParamsIncidentMode `form:"incident_mode,omitempty" json:"incident_mode,omitempty"`
+}
+
+// ActionsV2ListParamsIncidentMode defines parameters for ActionsV2List.
+type ActionsV2ListParamsIncidentMode string
+
+// AlertEventsV2CreateHTTPParams defines parameters for AlertEventsV2CreateHTTP.
+type AlertEventsV2CreateHTTPParams struct {
+	// Token Token used to authenticate the request, generated when configuring the alert source. Will be consumed via a URL query string parameter
+	Token *string `form:"token,omitempty" json:"token,omitempty"`
+}
+
 // CatalogV2ListEntriesParams defines parameters for CatalogV2ListEntries.
 type CatalogV2ListEntriesParams struct {
 	// CatalogTypeId ID of this catalog type
 	CatalogTypeId string `form:"catalog_type_id" json:"catalog_type_id"`
 
 	// PageSize Integer number of records to return
-	PageSize *int `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageSize *int64 `form:"page_size,omitempty" json:"page_size,omitempty"`
 
 	// After An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
 	After *string `form:"after,omitempty" json:"after,omitempty"`
 }
+
+// FollowUpsV2ListParams defines parameters for FollowUpsV2List.
+type FollowUpsV2ListParams struct {
+	// IncidentId Find follow-ups related to this incident
+	IncidentId *string `form:"incident_id,omitempty" json:"incident_id,omitempty"`
+
+	// IncidentMode Filter to follow-ups from incidents of the given mode. If not set, only follow-ups from `standard` and `retrospective` incidents are returned
+	IncidentMode *FollowUpsV2ListParamsIncidentMode `form:"incident_mode,omitempty" json:"incident_mode,omitempty"`
+}
+
+// FollowUpsV2ListParamsIncidentMode defines parameters for FollowUpsV2List.
+type FollowUpsV2ListParamsIncidentMode string
 
 // IncidentUpdatesV2ListParams defines parameters for IncidentUpdatesV2List.
 type IncidentUpdatesV2ListParams struct {
@@ -1825,7 +2507,7 @@ type IncidentUpdatesV2ListParams struct {
 	IncidentId *string `form:"incident_id,omitempty" json:"incident_id,omitempty"`
 
 	// PageSize Integer number of records to return
-	PageSize *int `form:"page_size,omitempty" json:"page_size,omitempty"`
+	PageSize *int64 `form:"page_size,omitempty" json:"page_size,omitempty"`
 
 	// After An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
 	After *string `form:"after,omitempty" json:"after,omitempty"`
@@ -1842,10 +2524,13 @@ type IncidentsV2ListParams struct {
 	// Status Filter on incident status. The accepted operators are 'one_of', or 'not_in'.
 	Status *map[string][]string `form:"status,omitempty" json:"status,omitempty"`
 
+	// StatusCategory Filter on the category of the incidents status. The accepted operators are 'one_of', or 'not_in'. If this is not provided, this value defaults to `{"one_of": ["triage", "active", "post-incident", "closed"] }`, meaning that canceled, declined and merged incidents are not included.
+	StatusCategory *map[string][]string `form:"status_category,omitempty" json:"status_category,omitempty"`
+
 	// Severity Filter on incident severity. The accepted operators are 'one_of', 'not_in', 'gte', 'lte'.
 	Severity *map[string][]string `form:"severity,omitempty" json:"severity,omitempty"`
 
-	// IncidentType Filter on incident type. The accepted operator is 'one_of'.
+	// IncidentType Filter on incident type. The accepted operators are 'one_of, or 'not_in'.
 	IncidentType *map[string][]string `form:"incident_type,omitempty" json:"incident_type,omitempty"`
 
 	// IncidentRole Filter on an incident role. Role ID should be sent, followed by the operator and values. The accepted operators are 'one_of', 'is_blank'.
@@ -1853,6 +2538,18 @@ type IncidentsV2ListParams struct {
 
 	// CustomField Filter on an incident custom field. Custom field ID should be sent, followed by the operator and values. Accepted operator will depend on the custom field type.
 	CustomField *map[string]map[string][]string `form:"custom_field,omitempty" json:"custom_field,omitempty"`
+
+	// Mode Filter on incident mode. The accepted operator is 'one_of'.  If this is not provided, this value defaults to `{"one_of": ["standard", "retrospective"] }`, meaning that test and tutorial incidents are not included.
+	Mode *map[string][]string `form:"mode,omitempty" json:"mode,omitempty"`
+}
+
+// UsersV2ListParams defines parameters for UsersV2List.
+type UsersV2ListParams struct {
+	// PageSize Integer number of records to return
+	PageSize *int64 `form:"page_size,omitempty" json:"page_size,omitempty"`
+
+	// After An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
+	After *string `form:"after,omitempty" json:"after,omitempty"`
 }
 
 // CustomFieldOptionsV1CreateJSONRequestBody defines body for CustomFieldOptionsV1Create for application/json ContentType.
@@ -1868,28 +2565,37 @@ type CustomFieldsV1CreateJSONRequestBody = CreateRequestBody2
 type CustomFieldsV1UpdateJSONRequestBody = UpdateRequestBody2
 
 // IncidentAttachmentsV1CreateJSONRequestBody defines body for IncidentAttachmentsV1Create for application/json ContentType.
-type IncidentAttachmentsV1CreateJSONRequestBody = CreateRequestBody3
+type IncidentAttachmentsV1CreateJSONRequestBody = CreateRequestBody4
+
+// IncidentMembershipsV1CreateJSONRequestBody defines body for IncidentMembershipsV1Create for application/json ContentType.
+type IncidentMembershipsV1CreateJSONRequestBody = CreateRequestBody5
+
+// IncidentMembershipsV1RevokeJSONRequestBody defines body for IncidentMembershipsV1Revoke for application/json ContentType.
+type IncidentMembershipsV1RevokeJSONRequestBody = CreateRequestBody5
 
 // IncidentRolesV1CreateJSONRequestBody defines body for IncidentRolesV1Create for application/json ContentType.
-type IncidentRolesV1CreateJSONRequestBody = CreateRequestBody4
+type IncidentRolesV1CreateJSONRequestBody = CreateRequestBody6
 
 // IncidentRolesV1UpdateJSONRequestBody defines body for IncidentRolesV1Update for application/json ContentType.
-type IncidentRolesV1UpdateJSONRequestBody = UpdateRequestBody3
+type IncidentRolesV1UpdateJSONRequestBody = UpdateRequestBody4
 
 // IncidentStatusesV1CreateJSONRequestBody defines body for IncidentStatusesV1Create for application/json ContentType.
-type IncidentStatusesV1CreateJSONRequestBody = CreateRequestBody5
+type IncidentStatusesV1CreateJSONRequestBody = CreateRequestBody8
 
 // IncidentStatusesV1UpdateJSONRequestBody defines body for IncidentStatusesV1Update for application/json ContentType.
-type IncidentStatusesV1UpdateJSONRequestBody = UpdateRequestBody4
+type IncidentStatusesV1UpdateJSONRequestBody = UpdateRequestBody6
 
 // IncidentsV1CreateJSONRequestBody defines body for IncidentsV1Create for application/json ContentType.
-type IncidentsV1CreateJSONRequestBody = CreateRequestBody6
+type IncidentsV1CreateJSONRequestBody = CreateRequestBody9
 
 // SeveritiesV1CreateJSONRequestBody defines body for SeveritiesV1Create for application/json ContentType.
-type SeveritiesV1CreateJSONRequestBody = CreateRequestBody8
+type SeveritiesV1CreateJSONRequestBody = CreateRequestBody11
 
 // SeveritiesV1UpdateJSONRequestBody defines body for SeveritiesV1Update for application/json ContentType.
-type SeveritiesV1UpdateJSONRequestBody = CreateRequestBody8
+type SeveritiesV1UpdateJSONRequestBody = CreateRequestBody11
+
+// AlertEventsV2CreateHTTPJSONRequestBody defines body for AlertEventsV2CreateHTTP for application/json ContentType.
+type AlertEventsV2CreateHTTPJSONRequestBody = CreateHTTPRequestBody
 
 // CatalogV2CreateEntryJSONRequestBody defines body for CatalogV2CreateEntry for application/json ContentType.
 type CatalogV2CreateEntryJSONRequestBody = CreateEntryRequestBody
@@ -1906,8 +2612,20 @@ type CatalogV2UpdateTypeJSONRequestBody = UpdateTypeRequestBody
 // CatalogV2UpdateTypeSchemaJSONRequestBody defines body for CatalogV2UpdateTypeSchema for application/json ContentType.
 type CatalogV2UpdateTypeSchemaJSONRequestBody = UpdateTypeSchemaRequestBody
 
+// CustomFieldsV2CreateJSONRequestBody defines body for CustomFieldsV2Create for application/json ContentType.
+type CustomFieldsV2CreateJSONRequestBody = CreateRequestBody3
+
+// CustomFieldsV2UpdateJSONRequestBody defines body for CustomFieldsV2Update for application/json ContentType.
+type CustomFieldsV2UpdateJSONRequestBody = UpdateRequestBody3
+
+// IncidentRolesV2CreateJSONRequestBody defines body for IncidentRolesV2Create for application/json ContentType.
+type IncidentRolesV2CreateJSONRequestBody = CreateRequestBody7
+
+// IncidentRolesV2UpdateJSONRequestBody defines body for IncidentRolesV2Update for application/json ContentType.
+type IncidentRolesV2UpdateJSONRequestBody = UpdateRequestBody5
+
 // IncidentsV2CreateJSONRequestBody defines body for IncidentsV2Create for application/json ContentType.
-type IncidentsV2CreateJSONRequestBody = CreateRequestBody7
+type IncidentsV2CreateJSONRequestBody = CreateRequestBody10
 
 // IncidentsV2EditJSONRequestBody defines body for IncidentsV2Edit for application/json ContentType.
 type IncidentsV2EditJSONRequestBody = EditRequestBody
@@ -2043,6 +2761,16 @@ type ClientInterface interface {
 	// IncidentAttachmentsV1Delete request
 	IncidentAttachmentsV1Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// IncidentMembershipsV1Create request with any body
+	IncidentMembershipsV1CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IncidentMembershipsV1Create(ctx context.Context, body IncidentMembershipsV1CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentMembershipsV1Revoke request with any body
+	IncidentMembershipsV1RevokeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IncidentMembershipsV1Revoke(ctx context.Context, body IncidentMembershipsV1RevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// IncidentRolesV1List request
 	IncidentRolesV1List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2101,6 +2829,9 @@ type ClientInterface interface {
 	// UtilitiesV1OpenAPI request
 	UtilitiesV1OpenAPI(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UtilitiesV1OpenAPIV3 request
+	UtilitiesV1OpenAPIV3(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// SeveritiesV1List request
 	SeveritiesV1List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2119,6 +2850,17 @@ type ClientInterface interface {
 	SeveritiesV1UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	SeveritiesV1Update(ctx context.Context, id string, body SeveritiesV1UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ActionsV2List request
+	ActionsV2List(ctx context.Context, params *ActionsV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ActionsV2Show request
+	ActionsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AlertEventsV2CreateHTTP request with any body
+	AlertEventsV2CreateHTTPWithBody(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AlertEventsV2CreateHTTP(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogV2ListEntries request
 	CatalogV2ListEntries(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2166,6 +2908,50 @@ type ClientInterface interface {
 
 	CatalogV2UpdateTypeSchema(ctx context.Context, id string, body CatalogV2UpdateTypeSchemaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CustomFieldsV2List request
+	CustomFieldsV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CustomFieldsV2Create request with any body
+	CustomFieldsV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CustomFieldsV2Create(ctx context.Context, body CustomFieldsV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CustomFieldsV2Delete request
+	CustomFieldsV2Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CustomFieldsV2Show request
+	CustomFieldsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CustomFieldsV2Update request with any body
+	CustomFieldsV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CustomFieldsV2Update(ctx context.Context, id string, body CustomFieldsV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// FollowUpsV2List request
+	FollowUpsV2List(ctx context.Context, params *FollowUpsV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// FollowUpsV2Show request
+	FollowUpsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentRolesV2List request
+	IncidentRolesV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentRolesV2Create request with any body
+	IncidentRolesV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IncidentRolesV2Create(ctx context.Context, body IncidentRolesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentRolesV2Delete request
+	IncidentRolesV2Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentRolesV2Show request
+	IncidentRolesV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// IncidentRolesV2Update request with any body
+	IncidentRolesV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	IncidentRolesV2Update(ctx context.Context, id string, body IncidentRolesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// IncidentTimestampsV2List request
 	IncidentTimestampsV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2190,6 +2976,12 @@ type ClientInterface interface {
 	IncidentsV2EditWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	IncidentsV2Edit(ctx context.Context, id string, body IncidentsV2EditJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UsersV2List request
+	UsersV2List(ctx context.Context, params *UsersV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UsersV2Show request
+	UsersV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ActionsV1List(ctx context.Context, params *ActionsV1ListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -2434,6 +3226,54 @@ func (c *Client) IncidentAttachmentsV1Create(ctx context.Context, body IncidentA
 
 func (c *Client) IncidentAttachmentsV1Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewIncidentAttachmentsV1DeleteRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentMembershipsV1CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentMembershipsV1CreateRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentMembershipsV1Create(ctx context.Context, body IncidentMembershipsV1CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentMembershipsV1CreateRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentMembershipsV1RevokeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentMembershipsV1RevokeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentMembershipsV1Revoke(ctx context.Context, body IncidentMembershipsV1RevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentMembershipsV1RevokeRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2696,6 +3536,18 @@ func (c *Client) UtilitiesV1OpenAPI(ctx context.Context, reqEditors ...RequestEd
 	return c.Client.Do(req)
 }
 
+func (c *Client) UtilitiesV1OpenAPIV3(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUtilitiesV1OpenAPIV3Request(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) SeveritiesV1List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSeveritiesV1ListRequest(c.Server)
 	if err != nil {
@@ -2770,6 +3622,54 @@ func (c *Client) SeveritiesV1UpdateWithBody(ctx context.Context, id string, cont
 
 func (c *Client) SeveritiesV1Update(ctx context.Context, id string, body SeveritiesV1UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSeveritiesV1UpdateRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ActionsV2List(ctx context.Context, params *ActionsV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewActionsV2ListRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ActionsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewActionsV2ShowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertEventsV2CreateHTTPWithBody(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertEventsV2CreateHTTPRequestWithBody(c.Server, alertSourceConfigId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertEventsV2CreateHTTP(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertEventsV2CreateHTTPRequest(c.Server, alertSourceConfigId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2984,6 +3884,198 @@ func (c *Client) CatalogV2UpdateTypeSchema(ctx context.Context, id string, body 
 	return c.Client.Do(req)
 }
 
+func (c *Client) CustomFieldsV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2ListRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2CreateRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2Create(ctx context.Context, body CustomFieldsV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2CreateRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2DeleteRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2ShowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2UpdateRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CustomFieldsV2Update(ctx context.Context, id string, body CustomFieldsV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCustomFieldsV2UpdateRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FollowUpsV2List(ctx context.Context, params *FollowUpsV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFollowUpsV2ListRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) FollowUpsV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewFollowUpsV2ShowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2ListRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2CreateRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2Create(ctx context.Context, body IncidentRolesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2CreateRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2Delete(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2DeleteRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2ShowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2UpdateRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) IncidentRolesV2Update(ctx context.Context, id string, body IncidentRolesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewIncidentRolesV2UpdateRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) IncidentTimestampsV2List(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewIncidentTimestampsV2ListRequest(c.Server)
 	if err != nil {
@@ -3082,6 +4174,30 @@ func (c *Client) IncidentsV2EditWithBody(ctx context.Context, id string, content
 
 func (c *Client) IncidentsV2Edit(ctx context.Context, id string, body IncidentsV2EditJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewIncidentsV2EditRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UsersV2List(ctx context.Context, params *UsersV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUsersV2ListRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UsersV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUsersV2ShowRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3797,6 +4913,86 @@ func NewIncidentAttachmentsV1DeleteRequest(server string, id string) (*http.Requ
 	return req, nil
 }
 
+// NewIncidentMembershipsV1CreateRequest calls the generic IncidentMembershipsV1Create builder with application/json body
+func NewIncidentMembershipsV1CreateRequest(server string, body IncidentMembershipsV1CreateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIncidentMembershipsV1CreateRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewIncidentMembershipsV1CreateRequestWithBody generates requests for IncidentMembershipsV1Create with any type of body
+func NewIncidentMembershipsV1CreateRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/incident_memberships")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewIncidentMembershipsV1RevokeRequest calls the generic IncidentMembershipsV1Revoke builder with application/json body
+func NewIncidentMembershipsV1RevokeRequest(server string, body IncidentMembershipsV1RevokeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIncidentMembershipsV1RevokeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewIncidentMembershipsV1RevokeRequestWithBody generates requests for IncidentMembershipsV1Revoke with any type of body
+func NewIncidentMembershipsV1RevokeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/incident_memberships/actions/revoke")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewIncidentRolesV1ListRequest generates requests for IncidentRolesV1List
 func NewIncidentRolesV1ListRequest(server string) (*http.Request, error) {
 	var err error
@@ -4402,6 +5598,33 @@ func NewUtilitiesV1OpenAPIRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewUtilitiesV1OpenAPIV3Request generates requests for UtilitiesV1OpenAPIV3
+func NewUtilitiesV1OpenAPIV3Request(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/openapiV3.json")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewSeveritiesV1ListRequest generates requests for SeveritiesV1List
 func NewSeveritiesV1ListRequest(server string) (*http.Request, error) {
 	var err error
@@ -4575,6 +5798,170 @@ func NewSeveritiesV1UpdateRequestWithBody(server string, id string, contentType 
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewActionsV2ListRequest generates requests for ActionsV2List
+func NewActionsV2ListRequest(server string, params *ActionsV2ListParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/actions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.IncidentId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "incident_id", runtime.ParamLocationQuery, *params.IncidentId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.IncidentMode != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "incident_mode", runtime.ParamLocationQuery, *params.IncidentMode); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewActionsV2ShowRequest generates requests for ActionsV2Show
+func NewActionsV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/actions/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAlertEventsV2CreateHTTPRequest calls the generic AlertEventsV2CreateHTTP builder with application/json body
+func NewAlertEventsV2CreateHTTPRequest(server string, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAlertEventsV2CreateHTTPRequestWithBody(server, alertSourceConfigId, params, "application/json", bodyReader)
+}
+
+// NewAlertEventsV2CreateHTTPRequestWithBody generates requests for AlertEventsV2CreateHTTP with any type of body
+func NewAlertEventsV2CreateHTTPRequestWithBody(server string, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "alert_source_config_id", runtime.ParamLocationPath, alertSourceConfigId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/alert_events/http/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Token != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "token", runtime.ParamLocationQuery, *params.Token); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -4882,7 +6269,7 @@ func NewCatalogV2CreateTypeRequest(server string, body CatalogV2CreateTypeJSONRe
 // NewCatalogV2CreateTypeRequestWithBody generates requests for CatalogV2CreateType with any type of body
 func NewCatalogV2CreateTypeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
-	
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
@@ -5061,6 +6448,467 @@ func NewCatalogV2UpdateTypeSchemaRequestWithBody(server string, id string, conte
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCustomFieldsV2ListRequest generates requests for CustomFieldsV2List
+func NewCustomFieldsV2ListRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/custom_fields")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCustomFieldsV2CreateRequest calls the generic CustomFieldsV2Create builder with application/json body
+func NewCustomFieldsV2CreateRequest(server string, body CustomFieldsV2CreateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCustomFieldsV2CreateRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCustomFieldsV2CreateRequestWithBody generates requests for CustomFieldsV2Create with any type of body
+func NewCustomFieldsV2CreateRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/custom_fields")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCustomFieldsV2DeleteRequest generates requests for CustomFieldsV2Delete
+func NewCustomFieldsV2DeleteRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/custom_fields/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCustomFieldsV2ShowRequest generates requests for CustomFieldsV2Show
+func NewCustomFieldsV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/custom_fields/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCustomFieldsV2UpdateRequest calls the generic CustomFieldsV2Update builder with application/json body
+func NewCustomFieldsV2UpdateRequest(server string, id string, body CustomFieldsV2UpdateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCustomFieldsV2UpdateRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewCustomFieldsV2UpdateRequestWithBody generates requests for CustomFieldsV2Update with any type of body
+func NewCustomFieldsV2UpdateRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/custom_fields/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewFollowUpsV2ListRequest generates requests for FollowUpsV2List
+func NewFollowUpsV2ListRequest(server string, params *FollowUpsV2ListParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/follow_ups")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.IncidentId != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "incident_id", runtime.ParamLocationQuery, *params.IncidentId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.IncidentMode != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "incident_mode", runtime.ParamLocationQuery, *params.IncidentMode); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewFollowUpsV2ShowRequest generates requests for FollowUpsV2Show
+func NewFollowUpsV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/follow_ups/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewIncidentRolesV2ListRequest generates requests for IncidentRolesV2List
+func NewIncidentRolesV2ListRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/incident_roles")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewIncidentRolesV2CreateRequest calls the generic IncidentRolesV2Create builder with application/json body
+func NewIncidentRolesV2CreateRequest(server string, body IncidentRolesV2CreateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIncidentRolesV2CreateRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewIncidentRolesV2CreateRequestWithBody generates requests for IncidentRolesV2Create with any type of body
+func NewIncidentRolesV2CreateRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/incident_roles")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewIncidentRolesV2DeleteRequest generates requests for IncidentRolesV2Delete
+func NewIncidentRolesV2DeleteRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/incident_roles/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewIncidentRolesV2ShowRequest generates requests for IncidentRolesV2Show
+func NewIncidentRolesV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/incident_roles/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewIncidentRolesV2UpdateRequest calls the generic IncidentRolesV2Update builder with application/json body
+func NewIncidentRolesV2UpdateRequest(server string, id string, body IncidentRolesV2UpdateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewIncidentRolesV2UpdateRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewIncidentRolesV2UpdateRequestWithBody generates requests for IncidentRolesV2Update with any type of body
+func NewIncidentRolesV2UpdateRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/incident_roles/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -5279,6 +7127,22 @@ func NewIncidentsV2ListRequest(server string, params *IncidentsV2ListParams) (*h
 
 	}
 
+	if params.StatusCategory != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "status_category", runtime.ParamLocationQuery, *params.StatusCategory); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
 	if params.Severity != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "severity", runtime.ParamLocationQuery, *params.Severity); err != nil {
@@ -5330,6 +7194,22 @@ func NewIncidentsV2ListRequest(server string, params *IncidentsV2ListParams) (*h
 	if params.CustomField != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "custom_field", runtime.ParamLocationQuery, *params.CustomField); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Mode != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mode", runtime.ParamLocationQuery, *params.Mode); err != nil {
 			return nil, err
 		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 			return nil, err
@@ -5474,6 +7354,103 @@ func NewIncidentsV2EditRequestWithBody(server string, id string, contentType str
 	return req, nil
 }
 
+// NewUsersV2ListRequest generates requests for UsersV2List
+func NewUsersV2ListRequest(server string, params *UsersV2ListParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/users")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.PageSize != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page_size", runtime.ParamLocationQuery, *params.PageSize); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.After != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "after", runtime.ParamLocationQuery, *params.After); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUsersV2ShowRequest generates requests for UsersV2Show
+func NewUsersV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/users/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -5575,6 +7552,16 @@ type ClientWithResponsesInterface interface {
 	// IncidentAttachmentsV1Delete request
 	IncidentAttachmentsV1DeleteWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*IncidentAttachmentsV1DeleteResponse, error)
 
+	// IncidentMembershipsV1Create request with any body
+	IncidentMembershipsV1CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1CreateResponse, error)
+
+	IncidentMembershipsV1CreateWithResponse(ctx context.Context, body IncidentMembershipsV1CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1CreateResponse, error)
+
+	// IncidentMembershipsV1Revoke request with any body
+	IncidentMembershipsV1RevokeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1RevokeResponse, error)
+
+	IncidentMembershipsV1RevokeWithResponse(ctx context.Context, body IncidentMembershipsV1RevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1RevokeResponse, error)
+
 	// IncidentRolesV1List request
 	IncidentRolesV1ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentRolesV1ListResponse, error)
 
@@ -5633,6 +7620,9 @@ type ClientWithResponsesInterface interface {
 	// UtilitiesV1OpenAPI request
 	UtilitiesV1OpenAPIWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UtilitiesV1OpenAPIResponse, error)
 
+	// UtilitiesV1OpenAPIV3 request
+	UtilitiesV1OpenAPIV3WithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UtilitiesV1OpenAPIV3Response, error)
+
 	// SeveritiesV1List request
 	SeveritiesV1ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SeveritiesV1ListResponse, error)
 
@@ -5651,6 +7641,17 @@ type ClientWithResponsesInterface interface {
 	SeveritiesV1UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SeveritiesV1UpdateResponse, error)
 
 	SeveritiesV1UpdateWithResponse(ctx context.Context, id string, body SeveritiesV1UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*SeveritiesV1UpdateResponse, error)
+
+	// ActionsV2List request
+	ActionsV2ListWithResponse(ctx context.Context, params *ActionsV2ListParams, reqEditors ...RequestEditorFn) (*ActionsV2ListResponse, error)
+
+	// ActionsV2Show request
+	ActionsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ActionsV2ShowResponse, error)
+
+	// AlertEventsV2CreateHTTP request with any body
+	AlertEventsV2CreateHTTPWithBodyWithResponse(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertEventsV2CreateHTTPResponse, error)
+
+	AlertEventsV2CreateHTTPWithResponse(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertEventsV2CreateHTTPResponse, error)
 
 	// CatalogV2ListEntries request
 	CatalogV2ListEntriesWithResponse(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*CatalogV2ListEntriesResponse, error)
@@ -5698,6 +7699,50 @@ type ClientWithResponsesInterface interface {
 
 	CatalogV2UpdateTypeSchemaWithResponse(ctx context.Context, id string, body CatalogV2UpdateTypeSchemaJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogV2UpdateTypeSchemaResponse, error)
 
+	// CustomFieldsV2List request
+	CustomFieldsV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CustomFieldsV2ListResponse, error)
+
+	// CustomFieldsV2Create request with any body
+	CustomFieldsV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CustomFieldsV2CreateResponse, error)
+
+	CustomFieldsV2CreateWithResponse(ctx context.Context, body CustomFieldsV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*CustomFieldsV2CreateResponse, error)
+
+	// CustomFieldsV2Delete request
+	CustomFieldsV2DeleteWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CustomFieldsV2DeleteResponse, error)
+
+	// CustomFieldsV2Show request
+	CustomFieldsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CustomFieldsV2ShowResponse, error)
+
+	// CustomFieldsV2Update request with any body
+	CustomFieldsV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CustomFieldsV2UpdateResponse, error)
+
+	CustomFieldsV2UpdateWithResponse(ctx context.Context, id string, body CustomFieldsV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*CustomFieldsV2UpdateResponse, error)
+
+	// FollowUpsV2List request
+	FollowUpsV2ListWithResponse(ctx context.Context, params *FollowUpsV2ListParams, reqEditors ...RequestEditorFn) (*FollowUpsV2ListResponse, error)
+
+	// FollowUpsV2Show request
+	FollowUpsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*FollowUpsV2ShowResponse, error)
+
+	// IncidentRolesV2List request
+	IncidentRolesV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentRolesV2ListResponse, error)
+
+	// IncidentRolesV2Create request with any body
+	IncidentRolesV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentRolesV2CreateResponse, error)
+
+	IncidentRolesV2CreateWithResponse(ctx context.Context, body IncidentRolesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentRolesV2CreateResponse, error)
+
+	// IncidentRolesV2Delete request
+	IncidentRolesV2DeleteWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*IncidentRolesV2DeleteResponse, error)
+
+	// IncidentRolesV2Show request
+	IncidentRolesV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*IncidentRolesV2ShowResponse, error)
+
+	// IncidentRolesV2Update request with any body
+	IncidentRolesV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentRolesV2UpdateResponse, error)
+
+	IncidentRolesV2UpdateWithResponse(ctx context.Context, id string, body IncidentRolesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentRolesV2UpdateResponse, error)
+
 	// IncidentTimestampsV2List request
 	IncidentTimestampsV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentTimestampsV2ListResponse, error)
 
@@ -5722,6 +7767,12 @@ type ClientWithResponsesInterface interface {
 	IncidentsV2EditWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentsV2EditResponse, error)
 
 	IncidentsV2EditWithResponse(ctx context.Context, id string, body IncidentsV2EditJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentsV2EditResponse, error)
+
+	// UsersV2List request
+	UsersV2ListWithResponse(ctx context.Context, params *UsersV2ListParams, reqEditors ...RequestEditorFn) (*UsersV2ListResponse, error)
+
+	// UsersV2Show request
+	UsersV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*UsersV2ShowResponse, error)
 }
 
 type ActionsV1ListResponse struct {
@@ -5771,7 +7822,7 @@ func (r ActionsV1ShowResponse) StatusCode() int {
 type CustomFieldOptionsV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody2
+	JSON200      *ListResponseBody3
 }
 
 // Status returns HTTPResponse.Status
@@ -5793,7 +7844,7 @@ func (r CustomFieldOptionsV1ListResponse) StatusCode() int {
 type CustomFieldOptionsV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *ShowResponseBody2
+	JSON201      *ShowResponseBody3
 }
 
 // Status returns HTTPResponse.Status
@@ -5836,7 +7887,7 @@ func (r CustomFieldOptionsV1DeleteResponse) StatusCode() int {
 type CustomFieldOptionsV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody2
+	JSON200      *ShowResponseBody3
 }
 
 // Status returns HTTPResponse.Status
@@ -5858,7 +7909,7 @@ func (r CustomFieldOptionsV1ShowResponse) StatusCode() int {
 type CustomFieldOptionsV1UpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody2
+	JSON200      *ShowResponseBody3
 }
 
 // Status returns HTTPResponse.Status
@@ -5880,7 +7931,7 @@ func (r CustomFieldOptionsV1UpdateResponse) StatusCode() int {
 type CustomFieldsV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody3
+	JSON200      *ListResponseBody4
 }
 
 // Status returns HTTPResponse.Status
@@ -5902,7 +7953,7 @@ func (r CustomFieldsV1ListResponse) StatusCode() int {
 type CustomFieldsV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *ShowResponseBody3
+	JSON201      *ShowResponseBody4
 }
 
 // Status returns HTTPResponse.Status
@@ -5945,7 +7996,7 @@ func (r CustomFieldsV1DeleteResponse) StatusCode() int {
 type CustomFieldsV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody3
+	JSON200      *ShowResponseBody4
 }
 
 // Status returns HTTPResponse.Status
@@ -5967,7 +8018,7 @@ func (r CustomFieldsV1ShowResponse) StatusCode() int {
 type CustomFieldsV1UpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody3
+	JSON200      *ShowResponseBody4
 }
 
 // Status returns HTTPResponse.Status
@@ -6011,7 +8062,7 @@ func (r UtilitiesV1IdentityResponse) StatusCode() int {
 type IncidentAttachmentsV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody4
+	JSON200      *ListResponseBody7
 }
 
 // Status returns HTTPResponse.Status
@@ -6073,10 +8124,53 @@ func (r IncidentAttachmentsV1DeleteResponse) StatusCode() int {
 	return 0
 }
 
+type IncidentMembershipsV1CreateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *CreateResponseBody2
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentMembershipsV1CreateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentMembershipsV1CreateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentMembershipsV1RevokeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentMembershipsV1RevokeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentMembershipsV1RevokeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type IncidentRolesV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody5
+	JSON200      *ListResponseBody8
 }
 
 // Status returns HTTPResponse.Status
@@ -6098,7 +8192,7 @@ func (r IncidentRolesV1ListResponse) StatusCode() int {
 type IncidentRolesV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *ShowResponseBody4
+	JSON201      *ShowResponseBody7
 }
 
 // Status returns HTTPResponse.Status
@@ -6141,7 +8235,7 @@ func (r IncidentRolesV1DeleteResponse) StatusCode() int {
 type IncidentRolesV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody4
+	JSON200      *ShowResponseBody7
 }
 
 // Status returns HTTPResponse.Status
@@ -6163,7 +8257,7 @@ func (r IncidentRolesV1ShowResponse) StatusCode() int {
 type IncidentRolesV1UpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody4
+	JSON200      *ShowResponseBody7
 }
 
 // Status returns HTTPResponse.Status
@@ -6185,7 +8279,7 @@ func (r IncidentRolesV1UpdateResponse) StatusCode() int {
 type IncidentStatusesV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody6
+	JSON200      *ListResponseBody10
 }
 
 // Status returns HTTPResponse.Status
@@ -6207,7 +8301,7 @@ func (r IncidentStatusesV1ListResponse) StatusCode() int {
 type IncidentStatusesV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *ShowResponseBody5
+	JSON201      *ShowResponseBody9
 }
 
 // Status returns HTTPResponse.Status
@@ -6250,7 +8344,7 @@ func (r IncidentStatusesV1DeleteResponse) StatusCode() int {
 type IncidentStatusesV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody5
+	JSON200      *ShowResponseBody9
 }
 
 // Status returns HTTPResponse.Status
@@ -6272,7 +8366,7 @@ func (r IncidentStatusesV1ShowResponse) StatusCode() int {
 type IncidentStatusesV1UpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody5
+	JSON200      *ShowResponseBody9
 }
 
 // Status returns HTTPResponse.Status
@@ -6294,7 +8388,7 @@ func (r IncidentStatusesV1UpdateResponse) StatusCode() int {
 type IncidentTypesV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody8
+	JSON200      *ListResponseBody12
 }
 
 // Status returns HTTPResponse.Status
@@ -6316,7 +8410,7 @@ func (r IncidentTypesV1ListResponse) StatusCode() int {
 type IncidentTypesV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody7
+	JSON200      *ShowResponseBody11
 }
 
 // Status returns HTTPResponse.Status
@@ -6338,7 +8432,7 @@ func (r IncidentTypesV1ShowResponse) StatusCode() int {
 type IncidentsV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody10
+	JSON200      *ListResponseBody14
 }
 
 // Status returns HTTPResponse.Status
@@ -6360,7 +8454,7 @@ func (r IncidentsV1ListResponse) StatusCode() int {
 type IncidentsV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody8
+	JSON200      *ShowResponseBody12
 }
 
 // Status returns HTTPResponse.Status
@@ -6382,7 +8476,7 @@ func (r IncidentsV1CreateResponse) StatusCode() int {
 type IncidentsV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody8
+	JSON200      *ShowResponseBody12
 }
 
 // Status returns HTTPResponse.Status
@@ -6423,10 +8517,32 @@ func (r UtilitiesV1OpenAPIResponse) StatusCode() int {
 	return 0
 }
 
+type UtilitiesV1OpenAPIV3Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *openapi_types.File
+}
+
+// Status returns HTTPResponse.Status
+func (r UtilitiesV1OpenAPIV3Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UtilitiesV1OpenAPIV3Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type SeveritiesV1ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody12
+	JSON200      *ListResponseBody16
 }
 
 // Status returns HTTPResponse.Status
@@ -6448,7 +8564,7 @@ func (r SeveritiesV1ListResponse) StatusCode() int {
 type SeveritiesV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *ShowResponseBody10
+	JSON201      *ShowResponseBody14
 }
 
 // Status returns HTTPResponse.Status
@@ -6491,7 +8607,7 @@ func (r SeveritiesV1DeleteResponse) StatusCode() int {
 type SeveritiesV1ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody10
+	JSON200      *ShowResponseBody14
 }
 
 // Status returns HTTPResponse.Status
@@ -6513,7 +8629,7 @@ func (r SeveritiesV1ShowResponse) StatusCode() int {
 type SeveritiesV1UpdateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody10
+	JSON200      *ShowResponseBody14
 }
 
 // Status returns HTTPResponse.Status
@@ -6526,6 +8642,72 @@ func (r SeveritiesV1UpdateResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SeveritiesV1UpdateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ActionsV2ListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResponseBody2
+}
+
+// Status returns HTTPResponse.Status
+func (r ActionsV2ListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ActionsV2ListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ActionsV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody2
+}
+
+// Status returns HTTPResponse.Status
+func (r ActionsV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ActionsV2ShowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AlertEventsV2CreateHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON202      *CreateHTTPResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r AlertEventsV2CreateHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AlertEventsV2CreateHTTPResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6794,10 +8976,272 @@ func (r CatalogV2UpdateTypeSchemaResponse) StatusCode() int {
 	return 0
 }
 
+type CustomFieldsV2ListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResponseBody5
+}
+
+// Status returns HTTPResponse.Status
+func (r CustomFieldsV2ListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CustomFieldsV2ListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CustomFieldsV2CreateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ShowResponseBody5
+}
+
+// Status returns HTTPResponse.Status
+func (r CustomFieldsV2CreateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CustomFieldsV2CreateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CustomFieldsV2DeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CustomFieldsV2DeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CustomFieldsV2DeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CustomFieldsV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody5
+}
+
+// Status returns HTTPResponse.Status
+func (r CustomFieldsV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CustomFieldsV2ShowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CustomFieldsV2UpdateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody5
+}
+
+// Status returns HTTPResponse.Status
+func (r CustomFieldsV2UpdateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CustomFieldsV2UpdateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type FollowUpsV2ListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResponseBody6
+}
+
+// Status returns HTTPResponse.Status
+func (r FollowUpsV2ListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FollowUpsV2ListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type FollowUpsV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody6
+}
+
+// Status returns HTTPResponse.Status
+func (r FollowUpsV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r FollowUpsV2ShowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentRolesV2ListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResponseBody9
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentRolesV2ListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentRolesV2ListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentRolesV2CreateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *ShowResponseBody8
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentRolesV2CreateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentRolesV2CreateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentRolesV2DeleteResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentRolesV2DeleteResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentRolesV2DeleteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentRolesV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody8
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentRolesV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentRolesV2ShowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type IncidentRolesV2UpdateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody8
+}
+
+// Status returns HTTPResponse.Status
+func (r IncidentRolesV2UpdateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r IncidentRolesV2UpdateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type IncidentTimestampsV2ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody7
+	JSON200      *ListResponseBody11
 }
 
 // Status returns HTTPResponse.Status
@@ -6819,7 +9263,7 @@ func (r IncidentTimestampsV2ListResponse) StatusCode() int {
 type IncidentTimestampsV2ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody6
+	JSON200      *ShowResponseBody10
 }
 
 // Status returns HTTPResponse.Status
@@ -6841,7 +9285,7 @@ func (r IncidentTimestampsV2ShowResponse) StatusCode() int {
 type IncidentUpdatesV2ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody9
+	JSON200      *ListResponseBody13
 }
 
 // Status returns HTTPResponse.Status
@@ -6863,7 +9307,7 @@ func (r IncidentUpdatesV2ListResponse) StatusCode() int {
 type IncidentsV2ListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListResponseBody11
+	JSON200      *ListResponseBody15
 }
 
 // Status returns HTTPResponse.Status
@@ -6885,7 +9329,7 @@ func (r IncidentsV2ListResponse) StatusCode() int {
 type IncidentsV2CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody9
+	JSON200      *ShowResponseBody13
 }
 
 // Status returns HTTPResponse.Status
@@ -6907,7 +9351,7 @@ func (r IncidentsV2CreateResponse) StatusCode() int {
 type IncidentsV2ShowResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody9
+	JSON200      *ShowResponseBody13
 }
 
 // Status returns HTTPResponse.Status
@@ -6929,7 +9373,7 @@ func (r IncidentsV2ShowResponse) StatusCode() int {
 type IncidentsV2EditResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ShowResponseBody9
+	JSON200      *ShowResponseBody13
 }
 
 // Status returns HTTPResponse.Status
@@ -6942,6 +9386,50 @@ func (r IncidentsV2EditResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r IncidentsV2EditResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UsersV2ListResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ListResponseBody17
+}
+
+// Status returns HTTPResponse.Status
+func (r UsersV2ListResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UsersV2ListResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UsersV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ShowResponseBody15
+}
+
+// Status returns HTTPResponse.Status
+func (r UsersV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UsersV2ShowResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7132,6 +9620,40 @@ func (c *ClientWithResponses) IncidentAttachmentsV1DeleteWithResponse(ctx contex
 	return ParseIncidentAttachmentsV1DeleteResponse(rsp)
 }
 
+// IncidentMembershipsV1CreateWithBodyWithResponse request with arbitrary body returning *IncidentMembershipsV1CreateResponse
+func (c *ClientWithResponses) IncidentMembershipsV1CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1CreateResponse, error) {
+	rsp, err := c.IncidentMembershipsV1CreateWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentMembershipsV1CreateResponse(rsp)
+}
+
+func (c *ClientWithResponses) IncidentMembershipsV1CreateWithResponse(ctx context.Context, body IncidentMembershipsV1CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1CreateResponse, error) {
+	rsp, err := c.IncidentMembershipsV1Create(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentMembershipsV1CreateResponse(rsp)
+}
+
+// IncidentMembershipsV1RevokeWithBodyWithResponse request with arbitrary body returning *IncidentMembershipsV1RevokeResponse
+func (c *ClientWithResponses) IncidentMembershipsV1RevokeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1RevokeResponse, error) {
+	rsp, err := c.IncidentMembershipsV1RevokeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentMembershipsV1RevokeResponse(rsp)
+}
+
+func (c *ClientWithResponses) IncidentMembershipsV1RevokeWithResponse(ctx context.Context, body IncidentMembershipsV1RevokeJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentMembershipsV1RevokeResponse, error) {
+	rsp, err := c.IncidentMembershipsV1Revoke(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentMembershipsV1RevokeResponse(rsp)
+}
+
 // IncidentRolesV1ListWithResponse request returning *IncidentRolesV1ListResponse
 func (c *ClientWithResponses) IncidentRolesV1ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentRolesV1ListResponse, error) {
 	rsp, err := c.IncidentRolesV1List(ctx, reqEditors...)
@@ -7316,6 +9838,15 @@ func (c *ClientWithResponses) UtilitiesV1OpenAPIWithResponse(ctx context.Context
 	return ParseUtilitiesV1OpenAPIResponse(rsp)
 }
 
+// UtilitiesV1OpenAPIV3WithResponse request returning *UtilitiesV1OpenAPIV3Response
+func (c *ClientWithResponses) UtilitiesV1OpenAPIV3WithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*UtilitiesV1OpenAPIV3Response, error) {
+	rsp, err := c.UtilitiesV1OpenAPIV3(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUtilitiesV1OpenAPIV3Response(rsp)
+}
+
 // SeveritiesV1ListWithResponse request returning *SeveritiesV1ListResponse
 func (c *ClientWithResponses) SeveritiesV1ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SeveritiesV1ListResponse, error) {
 	rsp, err := c.SeveritiesV1List(ctx, reqEditors...)
@@ -7375,6 +9906,41 @@ func (c *ClientWithResponses) SeveritiesV1UpdateWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseSeveritiesV1UpdateResponse(rsp)
+}
+
+// ActionsV2ListWithResponse request returning *ActionsV2ListResponse
+func (c *ClientWithResponses) ActionsV2ListWithResponse(ctx context.Context, params *ActionsV2ListParams, reqEditors ...RequestEditorFn) (*ActionsV2ListResponse, error) {
+	rsp, err := c.ActionsV2List(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseActionsV2ListResponse(rsp)
+}
+
+// ActionsV2ShowWithResponse request returning *ActionsV2ShowResponse
+func (c *ClientWithResponses) ActionsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*ActionsV2ShowResponse, error) {
+	rsp, err := c.ActionsV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseActionsV2ShowResponse(rsp)
+}
+
+// AlertEventsV2CreateHTTPWithBodyWithResponse request with arbitrary body returning *AlertEventsV2CreateHTTPResponse
+func (c *ClientWithResponses) AlertEventsV2CreateHTTPWithBodyWithResponse(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertEventsV2CreateHTTPResponse, error) {
+	rsp, err := c.AlertEventsV2CreateHTTPWithBody(ctx, alertSourceConfigId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertEventsV2CreateHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) AlertEventsV2CreateHTTPWithResponse(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertEventsV2CreateHTTPResponse, error) {
+	rsp, err := c.AlertEventsV2CreateHTTP(ctx, alertSourceConfigId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertEventsV2CreateHTTPResponse(rsp)
 }
 
 // CatalogV2ListEntriesWithResponse request returning *CatalogV2ListEntriesResponse
@@ -7525,6 +10091,146 @@ func (c *ClientWithResponses) CatalogV2UpdateTypeSchemaWithResponse(ctx context.
 	return ParseCatalogV2UpdateTypeSchemaResponse(rsp)
 }
 
+// CustomFieldsV2ListWithResponse request returning *CustomFieldsV2ListResponse
+func (c *ClientWithResponses) CustomFieldsV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CustomFieldsV2ListResponse, error) {
+	rsp, err := c.CustomFieldsV2List(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2ListResponse(rsp)
+}
+
+// CustomFieldsV2CreateWithBodyWithResponse request with arbitrary body returning *CustomFieldsV2CreateResponse
+func (c *ClientWithResponses) CustomFieldsV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CustomFieldsV2CreateResponse, error) {
+	rsp, err := c.CustomFieldsV2CreateWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2CreateResponse(rsp)
+}
+
+func (c *ClientWithResponses) CustomFieldsV2CreateWithResponse(ctx context.Context, body CustomFieldsV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*CustomFieldsV2CreateResponse, error) {
+	rsp, err := c.CustomFieldsV2Create(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2CreateResponse(rsp)
+}
+
+// CustomFieldsV2DeleteWithResponse request returning *CustomFieldsV2DeleteResponse
+func (c *ClientWithResponses) CustomFieldsV2DeleteWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CustomFieldsV2DeleteResponse, error) {
+	rsp, err := c.CustomFieldsV2Delete(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2DeleteResponse(rsp)
+}
+
+// CustomFieldsV2ShowWithResponse request returning *CustomFieldsV2ShowResponse
+func (c *ClientWithResponses) CustomFieldsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*CustomFieldsV2ShowResponse, error) {
+	rsp, err := c.CustomFieldsV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2ShowResponse(rsp)
+}
+
+// CustomFieldsV2UpdateWithBodyWithResponse request with arbitrary body returning *CustomFieldsV2UpdateResponse
+func (c *ClientWithResponses) CustomFieldsV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CustomFieldsV2UpdateResponse, error) {
+	rsp, err := c.CustomFieldsV2UpdateWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2UpdateResponse(rsp)
+}
+
+func (c *ClientWithResponses) CustomFieldsV2UpdateWithResponse(ctx context.Context, id string, body CustomFieldsV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*CustomFieldsV2UpdateResponse, error) {
+	rsp, err := c.CustomFieldsV2Update(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCustomFieldsV2UpdateResponse(rsp)
+}
+
+// FollowUpsV2ListWithResponse request returning *FollowUpsV2ListResponse
+func (c *ClientWithResponses) FollowUpsV2ListWithResponse(ctx context.Context, params *FollowUpsV2ListParams, reqEditors ...RequestEditorFn) (*FollowUpsV2ListResponse, error) {
+	rsp, err := c.FollowUpsV2List(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFollowUpsV2ListResponse(rsp)
+}
+
+// FollowUpsV2ShowWithResponse request returning *FollowUpsV2ShowResponse
+func (c *ClientWithResponses) FollowUpsV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*FollowUpsV2ShowResponse, error) {
+	rsp, err := c.FollowUpsV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseFollowUpsV2ShowResponse(rsp)
+}
+
+// IncidentRolesV2ListWithResponse request returning *IncidentRolesV2ListResponse
+func (c *ClientWithResponses) IncidentRolesV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentRolesV2ListResponse, error) {
+	rsp, err := c.IncidentRolesV2List(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2ListResponse(rsp)
+}
+
+// IncidentRolesV2CreateWithBodyWithResponse request with arbitrary body returning *IncidentRolesV2CreateResponse
+func (c *ClientWithResponses) IncidentRolesV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentRolesV2CreateResponse, error) {
+	rsp, err := c.IncidentRolesV2CreateWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2CreateResponse(rsp)
+}
+
+func (c *ClientWithResponses) IncidentRolesV2CreateWithResponse(ctx context.Context, body IncidentRolesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentRolesV2CreateResponse, error) {
+	rsp, err := c.IncidentRolesV2Create(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2CreateResponse(rsp)
+}
+
+// IncidentRolesV2DeleteWithResponse request returning *IncidentRolesV2DeleteResponse
+func (c *ClientWithResponses) IncidentRolesV2DeleteWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*IncidentRolesV2DeleteResponse, error) {
+	rsp, err := c.IncidentRolesV2Delete(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2DeleteResponse(rsp)
+}
+
+// IncidentRolesV2ShowWithResponse request returning *IncidentRolesV2ShowResponse
+func (c *ClientWithResponses) IncidentRolesV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*IncidentRolesV2ShowResponse, error) {
+	rsp, err := c.IncidentRolesV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2ShowResponse(rsp)
+}
+
+// IncidentRolesV2UpdateWithBodyWithResponse request with arbitrary body returning *IncidentRolesV2UpdateResponse
+func (c *ClientWithResponses) IncidentRolesV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*IncidentRolesV2UpdateResponse, error) {
+	rsp, err := c.IncidentRolesV2UpdateWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2UpdateResponse(rsp)
+}
+
+func (c *ClientWithResponses) IncidentRolesV2UpdateWithResponse(ctx context.Context, id string, body IncidentRolesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentRolesV2UpdateResponse, error) {
+	rsp, err := c.IncidentRolesV2Update(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseIncidentRolesV2UpdateResponse(rsp)
+}
+
 // IncidentTimestampsV2ListWithResponse request returning *IncidentTimestampsV2ListResponse
 func (c *ClientWithResponses) IncidentTimestampsV2ListWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*IncidentTimestampsV2ListResponse, error) {
 	rsp, err := c.IncidentTimestampsV2List(ctx, reqEditors...)
@@ -7604,6 +10310,24 @@ func (c *ClientWithResponses) IncidentsV2EditWithResponse(ctx context.Context, i
 	return ParseIncidentsV2EditResponse(rsp)
 }
 
+// UsersV2ListWithResponse request returning *UsersV2ListResponse
+func (c *ClientWithResponses) UsersV2ListWithResponse(ctx context.Context, params *UsersV2ListParams, reqEditors ...RequestEditorFn) (*UsersV2ListResponse, error) {
+	rsp, err := c.UsersV2List(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUsersV2ListResponse(rsp)
+}
+
+// UsersV2ShowWithResponse request returning *UsersV2ShowResponse
+func (c *ClientWithResponses) UsersV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*UsersV2ShowResponse, error) {
+	rsp, err := c.UsersV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUsersV2ShowResponse(rsp)
+}
+
 // ParseActionsV1ListResponse parses an HTTP response from a ActionsV1ListWithResponse call
 func ParseActionsV1ListResponse(rsp *http.Response) (*ActionsV1ListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -7671,7 +10395,7 @@ func ParseCustomFieldOptionsV1ListResponse(rsp *http.Response) (*CustomFieldOpti
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody2
+		var dest ListResponseBody3
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7697,7 +10421,7 @@ func ParseCustomFieldOptionsV1CreateResponse(rsp *http.Response) (*CustomFieldOp
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest ShowResponseBody2
+		var dest ShowResponseBody3
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7739,7 +10463,7 @@ func ParseCustomFieldOptionsV1ShowResponse(rsp *http.Response) (*CustomFieldOpti
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody2
+		var dest ShowResponseBody3
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7765,7 +10489,7 @@ func ParseCustomFieldOptionsV1UpdateResponse(rsp *http.Response) (*CustomFieldOp
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody2
+		var dest ShowResponseBody3
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7791,7 +10515,7 @@ func ParseCustomFieldsV1ListResponse(rsp *http.Response) (*CustomFieldsV1ListRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody3
+		var dest ListResponseBody4
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7817,7 +10541,7 @@ func ParseCustomFieldsV1CreateResponse(rsp *http.Response) (*CustomFieldsV1Creat
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest ShowResponseBody3
+		var dest ShowResponseBody4
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7859,7 +10583,7 @@ func ParseCustomFieldsV1ShowResponse(rsp *http.Response) (*CustomFieldsV1ShowRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody3
+		var dest ShowResponseBody4
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7885,7 +10609,7 @@ func ParseCustomFieldsV1UpdateResponse(rsp *http.Response) (*CustomFieldsV1Updat
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody3
+		var dest ShowResponseBody4
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7937,7 +10661,7 @@ func ParseIncidentAttachmentsV1ListResponse(rsp *http.Response) (*IncidentAttach
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody4
+		var dest ListResponseBody7
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -7990,6 +10714,48 @@ func ParseIncidentAttachmentsV1DeleteResponse(rsp *http.Response) (*IncidentAtta
 	return response, nil
 }
 
+// ParseIncidentMembershipsV1CreateResponse parses an HTTP response from a IncidentMembershipsV1CreateWithResponse call
+func ParseIncidentMembershipsV1CreateResponse(rsp *http.Response) (*IncidentMembershipsV1CreateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentMembershipsV1CreateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CreateResponseBody2
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncidentMembershipsV1RevokeResponse parses an HTTP response from a IncidentMembershipsV1RevokeWithResponse call
+func ParseIncidentMembershipsV1RevokeResponse(rsp *http.Response) (*IncidentMembershipsV1RevokeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentMembershipsV1RevokeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ParseIncidentRolesV1ListResponse parses an HTTP response from a IncidentRolesV1ListWithResponse call
 func ParseIncidentRolesV1ListResponse(rsp *http.Response) (*IncidentRolesV1ListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8005,7 +10771,7 @@ func ParseIncidentRolesV1ListResponse(rsp *http.Response) (*IncidentRolesV1ListR
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody5
+		var dest ListResponseBody8
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8031,7 +10797,7 @@ func ParseIncidentRolesV1CreateResponse(rsp *http.Response) (*IncidentRolesV1Cre
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest ShowResponseBody4
+		var dest ShowResponseBody7
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8073,7 +10839,7 @@ func ParseIncidentRolesV1ShowResponse(rsp *http.Response) (*IncidentRolesV1ShowR
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody4
+		var dest ShowResponseBody7
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8099,7 +10865,7 @@ func ParseIncidentRolesV1UpdateResponse(rsp *http.Response) (*IncidentRolesV1Upd
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody4
+		var dest ShowResponseBody7
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8125,7 +10891,7 @@ func ParseIncidentStatusesV1ListResponse(rsp *http.Response) (*IncidentStatusesV
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody6
+		var dest ListResponseBody10
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8151,7 +10917,7 @@ func ParseIncidentStatusesV1CreateResponse(rsp *http.Response) (*IncidentStatuse
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest ShowResponseBody5
+		var dest ShowResponseBody9
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8193,7 +10959,7 @@ func ParseIncidentStatusesV1ShowResponse(rsp *http.Response) (*IncidentStatusesV
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody5
+		var dest ShowResponseBody9
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8219,7 +10985,7 @@ func ParseIncidentStatusesV1UpdateResponse(rsp *http.Response) (*IncidentStatuse
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody5
+		var dest ShowResponseBody9
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8245,7 +11011,7 @@ func ParseIncidentTypesV1ListResponse(rsp *http.Response) (*IncidentTypesV1ListR
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody8
+		var dest ListResponseBody12
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8271,7 +11037,7 @@ func ParseIncidentTypesV1ShowResponse(rsp *http.Response) (*IncidentTypesV1ShowR
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody7
+		var dest ShowResponseBody11
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8297,7 +11063,7 @@ func ParseIncidentsV1ListResponse(rsp *http.Response) (*IncidentsV1ListResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody10
+		var dest ListResponseBody14
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8323,7 +11089,7 @@ func ParseIncidentsV1CreateResponse(rsp *http.Response) (*IncidentsV1CreateRespo
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody8
+		var dest ShowResponseBody12
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8349,7 +11115,7 @@ func ParseIncidentsV1ShowResponse(rsp *http.Response) (*IncidentsV1ShowResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody8
+		var dest ShowResponseBody12
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8386,6 +11152,32 @@ func ParseUtilitiesV1OpenAPIResponse(rsp *http.Response) (*UtilitiesV1OpenAPIRes
 	return response, nil
 }
 
+// ParseUtilitiesV1OpenAPIV3Response parses an HTTP response from a UtilitiesV1OpenAPIV3WithResponse call
+func ParseUtilitiesV1OpenAPIV3Response(rsp *http.Response) (*UtilitiesV1OpenAPIV3Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UtilitiesV1OpenAPIV3Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest openapi_types.File
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseSeveritiesV1ListResponse parses an HTTP response from a SeveritiesV1ListWithResponse call
 func ParseSeveritiesV1ListResponse(rsp *http.Response) (*SeveritiesV1ListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8401,7 +11193,7 @@ func ParseSeveritiesV1ListResponse(rsp *http.Response) (*SeveritiesV1ListRespons
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody12
+		var dest ListResponseBody16
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8427,7 +11219,7 @@ func ParseSeveritiesV1CreateResponse(rsp *http.Response) (*SeveritiesV1CreateRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest ShowResponseBody10
+		var dest ShowResponseBody14
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8469,7 +11261,7 @@ func ParseSeveritiesV1ShowResponse(rsp *http.Response) (*SeveritiesV1ShowRespons
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody10
+		var dest ShowResponseBody14
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8495,11 +11287,89 @@ func ParseSeveritiesV1UpdateResponse(rsp *http.Response) (*SeveritiesV1UpdateRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody10
+		var dest ShowResponseBody14
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseActionsV2ListResponse parses an HTTP response from a ActionsV2ListWithResponse call
+func ParseActionsV2ListResponse(rsp *http.Response) (*ActionsV2ListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ActionsV2ListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResponseBody2
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseActionsV2ShowResponse parses an HTTP response from a ActionsV2ShowWithResponse call
+func ParseActionsV2ShowResponse(rsp *http.Response) (*ActionsV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ActionsV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody2
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAlertEventsV2CreateHTTPResponse parses an HTTP response from a AlertEventsV2CreateHTTPWithResponse call
+func ParseAlertEventsV2CreateHTTPResponse(rsp *http.Response) (*AlertEventsV2CreateHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AlertEventsV2CreateHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest CreateHTTPResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
 
 	}
 
@@ -8798,6 +11668,298 @@ func ParseCatalogV2UpdateTypeSchemaResponse(rsp *http.Response) (*CatalogV2Updat
 	return response, nil
 }
 
+// ParseCustomFieldsV2ListResponse parses an HTTP response from a CustomFieldsV2ListWithResponse call
+func ParseCustomFieldsV2ListResponse(rsp *http.Response) (*CustomFieldsV2ListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CustomFieldsV2ListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResponseBody5
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCustomFieldsV2CreateResponse parses an HTTP response from a CustomFieldsV2CreateWithResponse call
+func ParseCustomFieldsV2CreateResponse(rsp *http.Response) (*CustomFieldsV2CreateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CustomFieldsV2CreateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ShowResponseBody5
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCustomFieldsV2DeleteResponse parses an HTTP response from a CustomFieldsV2DeleteWithResponse call
+func ParseCustomFieldsV2DeleteResponse(rsp *http.Response) (*CustomFieldsV2DeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CustomFieldsV2DeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseCustomFieldsV2ShowResponse parses an HTTP response from a CustomFieldsV2ShowWithResponse call
+func ParseCustomFieldsV2ShowResponse(rsp *http.Response) (*CustomFieldsV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CustomFieldsV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody5
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCustomFieldsV2UpdateResponse parses an HTTP response from a CustomFieldsV2UpdateWithResponse call
+func ParseCustomFieldsV2UpdateResponse(rsp *http.Response) (*CustomFieldsV2UpdateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CustomFieldsV2UpdateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody5
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseFollowUpsV2ListResponse parses an HTTP response from a FollowUpsV2ListWithResponse call
+func ParseFollowUpsV2ListResponse(rsp *http.Response) (*FollowUpsV2ListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FollowUpsV2ListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResponseBody6
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseFollowUpsV2ShowResponse parses an HTTP response from a FollowUpsV2ShowWithResponse call
+func ParseFollowUpsV2ShowResponse(rsp *http.Response) (*FollowUpsV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FollowUpsV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody6
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncidentRolesV2ListResponse parses an HTTP response from a IncidentRolesV2ListWithResponse call
+func ParseIncidentRolesV2ListResponse(rsp *http.Response) (*IncidentRolesV2ListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentRolesV2ListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResponseBody9
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncidentRolesV2CreateResponse parses an HTTP response from a IncidentRolesV2CreateWithResponse call
+func ParseIncidentRolesV2CreateResponse(rsp *http.Response) (*IncidentRolesV2CreateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentRolesV2CreateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ShowResponseBody8
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncidentRolesV2DeleteResponse parses an HTTP response from a IncidentRolesV2DeleteWithResponse call
+func ParseIncidentRolesV2DeleteResponse(rsp *http.Response) (*IncidentRolesV2DeleteResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentRolesV2DeleteResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseIncidentRolesV2ShowResponse parses an HTTP response from a IncidentRolesV2ShowWithResponse call
+func ParseIncidentRolesV2ShowResponse(rsp *http.Response) (*IncidentRolesV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentRolesV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody8
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseIncidentRolesV2UpdateResponse parses an HTTP response from a IncidentRolesV2UpdateWithResponse call
+func ParseIncidentRolesV2UpdateResponse(rsp *http.Response) (*IncidentRolesV2UpdateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &IncidentRolesV2UpdateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody8
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseIncidentTimestampsV2ListResponse parses an HTTP response from a IncidentTimestampsV2ListWithResponse call
 func ParseIncidentTimestampsV2ListResponse(rsp *http.Response) (*IncidentTimestampsV2ListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8813,7 +11975,7 @@ func ParseIncidentTimestampsV2ListResponse(rsp *http.Response) (*IncidentTimesta
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody7
+		var dest ListResponseBody11
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8839,7 +12001,7 @@ func ParseIncidentTimestampsV2ShowResponse(rsp *http.Response) (*IncidentTimesta
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody6
+		var dest ShowResponseBody10
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8865,7 +12027,7 @@ func ParseIncidentUpdatesV2ListResponse(rsp *http.Response) (*IncidentUpdatesV2L
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody9
+		var dest ListResponseBody13
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8891,7 +12053,7 @@ func ParseIncidentsV2ListResponse(rsp *http.Response) (*IncidentsV2ListResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListResponseBody11
+		var dest ListResponseBody15
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8917,7 +12079,7 @@ func ParseIncidentsV2CreateResponse(rsp *http.Response) (*IncidentsV2CreateRespo
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody9
+		var dest ShowResponseBody13
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8943,7 +12105,7 @@ func ParseIncidentsV2ShowResponse(rsp *http.Response) (*IncidentsV2ShowResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody9
+		var dest ShowResponseBody13
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8969,7 +12131,59 @@ func ParseIncidentsV2EditResponse(rsp *http.Response) (*IncidentsV2EditResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ShowResponseBody9
+		var dest ShowResponseBody13
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUsersV2ListResponse parses an HTTP response from a UsersV2ListWithResponse call
+func ParseUsersV2ListResponse(rsp *http.Response) (*UsersV2ListResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UsersV2ListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListResponseBody17
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUsersV2ShowResponse parses an HTTP response from a UsersV2ShowWithResponse call
+func ParseUsersV2ShowResponse(rsp *http.Response) (*UsersV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UsersV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShowResponseBody15
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
