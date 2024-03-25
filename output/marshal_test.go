@@ -50,7 +50,7 @@ var _ = Describe("Marshalling data", func() {
 
 				entries := []source.Entry{sourceEntry}
 
-				res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
 
 				expectedAliasResult := []string{"aliasInAnArray", "anotherAliasInAnArray"}
 				Expect(err).NotTo(HaveOccurred())
@@ -68,7 +68,7 @@ var _ = Describe("Marshalling data", func() {
 					"aliases":     "singleAlias",
 				}
 				entries := []source.Entry{sourceEntry}
-				res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
 				expectedAliasResult := []string{"singleAlias"}
 				Expect(err).NotTo(HaveOccurred())
 				Expect(res[0].Aliases).To(Equal(expectedAliasResult))
@@ -99,7 +99,7 @@ var _ = Describe("Marshalling data", func() {
 					"description": "A super important component. A structurally integral component tbh.",
 				}
 				entries := []source.Entry{sourceEntry}
-				res, err := MarshalEntries(ctx, catalogTypeOutput, entries, logger)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(res[0].AttributeValues).To(BeEmpty())
 			})

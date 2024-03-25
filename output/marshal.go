@@ -87,7 +87,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 //
 // The majority of the work comes from compiling and evaluating the JS expressions that
 // marshal the catalog entries from source.
-func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry, logger kitlog.Logger) ([]*CatalogEntryModel, error) {
+func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry) ([]*CatalogEntryModel, error) {
 	nameSource := output.Source.Name
 	externalIDSource := output.Source.ExternalID
 	aliasesSource := output.Source.Aliases
@@ -108,12 +108,12 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 
 	catalogEntryModels := []*CatalogEntryModel{}
 	for _, entry := range entries {
-		name, err := expr.EvaluateSingleValue[string](ctx, nameSource, entry, logger)
+		name, err := expr.EvaluateSingleValue[string](ctx, logger, nameSource, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry name")
 		}
 
-		externalID, err := expr.EvaluateSingleValue[string](ctx, externalIDSource, entry, logger)
+		externalID, err := expr.EvaluateSingleValue[string](ctx, logger, externalIDSource, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
@@ -121,7 +121,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		var rank *int
 		if rankSource := output.Source.Rank; rankSource.Valid && rankSource.String != "" {
 			var err error
-			rank, err = expr.EvaluateSingleValue[int](ctx, rankSource.String, entry, logger)
+			rank, err = expr.EvaluateSingleValue[int](ctx, logger, rankSource.String, entry)
 			if err != nil {
 				return nil, errors.Wrap(err, "evaluating entry rank")
 			}
@@ -132,12 +132,12 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 		aliases := []string{}
 		for idx, aliasSource := range aliasesSource {
 			toAdd := []string{}
-			alias, err := expr.EvaluateSingleValue[string](ctx, aliasSource, entry, logger)
+			alias, err := expr.EvaluateSingleValue[string](ctx, logger, aliasSource, entry)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 			}
 			if alias == nil {
-				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, aliasSource, entry, logger)
+				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, logger, aliasSource, entry)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
@@ -161,7 +161,7 @@ func MarshalEntries(ctx context.Context, output *Output, entries []source.Entry,
 			binding := client.CatalogAttributeBindingPayloadV2{}
 
 			if attributeByID[attributeID].Array {
-				valueLiterals, err := expr.EvaluateArray[any](ctx, src, entry, logger)
+				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry)
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
@@ -251,7 +251,7 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 }
 
 func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (*string, error) {
-	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, src, entry, logger)
+	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, logger, src, entry)
 	if err != nil {
 		return nil, err
 	}

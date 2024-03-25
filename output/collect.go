@@ -11,7 +11,7 @@ import (
 
 // Collect filters the list of entries against the source filter on the output, returning
 // a list of all entries which pass the filter.
-func Collect(ctx context.Context, output *Output, entries []source.Entry, logger kitlog.Logger) ([]source.Entry, error) {
+func Collect(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry) ([]source.Entry, error) {
 	if !output.Source.Filter.Valid {
 		return entries, nil // no-op, the filter is blank
 	}
@@ -20,7 +20,7 @@ func Collect(ctx context.Context, output *Output, entries []source.Entry, logger
 
 	filteredEntries := []source.Entry{}
 	for _, entry := range entries {
-		result, err := expr.EvaluateSingleValue[bool](ctx, src, entry, logger)
+		result, err := expr.EvaluateSingleValue[bool](ctx, logger, src, entry)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}
