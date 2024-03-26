@@ -27,7 +27,7 @@ type CatalogEntryModel struct {
 	Name            string
 	Aliases         []string
 	Rank            int32
-	AttributeValues map[string]client.CatalogAttributeBindingPayloadV2
+	AttributeValues map[string]client.EngineParamBindingPayloadV2
 }
 
 // MarshalType builds the base catalog type model for the output, and any associated enum
@@ -51,12 +51,19 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 			attrType = attr.Type.String
 		}
 
+		mode := client.CatalogTypeAttributePayloadV2ModeManual
+		if attr.BacklinkAttribute.Valid {
+			mode = client.CatalogTypeAttributePayloadV2ModeBacklink
+		}
+
 		base.Attributes = append(
 			base.Attributes, client.CatalogTypeAttributePayloadV2{
-				Id:    lo.ToPtr(attr.ID),
-				Name:  attr.Name,
-				Type:  attrType,
-				Array: attr.Array,
+				Id:                lo.ToPtr(attr.ID),
+				Name:              attr.Name,
+				Type:              attrType,
+				Array:             attr.Array,
+				BacklinkAttribute: attr.BacklinkAttribute.Ptr(),
+				Mode:              lo.ToPtr(mode),
 			})
 
 		// The enums we generate should be returned as types too, as we'll need to sync them
@@ -72,6 +79,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 						Id:   lo.ToPtr("description"),
 						Name: "Description",
 						Type: "String",
+						Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeManual),
 					},
 				},
 				SourceAttribute: lo.ToPtr(*attr),
@@ -155,10 +163,10 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 
 		// Attribute values are built best effort, as it might not be the case that upstream
 		// source entries have these fields, or have fields of the correct type.
-		attributeValues := map[string]client.CatalogAttributeBindingPayloadV2{}
+		attributeValues := map[string]client.EngineParamBindingPayloadV2{}
 
 		for attributeID, src := range attributeSources {
-			binding := client.CatalogAttributeBindingPayloadV2{}
+			binding := client.EngineParamBindingPayloadV2{}
 
 			if attributeByID[attributeID].Array {
 				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry)
@@ -169,14 +177,14 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					continue
 				}
 
-				arrayValue := []client.CatalogAttributeValuePayloadV2{}
+				arrayValue := []client.EngineParamBindingValuePayloadV2{}
 				for _, literalAny := range valueLiterals {
 					literal, ok := literalAny.(string)
 					if !ok {
 						continue
 					}
 
-					arrayValue = append(arrayValue, client.CatalogAttributeValuePayloadV2{
+					arrayValue = append(arrayValue, client.EngineParamBindingValuePayloadV2{
 						Literal: lo.ToPtr(literal),
 					})
 				}
@@ -191,7 +199,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					continue
 				}
 
-				binding.Value = &client.CatalogAttributeValuePayloadV2{
+				binding.Value = &client.EngineParamBindingValuePayloadV2{
 					Literal: literal,
 				}
 			}
