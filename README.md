@@ -43,6 +43,16 @@ docker run \
     sync --config /config/importer.jsonnet
 ```
 
+## Linking the Catalog UI to your importer repository
+
+If you manage some of your catalog types through the catalog importer, you can
+now pass a `--source-repo-url` parameter when running the catalog importer to
+associate the URL of the repository where you're storing your catalog types
+with those types.
+
+This will prevent the catalog types you're syncing from being edited in the
+catalog UI, and add a link in the UI from those types to your repository.
+
 ## Contributing
 
 We're happy to accept open-source contributions or feedback. Just open a
