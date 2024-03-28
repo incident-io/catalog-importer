@@ -97,7 +97,7 @@ For the example entry above, the following expressions would evaluate to:
 - `_.get($.details, "alias")` → `null`
 - `_.get($.details, "alias", "default alias")` → `default alias`
 - `_.get($.details, "description")` → `Marketing website`
-- `_.get($.details, ["description", "owner", "team"])` → Engineering`
+- `_.get($.details, ["description", "owner", "team"])` → `Engineering`
 
 ## Migrating from CEL
 
