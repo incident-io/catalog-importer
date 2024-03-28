@@ -73,7 +73,10 @@ Given an example entry of:
 {
   "name": "Website",
   "details": {
-    "description": "Marketing website"
+    "description": "Marketing website",
+    "owner": {
+      "team": "Engineering"
+    }
   },
   "runbooks": ["https://github.com/incident-io/runbooks/blob/main/website.md"]
 }
@@ -86,8 +89,7 @@ The following expressions would evaluate to:
 - `$.runbooks` → `["https://github.com/incident-io/runbooks/blob/main/website.md"]`
 - `$.runbooks[0]` → `https://github.com/incident-io/runbooks/blob/main/website.md`
 
-
-You can also use `get` to evaluate nested fields that may be null.
+You can also [use `get`](https://underscorejs.org/#get) to evaluate nested fields that may be null.
 For the example entry above, the following expressions would evaluate to:
 
 - `_.get($.metadata, "name")` → `null`
@@ -95,7 +97,7 @@ For the example entry above, the following expressions would evaluate to:
 - `_.get($.details, "alias")` → `null`
 - `_.get($.details, "alias", "default alias")` → `default alias`
 - `_.get($.details, "description")` → `Marketing website`
-
+- `_.get($.details, ["description", "owner", "team"])` → `Marketing website`
 
 ## Migrating from CEL
 
