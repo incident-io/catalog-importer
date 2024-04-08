@@ -39,19 +39,19 @@ local catalog = import 'catalog.jsonnet';
             {
               id: 'tech_lead',
               name: 'Tech lead',
-              type: 'SlackUser',
+              type: 'User',
               source: '$.tech_lead',
             },
             {
               id: 'engineering_manager',
               name: 'Engineering manager',
-              type: 'SlackUser',
+              type: 'User',
               source: '$.engineering_manager',
             },
             {
               id: 'product_manager',
               name: 'Product manager',
-              type: 'SlackUser',
+              type: 'User',
               source: '$.product_manager',
             },
             {
@@ -81,7 +81,7 @@ local catalog = import 'catalog.jsonnet';
             {
               id: 'members',
               name: 'Members',
-              type: 'SlackUser',
+              type: 'User',
               array: true,
               source: '$.members',
             },
