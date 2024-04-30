@@ -36,7 +36,7 @@ func (opt *TypesOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	}
 
 	// Build incident.io client
-	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version())
+	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version(), logger)
 	if err != nil {
 		return err
 	}

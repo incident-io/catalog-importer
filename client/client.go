@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
+	kitlog "github.com/go-kit/kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
@@ -59,14 +61,24 @@ func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Respons
 	return retryablehttp.DefaultBackoff(min, max, attemptNum, resp)
 }
 
-func New(ctx context.Context, apiKey, apiEndpoint, version string, opts ...ClientOption) (*ClientWithResponses, error) {
+var _ retryablehttp.Logger = &retryableHttpLogger{}
+
+type retryableHttpLogger struct {
+	kitlog.Logger
+}
+
+func (l *retryableHttpLogger) Printf(message string, args ...interface{}) {
+	level.Debug(l.Logger).Log("req", fmt.Sprintf(message, args...))
+}
+
+func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog.Logger, opts ...ClientOption) (*ClientWithResponses, error) {
 	bearerTokenProvider, bearerTokenProviderErr := securityprovider.NewSecurityProviderBearerToken(apiKey)
 	if bearerTokenProviderErr != nil {
 		return nil, bearerTokenProviderErr
 	}
 
 	retryClient := retryablehttp.NewClient()
-	retryClient.Logger = nil
+	retryClient.Logger = &retryableHttpLogger{logger}
 	retryClient.RetryMax = maxRetries
 	retryClient.RetryWaitMin = minRetryWait
 	retryClient.RetryWaitMax = maxRetryWait
