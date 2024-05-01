@@ -99,7 +99,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 
 	// Build incident.io client
-	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version(), clientOptions...)
+	cl, err := client.New(ctx, opt.APIKey, opt.APIEndpoint, Version(), logger, clientOptions...)
 	if err != nil {
 		return err
 	}
