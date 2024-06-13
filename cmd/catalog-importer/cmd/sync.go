@@ -259,6 +259,18 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 						Attributes: []client.CatalogTypeAttributeV2{},
 					}
 					for _, attr := range model.Attributes {
+						var path *[]client.CatalogTypeAttributePathItemV2
+
+						if attr.Path != nil {
+							noPtrPath := *attr.Path
+							newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV2, _ int) client.CatalogTypeAttributePathItemV2 {
+								return client.CatalogTypeAttributePathItemV2{
+									AttributeId: item.AttributeId,
+								}
+							})
+							path = &newPath
+						}
+
 						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
 							Id:                *attr.Id,
 							Name:              attr.Name,
@@ -266,6 +278,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 							Array:             attr.Array,
 							Mode:              client.CatalogTypeAttributeV2Mode(*attr.Mode),
 							BacklinkAttribute: attr.BacklinkAttribute,
+							Path:              path,
 						})
 					}
 				}
