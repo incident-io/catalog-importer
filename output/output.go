@@ -47,19 +47,15 @@ func (s SourceConfig) Validate() error {
 	)
 }
 
-type PathAttribute struct {
-	AttributeId string `json:"attribute_id"`
-}
-
 type Attribute struct {
-	ID                string           `json:"id"`
-	Name              string           `json:"name"`
-	Type              null.String      `json:"type"`
-	Array             bool             `json:"array"`
-	Source            null.String      `json:"source"`
-	Enum              *AttributeEnum   `json:"enum"`
-	BacklinkAttribute null.String      `json:"backlink_attribute"`
-	Path              []*PathAttribute `json:"path"`
+	ID                string         `json:"id"`
+	Name              string         `json:"name"`
+	Type              null.String    `json:"type"`
+	Array             bool           `json:"array"`
+	Source            null.String    `json:"source"`
+	Enum              *AttributeEnum `json:"enum"`
+	BacklinkAttribute null.String    `json:"backlink_attribute"`
+	Path              []string       `json:"path"`
 }
 
 func (a Attribute) Validate() error {

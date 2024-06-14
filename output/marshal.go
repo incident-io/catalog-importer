@@ -71,9 +71,9 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		}
 
 		if attr.Path != nil {
-			attribute.Path = lo.ToPtr(lo.Map(attr.Path, func(item *PathAttribute, _ int) client.CatalogTypeAttributePathItemPayloadV2 {
+			attribute.Path = lo.ToPtr(lo.Map(attr.Path, func(item string, _ int) client.CatalogTypeAttributePathItemPayloadV2 {
 				return client.CatalogTypeAttributePathItemPayloadV2{
-					AttributeId: item.AttributeId,
+					AttributeId: item,
 				}
 			}))
 		}
