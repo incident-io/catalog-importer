@@ -219,11 +219,11 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 					// Our API behaves strangely with empty arrays, and will omit them. This patch
 					// ensures the array is present so our comparison doesn't trigger falsly.
 					if value.ArrayValue == nil && value.Value == nil {
-						value.ArrayValue = lo.ToPtr([]client.EngineParamBindingValueV2{})
+						value.ArrayValue = lo.ToPtr([]client.CatalogEntryEngineParamBindingValueV2{})
 					}
 
 					if value.ArrayValue != nil {
-						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.EngineParamBindingValueV2, _ int) client.EngineParamBindingValuePayloadV2 {
+						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogEntryEngineParamBindingValueV2, _ int) client.EngineParamBindingValuePayloadV2 {
 							return client.EngineParamBindingValuePayloadV2{
 								Literal: binding.Literal,
 							}
