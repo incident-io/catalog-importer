@@ -283,7 +283,20 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					}
 				}
 				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
-				DIFF("  ", *catalogType, updatedCatalogType)
+
+				// We only have attribute names in the response for a path attribute, not the
+				// request. To avoid erroneous diffs, we strip the attribute names from any
+				// path attributes.
+				catalogTypeToCompare := *catalogType
+				for _, attr := range catalogType.Schema.Attributes {
+					if attr.Path != nil {
+						for i := range *attr.Path {
+							(*attr.Path)[i].AttributeName = ""
+						}
+					}
+				}
+
+				DIFF("  ", catalogTypeToCompare, updatedCatalogType)
 			}
 		}
 	} else {
