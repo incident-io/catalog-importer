@@ -32,11 +32,11 @@ func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
 		Default("http://localhost:7007/api/catalog/entities").
 		Envar("BACKSTAGE_ENDPOINT").
 		StringVar(&opt.BackstageEndpoint)
-	cmd.Flag("backstage-token", "Token of the Backstage entries API").
+	cmd.Flag("backstage-token", "Token of the Backstage entries API. Optional").
 		Default("").
 		Envar("BACKSTAGE_TOKEN").
 		StringVar(&opt.BackstageToken)
-	cmd.Flag("backstage-sign-jwt", "Sign JWT for Backstage").
+	cmd.Flag("backstage-sign-jwt", "Whether to sign the provided Backstage token into a JWT. Defaults to true").
 		Default("true").
 		Envar("BACKSTAGE_SIGN_JWT").
 		BoolVar(&opt.BackstageSignJWT)
