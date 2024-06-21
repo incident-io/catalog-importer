@@ -16,6 +16,8 @@ type BackstageOptions struct {
 	APIEndpoint       string
 	APIKey            string
 	BackstageEndpoint string
+	BackstageToken    string
+	BackstageSignJWT  bool
 }
 
 func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
@@ -30,6 +32,14 @@ func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
 		Default("http://localhost:7007/api/catalog/entities").
 		Envar("BACKSTAGE_ENDPOINT").
 		StringVar(&opt.BackstageEndpoint)
+	cmd.Flag("backstage-token", "Token of the Backstage entries API").
+		Default("").
+		Envar("BACKSTAGE_TOKEN").
+		StringVar(&opt.BackstageToken)
+	cmd.Flag("backstage-sign-jwt", "Sign JWT for Backstage").
+		Default("true").
+		Envar("BACKSTAGE_SIGN_JWT").
+		BoolVar(&opt.BackstageSignJWT)
 
 	return opt
 }
@@ -52,6 +62,8 @@ func (opt *BackstageOptions) Run(ctx context.Context, logger kitlog.Logger) erro
 				{
 					Backstage: &source.SourceBackstage{
 						Endpoint: opt.BackstageEndpoint,
+						Token:    source.Credential(opt.BackstageToken),
+						SignJWT:  &opt.BackstageSignJWT,
 					},
 				},
 			}
