@@ -3,7 +3,7 @@ package source
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -35,10 +35,14 @@ func (s SourceLocal) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceE
 			return nil, errors.Wrap(err, "glob matching files")
 		}
 
+		if len(matches) == 0 {
+			return nil, errors.Errorf("no files found matching pattern: %s", pattern)
+		}
+
 		for _, match := range matches {
 			_, ok := results[match]
 			if !ok {
-				data, err := ioutil.ReadFile(match)
+				data, err := os.ReadFile(match)
 				if err != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("reading file: %s", match))
 				}
