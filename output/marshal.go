@@ -51,20 +51,34 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 			attrType = attr.Type.String
 		}
 
-		mode := client.CatalogTypeAttributePayloadV2ModeManual
-		if attr.BacklinkAttribute.Valid {
+		var mode client.CatalogTypeAttributePayloadV2Mode
+		switch {
+		case attr.BacklinkAttribute.Valid:
 			mode = client.CatalogTypeAttributePayloadV2ModeBacklink
+		case attr.Path != nil:
+			mode = client.CatalogTypeAttributePayloadV2ModePath
+		default:
+			mode = client.CatalogTypeAttributePayloadV2ModeManual
 		}
 
-		base.Attributes = append(
-			base.Attributes, client.CatalogTypeAttributePayloadV2{
-				Id:                lo.ToPtr(attr.ID),
-				Name:              attr.Name,
-				Type:              attrType,
-				Array:             attr.Array,
-				BacklinkAttribute: attr.BacklinkAttribute.Ptr(),
-				Mode:              lo.ToPtr(mode),
-			})
+		attribute := client.CatalogTypeAttributePayloadV2{
+			Id:                lo.ToPtr(attr.ID),
+			Name:              attr.Name,
+			Type:              attrType,
+			Array:             attr.Array,
+			BacklinkAttribute: attr.BacklinkAttribute.Ptr(),
+			Mode:              lo.ToPtr(mode),
+		}
+
+		if attr.Path != nil {
+			attribute.Path = lo.ToPtr(lo.Map(attr.Path, func(item string, _ int) client.CatalogTypeAttributePathItemPayloadV2 {
+				return client.CatalogTypeAttributePathItemPayloadV2{
+					AttributeId: item,
+				}
+			}))
+		}
+
+		base.Attributes = append(base.Attributes, attribute)
 
 		// The enums we generate should be returned as types too, as we'll need to sync them
 		// just as any other.

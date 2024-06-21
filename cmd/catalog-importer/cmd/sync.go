@@ -259,6 +259,18 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 						Attributes: []client.CatalogTypeAttributeV2{},
 					}
 					for _, attr := range model.Attributes {
+						var path *[]client.CatalogTypeAttributePathItemV2
+
+						if attr.Path != nil {
+							noPtrPath := *attr.Path
+							newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV2, _ int) client.CatalogTypeAttributePathItemV2 {
+								return client.CatalogTypeAttributePathItemV2{
+									AttributeId: item.AttributeId,
+								}
+							})
+							path = &newPath
+						}
+
 						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
 							Id:                *attr.Id,
 							Name:              attr.Name,
@@ -266,15 +278,29 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 							Array:             attr.Array,
 							Mode:              client.CatalogTypeAttributeV2Mode(*attr.Mode),
 							BacklinkAttribute: attr.BacklinkAttribute,
+							Path:              path,
 						})
 					}
 				}
 				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
-				DIFF("  ", *catalogType, updatedCatalogType)
+
+				// We only have attribute names in the response for a path attribute, not the
+				// request. To avoid erroneous diffs, we strip the attribute names from any
+				// path attributes.
+				catalogTypeToCompare := *catalogType
+				for _, attr := range catalogType.Schema.Attributes {
+					if attr.Path != nil {
+						for i := range *attr.Path {
+							(*attr.Path)[i].AttributeName = ""
+						}
+					}
+				}
+
+				DIFF("  ", catalogTypeToCompare, updatedCatalogType)
 			}
 		}
 	} else {
-		// Update all the type schemas except for new backlinks, which could reference
+		// Update all the type schemas except for new derived attributes, which could reference
 		// attributes that don't exist yet.
 		catalogTypeVersions := map[string]int64{}
 		for _, outputType := range cfg.Outputs() {
@@ -282,18 +308,19 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			for _, model := range append(enumModels, baseModel) {
 				catalogType := catalogTypesByOutput[model.TypeName]
 
-				attributesWithoutNewBacklinks := []client.CatalogTypeAttributePayloadV2{}
+				attributesWithoutNewDerived := []client.CatalogTypeAttributePayloadV2{}
 				for _, attr := range model.Attributes {
 					isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV2ModeBacklink
-					if isBacklink {
+					isPath := *attr.Mode == client.CatalogTypeAttributePayloadV2ModePath
+					if isBacklink || isPath {
 						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
 							return existingAttr.Id == *attr.Id
 						})
 						if inCurrentSchema {
-							attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
+							attributesWithoutNewDerived = append(attributesWithoutNewDerived, attr)
 						}
 					} else {
-						attributesWithoutNewBacklinks = append(attributesWithoutNewBacklinks, attr)
+						attributesWithoutNewDerived = append(attributesWithoutNewDerived, attr)
 					}
 				}
 
@@ -313,7 +340,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
 				schema, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
-					Attributes: attributesWithoutNewBacklinks,
+					Attributes: attributesWithoutNewDerived,
 				})
 				if err != nil {
 					return errors.Wrap(err, "updating catalog type schema")
@@ -325,31 +352,31 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			}
 		}
 
-		// Then go through again and create any types that do have new backlinks
-		OUT("\n↻ Syncing backlink attributes...")
+		// Then go through again and create any types that do have new derived attributes (backlinks or path)
+		OUT("\n↻ Syncing derived attributes...")
 		for _, outputType := range cfg.Outputs() {
 			baseModel, enumModels := output.MarshalType(outputType)
 			for _, model := range append(enumModels, baseModel) {
 				catalogType := catalogTypesByOutput[model.TypeName]
 
-				hasNewBacklinks := false
+				hasNewDerived := false
 				for _, attr := range model.Attributes {
-					if attr.Mode != nil && attr.BacklinkAttribute != nil {
+					if attr.Mode != nil && (attr.BacklinkAttribute != nil || attr.Path != nil) {
 						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
 							return existingAttr.Id == *attr.Id
 						})
 
 						if !inCurrentSchema {
-							hasNewBacklinks = true
+							hasNewDerived = true
 						}
 					}
 				}
 
-				if !hasNewBacklinks {
+				if !hasNewDerived {
 					continue
 				}
 				version := catalogTypeVersions[catalogType.Id]
-				logger.Log("msg", "updating catalog type schema: creating backlink attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
+				logger.Log("msg", "updating catalog type schema: creating derived attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
 
 				_, err = cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
