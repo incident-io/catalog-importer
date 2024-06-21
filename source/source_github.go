@@ -140,7 +140,8 @@ func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger) ([]*Source
 				tree, _, err := client.Git.GetTree(ctx, target.Owner, target.Repo, target.Ref, true)
 				if err != nil {
 					if repositoryEmpty(err) {
-						logger.Log("msg", "GitHub repository is empty, skipping")
+						logger.Log("msg", "GitHub repository is empty, skipping",
+							"owner", target.Owner, "repo", target.Repo, "ref", target.Ref)
 						return nil
 					}
 					return errors.Wrap(err, fmt.Sprintf("getting tree for '%s/%s' at ref %s", target.Owner, target.Repo, target.Ref))
