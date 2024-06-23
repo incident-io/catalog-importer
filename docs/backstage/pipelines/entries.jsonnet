@@ -220,7 +220,7 @@
     // https://backstage.io/docs/features/software-catalog/descriptor-format/#kind-group
     {
       name: 'Backstage Group',
-      description: 'Groups syned from Backstage.',
+      description: 'Groups synced from Backstage.',
       type_name: 'Custom["BackstageGroup"]',
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "Group"',
@@ -254,7 +254,7 @@
     // https://backstage.io/docs/features/software-catalog/descriptor-format/#kind-user
     {
       name: 'Backstage User',
-      description: 'Users syned from Backstage.',
+      description: 'Users synced from Backstage.',
       type_name: 'Custom["BackstageUser"]',
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "User"',
