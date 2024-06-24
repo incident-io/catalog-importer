@@ -139,6 +139,11 @@ func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger) ([]*Source
 					"owner", target.Owner, "repo", target.Repo, "ref", target.Ref)
 				tree, _, err := client.Git.GetTree(ctx, target.Owner, target.Repo, target.Ref, true)
 				if err != nil {
+					if repositoryEmpty(err) {
+						logger.Log("msg", "GitHub repository is empty, skipping",
+							"owner", target.Owner, "repo", target.Repo, "ref", target.Ref)
+						return nil
+					}
 					return errors.Wrap(err, fmt.Sprintf("getting tree for '%s/%s' at ref %s", target.Owner, target.Repo, target.Ref))
 				}
 
@@ -221,4 +226,11 @@ func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger) ([]*Source
 	}
 
 	return entries, nil
+}
+
+func repositoryEmpty(err error) bool {
+	if err == nil {
+		return false
+	}
+	return strings.Contains(err.Error(), "409 Git Repository is empty")
 }
