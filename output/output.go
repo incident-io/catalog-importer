@@ -17,6 +17,7 @@ type Output struct {
 	Ranked      bool         `json:"ranked"`
 	Source      SourceConfig `json:"source"`
 	Attributes  []*Attribute `json:"attributes"`
+	Categories  []string     `json:"categories"`
 }
 
 func (o Output) Validate() error {
