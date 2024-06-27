@@ -192,6 +192,7 @@
       name: 'Backstage Domain',
       description: 'Groups of systems that share terminology or purpose.',
       type_name: 'Custom["BackstageDomain"]',
+      categories: ['service'],
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "Domain"',
         name: '$.metadata.name',
@@ -222,6 +223,7 @@
       name: 'Backstage Group',
       description: 'Groups synced from Backstage.',
       type_name: 'Custom["BackstageGroup"]',
+      categories: ['team'],
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "Group"',
         name: '$.metadata.name',
@@ -256,6 +258,7 @@
       name: 'Backstage User',
       description: 'Users synced from Backstage.',
       type_name: 'Custom["BackstageUser"]',
+      categories: ['user'],
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "User"',
         name: '$.metadata.name',
@@ -288,6 +291,7 @@
       name: 'Backstage System',
       description: 'Collections of resources.',
       type_name: 'Custom["BackstageSystem"]',
+      categories: ['product-features'],
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "System"',
         name: '$.metadata.name',

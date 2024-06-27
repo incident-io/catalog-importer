@@ -32,6 +32,7 @@
       name: 'Backstage Lifecycle',
       description: 'Component lifecycle stage.',
       type_name: 'Custom["BackstageLifecycle"]',
+      categories: ['service'],
       source: {
         name: '$.name',
         external_id: '$.external_id',

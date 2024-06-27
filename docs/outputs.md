@@ -38,6 +38,7 @@ by example. Take this pipeline:
             name: 'name',
             external_id: 'external_id',
           },
+          categories: ['service'],
           attributes: [
             {
               id: 'description',

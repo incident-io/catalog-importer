@@ -32,6 +32,7 @@
       name: 'Backstage Component Type',
       description: 'Type of a component.',
       type_name: 'Custom["BackstageComponentType"]',
+      categories: ['service'],
       source: {
         name: '$.name',
         external_id: '$.external_id',
