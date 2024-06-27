@@ -199,11 +199,16 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				}
 			} else {
 				logger.Log("msg", "catalog type does not already exist, creating")
+				categories := lo.Map(model.Categories, func(category string, _ int) client.CreateTypeRequestBodyCategories {
+					return client.CreateTypeRequestBodyCategories(category)
+				})
+
 				result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
 					Name:          model.Name,
 					Description:   model.Description,
 					Ranked:        &model.Ranked,
 					TypeName:      lo.ToPtr(model.TypeName),
+					Categories:    lo.ToPtr(categories),
 					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
 					SourceRepoUrl: &opt.SourceRepoUrl,
 				})
@@ -271,6 +276,10 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 							path = &newPath
 						}
 
+						updatedCatalogType.Categories = lo.Map(model.Categories, func(category string, _ int) client.CatalogTypeV2Categories {
+							return client.CatalogTypeV2Categories(category)
+						})
+
 						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
 							Id:                *attr.Id,
 							Name:              attr.Name,
@@ -324,11 +333,16 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					}
 				}
 
+				categories := lo.Map(model.Categories, func(category string, _ int) client.UpdateTypeRequestBodyCategories {
+					return client.UpdateTypeRequestBodyCategories(category)
+				})
+
 				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
 				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
 					Name:          model.Name,
 					Description:   model.Description,
 					Ranked:        &model.Ranked,
+					Categories:    lo.ToPtr(categories),
 					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
 					SourceRepoUrl: &opt.SourceRepoUrl,
 				})
