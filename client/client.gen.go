@@ -80,13 +80,13 @@ const (
 
 // Defines values for CatalogTypeV2Categories.
 const (
-	CatalogTypeV2CategoriesCustomer        CatalogTypeV2Categories = "customer"
-	CatalogTypeV2CategoriesIssueTracker    CatalogTypeV2Categories = "issue-tracker"
-	CatalogTypeV2CategoriesOnCall          CatalogTypeV2Categories = "on-call"
-	CatalogTypeV2CategoriesProductFeatures CatalogTypeV2Categories = "product-features"
-	CatalogTypeV2CategoriesService         CatalogTypeV2Categories = "service"
-	CatalogTypeV2CategoriesTeam            CatalogTypeV2Categories = "team"
-	CatalogTypeV2CategoriesUser            CatalogTypeV2Categories = "user"
+	CatalogTypeV2CategoriesCustomer       CatalogTypeV2Categories = "customer"
+	CatalogTypeV2CategoriesIssueTracker   CatalogTypeV2Categories = "issue-tracker"
+	CatalogTypeV2CategoriesOnCall         CatalogTypeV2Categories = "on-call"
+	CatalogTypeV2CategoriesProductFeature CatalogTypeV2Categories = "product-feature"
+	CatalogTypeV2CategoriesService        CatalogTypeV2Categories = "service"
+	CatalogTypeV2CategoriesTeam           CatalogTypeV2Categories = "team"
+	CatalogTypeV2CategoriesUser           CatalogTypeV2Categories = "user"
 )
 
 // Defines values for CatalogTypeV2Color.
@@ -233,13 +233,13 @@ const (
 
 // Defines values for CreateTypeRequestBodyCategories.
 const (
-	CreateTypeRequestBodyCategoriesCustomer        CreateTypeRequestBodyCategories = "customer"
-	CreateTypeRequestBodyCategoriesIssueTracker    CreateTypeRequestBodyCategories = "issue-tracker"
-	CreateTypeRequestBodyCategoriesOnCall          CreateTypeRequestBodyCategories = "on-call"
-	CreateTypeRequestBodyCategoriesProductFeatures CreateTypeRequestBodyCategories = "product-features"
-	CreateTypeRequestBodyCategoriesService         CreateTypeRequestBodyCategories = "service"
-	CreateTypeRequestBodyCategoriesTeam            CreateTypeRequestBodyCategories = "team"
-	CreateTypeRequestBodyCategoriesUser            CreateTypeRequestBodyCategories = "user"
+	CreateTypeRequestBodyCategoriesCustomer       CreateTypeRequestBodyCategories = "customer"
+	CreateTypeRequestBodyCategoriesIssueTracker   CreateTypeRequestBodyCategories = "issue-tracker"
+	CreateTypeRequestBodyCategoriesOnCall         CreateTypeRequestBodyCategories = "on-call"
+	CreateTypeRequestBodyCategoriesProductFeature CreateTypeRequestBodyCategories = "product-feature"
+	CreateTypeRequestBodyCategoriesService        CreateTypeRequestBodyCategories = "service"
+	CreateTypeRequestBodyCategoriesTeam           CreateTypeRequestBodyCategories = "team"
+	CreateTypeRequestBodyCategoriesUser           CreateTypeRequestBodyCategories = "user"
 )
 
 // Defines values for CreateTypeRequestBodyColor.
@@ -592,13 +592,13 @@ const (
 
 // Defines values for UpdateTypeRequestBodyCategories.
 const (
-	UpdateTypeRequestBodyCategoriesCustomer        UpdateTypeRequestBodyCategories = "customer"
-	UpdateTypeRequestBodyCategoriesIssueTracker    UpdateTypeRequestBodyCategories = "issue-tracker"
-	UpdateTypeRequestBodyCategoriesOnCall          UpdateTypeRequestBodyCategories = "on-call"
-	UpdateTypeRequestBodyCategoriesProductFeatures UpdateTypeRequestBodyCategories = "product-features"
-	UpdateTypeRequestBodyCategoriesService         UpdateTypeRequestBodyCategories = "service"
-	UpdateTypeRequestBodyCategoriesTeam            UpdateTypeRequestBodyCategories = "team"
-	UpdateTypeRequestBodyCategoriesUser            UpdateTypeRequestBodyCategories = "user"
+	UpdateTypeRequestBodyCategoriesCustomer       UpdateTypeRequestBodyCategories = "customer"
+	UpdateTypeRequestBodyCategoriesIssueTracker   UpdateTypeRequestBodyCategories = "issue-tracker"
+	UpdateTypeRequestBodyCategoriesOnCall         UpdateTypeRequestBodyCategories = "on-call"
+	UpdateTypeRequestBodyCategoriesProductFeature UpdateTypeRequestBodyCategories = "product-feature"
+	UpdateTypeRequestBodyCategoriesService        UpdateTypeRequestBodyCategories = "service"
+	UpdateTypeRequestBodyCategoriesTeam           UpdateTypeRequestBodyCategories = "team"
+	UpdateTypeRequestBodyCategoriesUser           UpdateTypeRequestBodyCategories = "user"
 )
 
 // Defines values for UpdateTypeRequestBodyColor.
