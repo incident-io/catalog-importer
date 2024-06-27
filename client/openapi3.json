@@ -10333,7 +10333,7 @@
               "enum": [
                 "customer",
                 "issue-tracker",
-                "product-features",
+                "product-feature",
                 "service",
                 "on-call",
                 "team",
@@ -12370,7 +12370,7 @@
               "enum": [
                 "customer",
                 "issue-tracker",
-                "product-features",
+                "product-feature",
                 "service",
                 "on-call",
                 "team",
@@ -25324,7 +25324,7 @@
               "enum": [
                 "customer",
                 "issue-tracker",
-                "product-features",
+                "product-feature",
                 "service",
                 "on-call",
                 "team",
