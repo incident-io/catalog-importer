@@ -76,7 +76,7 @@ func Run(ctx context.Context) (err error) {
 	stdlog.SetOutput(kitlog.NewStdlibAdapter(logger))
 
 	// Root context to the application.
-	_, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	// Setup signal handling.
