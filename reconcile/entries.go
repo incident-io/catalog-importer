@@ -64,7 +64,7 @@ type EntriesProgress struct {
 	OnUpdateProgress func()
 }
 
-func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress) error {
+func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress) error {
 	logger = kitlog.With(logger,
 		"catalog_type_id", catalogType.Id,
 		"catalog_type_name", catalogType.TypeName,
@@ -197,6 +197,15 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 		}
 	}
 
+	// Identify the attributes that are schema-only, as we want to preserve the existing
+	// value instead of setting it outselves.
+	schemaOnlyAttributes := []*output.Attribute{}
+	for _, attr := range outputType.Attributes {
+		if attr.SchemaOnly {
+			schemaOnlyAttributes = append(schemaOnlyAttributes, attr)
+		}
+	}
+
 	{
 		toUpdate := []*output.CatalogEntryModel{}
 	eachPayload:
@@ -236,6 +245,12 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalo
 					}
 
 					currentBindings[attributeID] = current
+				}
+
+				// For any of the schema only attributes, preserve the existing value when
+				// performing an update.
+				for _, attr := range schemaOnlyAttributes {
+					model.AttributeValues[attr.ID] = currentBindings[attr.ID]
 				}
 
 				if isSame && reflect.DeepEqual(model.AttributeValues, currentBindings) {
