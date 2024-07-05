@@ -228,6 +228,12 @@
               //
               // Will default to the id of this attribute.
               source: '$.metadata.description',
+
+              // If true we will only create the attribute in the schema and won't sync
+              // the value of the attribute. This is useful when you want to specify the
+              // schema but leave this field available to be controlled from the dashboard
+              // manually, separately from the importer.
+              schema_only: false,
             },
 
             // Most of the time you can be much less verbose, as source will

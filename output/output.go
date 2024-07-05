@@ -57,6 +57,7 @@ type Attribute struct {
 	Enum              *AttributeEnum `json:"enum"`
 	BacklinkAttribute null.String    `json:"backlink_attribute"`
 	Path              []string       `json:"path"`
+	SchemaOnly        bool           `json:"schema_only"`
 }
 
 func (a Attribute) Validate() error {

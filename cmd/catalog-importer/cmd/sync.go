@@ -473,7 +473,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
 				catalogType := catalogTypesByOutput[outputType.TypeName]
 
-				err = reconcile.Entries(ctx, logger, entriesClient, catalogType, entryModels, newEntriesProgress(!opt.DryRun))
+				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun))
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
 				}
@@ -509,7 +509,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
 				catalogType := catalogTypesByOutput[enumModel.TypeName]
-				err := reconcile.Entries(ctx, logger, entriesClient, catalogType, enumModels, newEntriesProgress(!opt.DryRun))
+				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun))
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
