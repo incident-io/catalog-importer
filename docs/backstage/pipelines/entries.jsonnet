@@ -291,7 +291,7 @@
       name: 'Backstage System',
       description: 'Collections of resources.',
       type_name: 'Custom["BackstageSystem"]',
-      categories: ['product-features'],
+      categories: ['product-feature'],
       source: {
         filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "System"',
         name: '$.metadata.name',
