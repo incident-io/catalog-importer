@@ -103,13 +103,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	if err != nil {
 		return err
 	}
-	OUT("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
 
 	// Load existing catalog types
 	result, err := cl.CatalogV2ListTypesWithResponse(ctx)
 	if err != nil {
 		return errors.Wrap(err, "listing catalog types")
 	}
+	OUT("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
 
 	existingCatalogTypes := []client.CatalogTypeV2{}
 	for _, catalogType := range result.JSON200.CatalogTypes {

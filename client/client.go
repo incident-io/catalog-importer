@@ -12,38 +12,9 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
-	"golang.org/x/time/rate"
 )
 
-const (
-	rpm = 600
-
-	// last retry will wait 64 seconds
-	maxRetries   = 7
-	minRetryWait = 1 * time.Second
-	maxRetryWait = 65 * time.Second
-)
-
-type RateLimitedClient struct {
-	client      *http.Client
-	rateLimiter *rate.Limiter
-}
-
-func (c *RateLimitedClient) Do(req *http.Request) (*http.Response, error) {
-	if c.rateLimiter == nil {
-		return nil, errors.New("rate limiter not set")
-	}
-	ctx := req.Context()
-	err := c.rateLimiter.Wait(ctx)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
+const maxRetries = 3
 
 func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	// Retry for rate limits and server errors.
@@ -51,9 +22,15 @@ func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Respons
 		// Check for a 'Retry-After' header.
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
-			if retryAfterSeconds, err := time.ParseDuration(retryAfter + "s"); err == nil {
-				return retryAfterSeconds
+			retryAfterDate, err := time.Parse(time.RFC1123, retryAfter)
+			if err != nil {
+				// If we can't parse the Retry-After, lets just wait for 10 seconds
+				return 10
 			}
+
+			timeToWait := time.Until(retryAfterDate)
+
+			return timeToWait
 		}
 
 	}
@@ -80,8 +57,6 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	retryClient := retryablehttp.NewClient()
 	retryClient.Logger = &retryableHttpLogger{logger}
 	retryClient.RetryMax = maxRetries
-	retryClient.RetryWaitMin = minRetryWait
-	retryClient.RetryWaitMax = maxRetryWait
 	retryClient.Backoff = attentiveBackoff
 
 	base := retryClient.StandardClient()
@@ -105,14 +80,8 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 		return resp, err
 	})
 
-	// Adding a naive rate limiter to prevent us from using the API keys entire allowance
-	rlClient := &RateLimitedClient{
-		client:      base,
-		rateLimiter: rate.NewLimiter(rpm/60, 1),
-	}
-
 	clientOpts := append([]ClientOption{
-		WithHTTPClient(rlClient),
+		WithHTTPClient(base),
 		WithRequestEditorFn(bearerTokenProvider.Intercept),
 		// Add a user-agent so we can tell which version these requests came from.
 		WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
