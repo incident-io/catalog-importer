@@ -105,7 +105,7 @@ local catalog = import 'catalog.jsonnet';
           name: 'Feature',
           description: 'Product features that would be recognisable to customers.',
           type_name: 'Custom["Feature"]',
-          categories: ['product-features'],
+          categories: ['product-feature'],
           source: {
             name: '$.name',
             external_id: '$.external_id',
@@ -142,7 +142,7 @@ local catalog = import 'catalog.jsonnet';
           name: 'Integration',
           description: 'Product integrations with third-party services, powering features.',
           type_name: 'Custom["Integration"]',
-          categories: ['product-features'],
+          categories: ['product-feature'],
           source: {
             name: '$.name',
             external_id: '$.external_id',
