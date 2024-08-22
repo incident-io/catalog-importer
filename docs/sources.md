@@ -141,7 +141,7 @@ This looks like:
 [backstage-endpoint]: https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities
 
 The `endpoint` should be pointing at whatever URL maps to [GET
-/entries][backstage-endpoint] on your Backstage instance, and the `token` should
+/entities][backstage-endpoint] on your Backstage instance, and the `token` should
 be a bearer token with permissions to make this call.
 
 This will pull in all catalog entries after which you may use the source
