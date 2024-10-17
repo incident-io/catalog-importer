@@ -10,7 +10,8 @@ import (
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
-	"golang.org/x/sync/errgroup"
+
+	"github.com/sourcegraph/conc/pool"
 )
 
 type EntriesClient struct {
@@ -105,18 +106,18 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 		logger.Log("msg", fmt.Sprintf("found %d entries in the catalog, deleting %d of them", len(entries), len(toDelete)))
 
-		g, ctx := errgroup.WithContext(ctx)
-		g.SetLimit(10)
-
+		// Use a pool of workers to avoid hitting API limits but multiple other
+		// routines doing a smash and grab on the rate we do have available.
 		if onStart := progress.OnDeleteStart; onStart != nil {
 			onStart(len(toDelete))
 		}
 
+		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
 		for _, entry := range toDelete {
 			var (
 				entry = entry // avoid shadow loop variable
 			)
-			g.Go(func() error {
+			p.Go(func(ctx context.Context) error {
 				if onProgress := progress.OnDeleteProgress; onProgress != nil {
 					defer onProgress()
 				}
@@ -127,12 +128,12 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 				}
 
 				logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
-
 				return nil
 			})
 		}
 
-		if err := g.Wait(); err != nil {
+		err := p.Wait()
+		if err != nil {
 			return errors.Wrap(err, "destroying catalog entries")
 		}
 	}
@@ -157,19 +158,17 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 		logger.Log("msg", fmt.Sprintf("found %d entries that need creating", len(toCreate)))
 
-		g, ctx := errgroup.WithContext(ctx)
-		g.SetLimit(10)
-
 		if onStart := progress.OnCreateStart; onStart != nil {
 			onStart(len(toCreate))
 		}
 
+		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
 		for _, model := range toCreate {
 			var (
 				model = model // capture loop variable
 			)
 
-			g.Go(func() error {
+			p.Go(func(ctx context.Context) error {
 				if onProgress := progress.OnCreateProgress; onProgress != nil {
 					defer onProgress()
 				}
@@ -192,8 +191,9 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			})
 		}
 
-		if err := g.Wait(); err != nil {
-			return errors.Wrap(err, "creating new catalog entries")
+		err := p.Wait()
+		if err != nil {
+			return errors.Wrap(err, "destroying catalog entries")
 		}
 	}
 
@@ -265,9 +265,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 		logger.Log("msg", fmt.Sprintf("found %d entries that need updating", len(toUpdate)))
 
-		g, ctx := errgroup.WithContext(ctx)
-		g.SetLimit(10)
-
+		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
 		if onStart := progress.OnUpdateStart; onStart != nil {
 			onStart(len(toUpdate))
 		}
@@ -278,7 +276,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 				entry = entriesByExternalID[model.ExternalID] // for ID
 			)
 
-			g.Go(func() error {
+			p.Go(func(ctx context.Context) error {
 				if onProgress := progress.OnUpdateProgress; onProgress != nil {
 					defer onProgress()
 				}
@@ -299,8 +297,9 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			})
 		}
 
-		if err := g.Wait(); err != nil {
-			return errors.Wrap(err, "updating catalog entries")
+		err := p.Wait()
+		if err != nil {
+			return errors.Wrap(err, "destroying catalog entries")
 		}
 	}
 
