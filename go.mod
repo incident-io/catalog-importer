@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/bmatcuk/doublestar/v4 v4.6.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/fatih/color v1.12.0
 	github.com/ghodss/yaml v1.0.0
@@ -28,17 +27,21 @@ require (
 	github.com/rodaine/table v1.1.0
 	github.com/samber/lo v1.38.1
 	github.com/schollz/progressbar/v3 v3.13.1
+	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/objx v0.5.0
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/sync v0.2.0
-	golang.org/x/time v0.0.0-20220411224347-583f2d630306
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require gopkg.in/sourcemap.v1 v1.0.5 // indirect
+require (
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.9.0 // indirect
+	gopkg.in/sourcemap.v1 v1.0.5 // indirect
+)
 
 require (
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect

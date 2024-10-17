@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const maxRetries = 3
+const maxRetries = 10
 
 func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	// Retry for rate limits and server errors.
@@ -29,6 +29,11 @@ func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Respons
 			}
 
 			timeToWait := time.Until(retryAfterDate)
+
+			if timeToWait < 1*time.Second {
+				// by default lets back off at least 1 second
+				return 1 * time.Second
+			}
 
 			return timeToWait
 		}
