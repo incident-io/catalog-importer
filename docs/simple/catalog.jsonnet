@@ -52,11 +52,9 @@
           'megan.mcdonald',
           'milly',
           'rob',
-          'rory',
         ],
         auxiliary_members: [
           'pete',
-          'lawrence',
           'ben',
         ],
         escalation_path: $.escalationPaths.RSP_PINC_SP,
@@ -89,7 +87,6 @@
         ],
         auxiliary_members: [
           'pete',
-          'lawrence',
           'ben',
         ],
         escalation_path: $.escalationPaths.RSP_PINC_SP,
@@ -119,7 +116,6 @@
         ],
         auxiliary_members: [
           'pete',
-          'lawrence',
           'ben',
         ],
         escalation_path: $.escalationPaths.RSP_PINC_SP,
