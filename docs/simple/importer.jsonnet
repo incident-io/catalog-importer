@@ -86,6 +86,11 @@ local catalog = import 'catalog.jsonnet';
               array: true,
               source: '$.members',
             },
+            {
+              id: 'escalation_path',
+              name: 'Escalation path',
+              type: 'EscalationPath',
+            },
           ],
         },
       ],
