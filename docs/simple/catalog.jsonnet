@@ -1,7 +1,7 @@
 {
   escalationPaths: {
-    RSP_PINC_SP: 'rsp-pinc-sp',
-    ONC: 'onc',
+    RSP_PINC_SP: '01JAAJH5RE685WFRSZ2VFDEKS9',
+    ONC: '01J5B8JGEFK7DHNW00GZX1R17V',
   },
 
   // All product development teams are defined here.
