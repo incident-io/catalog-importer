@@ -1,4 +1,9 @@
 {
+  escalationPaths: {
+    RSP_PINC_SP: 'rsp-pinc-sp',
+    ONC: 'onc',
+  },
+
   // All product development teams are defined here.
   teams: [
     {
@@ -19,6 +24,7 @@
       linear_team: error 'linear_team is required',
       members: error 'members is required',
       auxiliary_members: error 'auxiliary_members is required',
+      escalation_path: error 'escalation_path is required',
     } + team
     for team in [
       {
@@ -53,6 +59,7 @@
           'lawrence',
           'ben',
         ],
+        escalation_path: $.escalationPaths.RSP_PINC_SP,
       },
       {
         external_id: 'response',
@@ -75,7 +82,6 @@
           'benji',
           'james.shedden',
           'kelsey',
-          'leo.papaloizos',
           'lisa',
           'megan.mcdonald',
           'sam',
@@ -86,6 +92,7 @@
           'lawrence',
           'ben',
         ],
+        escalation_path: $.escalationPaths.RSP_PINC_SP,
       },
       {
         external_id: 'status-pages',
@@ -108,7 +115,6 @@
           'dimitra',
           'isaac',
           'james.shedden',
-          'martha',
           'megan.mcdonald',
         ],
         auxiliary_members: [
@@ -116,6 +122,35 @@
           'lawrence',
           'ben',
         ],
+        escalation_path: $.escalationPaths.RSP_PINC_SP,
+      },
+      {
+        external_id: 'on-call',
+        name: 'On-call',
+        description: 'Building a delightful on-call product.',
+        goal: 'Responsible for the reliability and experience of the On-call product',
+        homepage: 'https://www.notion.so/incidentio/On-call-Team-4d360ade77624b879e0d1f197f300616',
+        group: std.format('%s-team@incident.io', self.external_id),
+        tech_lead: 'leo.sjoberg',
+        engineering_manager: 'chris.class',
+        product_manager: 'miia.paavola',
+        sentry_team: 'on-call',
+        slack_user_group: 'team-on-callz',
+        slack_channel: 'team-on-call',
+        alert_channel: '#alerts-on-call-pulse',
+        alert_staging_channel: '#alerts-on-call-staging-pulse',
+        linear_team: 'ONC',
+        members: [
+          'lawrence',
+          'leo.papaloizos',
+          'martha',
+          'rory',
+          'rory.malcolm',
+        ],
+        auxiliary_members: [
+          'sam.willis',
+        ],
+        escalation_path: $.escalationPaths.ONC,
       },
     ]
   ],
