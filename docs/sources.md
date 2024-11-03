@@ -130,9 +130,10 @@ This looks like:
     // https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
     token: '$(BACKSTAGE_TOKEN)',
 
-    // Optional. Customize header value used for authorization. If you are using a custom 
-    // value for your authorization header that can be changed here.
-    header: 'CustomHeader'
+    // By default, we send the token in the `Authorization` HTTP header. If you 
+    // want to override this, then you use this optional configuration value to 
+    // override the header name that is used.
+    // header: 'CustomHeader'
 
     // Some Backstage instances (e.g. Roadie) may prefer tokens to be used
     // as-is instead of signed into JWTs. If this is you, explicitly opt-out of
