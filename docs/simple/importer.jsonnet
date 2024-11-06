@@ -74,12 +74,6 @@ local catalog = import 'catalog.jsonnet';
               source: '$.alert_channel',
             },
             {
-              id: 'linear_team',
-              name: 'Linear team',
-              type: 'LinearTeam',
-              source: '$.linear_team',
-            },
-            {
               id: 'members',
               name: 'Members',
               type: 'User',
