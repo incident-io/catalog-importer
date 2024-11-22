@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
-	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
 // Defines values for ActionV1Status.
@@ -47,6 +46,25 @@ const (
 // Defines values for AlertResultStatus.
 const (
 	Success AlertResultStatus = "success"
+)
+
+// Defines values for AlertRouteIncidentTemplatePayloadV2PrioritySeverity.
+const (
+	AlertRouteIncidentTemplatePayloadV2PrioritySeveritySeverityFirstWins AlertRouteIncidentTemplatePayloadV2PrioritySeverity = "severity-first-wins"
+	AlertRouteIncidentTemplatePayloadV2PrioritySeveritySeverityMax       AlertRouteIncidentTemplatePayloadV2PrioritySeverity = "severity-max"
+)
+
+// Defines values for AlertRouteIncidentTemplateV2CustomFieldPriorities.
+const (
+	Append    AlertRouteIncidentTemplateV2CustomFieldPriorities = "append"
+	FirstWins AlertRouteIncidentTemplateV2CustomFieldPriorities = "first-wins"
+	LastWins  AlertRouteIncidentTemplateV2CustomFieldPriorities = "last-wins"
+)
+
+// Defines values for AlertRouteIncidentTemplateV2PrioritySeverity.
+const (
+	AlertRouteIncidentTemplateV2PrioritySeveritySeverityFirstWins AlertRouteIncidentTemplateV2PrioritySeverity = "severity-first-wins"
+	AlertRouteIncidentTemplateV2PrioritySeveritySeverityMax       AlertRouteIncidentTemplateV2PrioritySeverity = "severity-max"
 )
 
 // Defines values for CatalogResourceV2Category.
@@ -102,56 +120,39 @@ const (
 
 // Defines values for CatalogTypeV2Icon.
 const (
-	CatalogTypeV2IconBolt       CatalogTypeV2Icon = "bolt"
-	CatalogTypeV2IconBox        CatalogTypeV2Icon = "box"
-	CatalogTypeV2IconBriefcase  CatalogTypeV2Icon = "briefcase"
-	CatalogTypeV2IconBrowser    CatalogTypeV2Icon = "browser"
-	CatalogTypeV2IconBulb       CatalogTypeV2Icon = "bulb"
-	CatalogTypeV2IconCalendar   CatalogTypeV2Icon = "calendar"
-	CatalogTypeV2IconClock      CatalogTypeV2Icon = "clock"
-	CatalogTypeV2IconCog        CatalogTypeV2Icon = "cog"
-	CatalogTypeV2IconComponents CatalogTypeV2Icon = "components"
-	CatalogTypeV2IconDatabase   CatalogTypeV2Icon = "database"
-	CatalogTypeV2IconDoc        CatalogTypeV2Icon = "doc"
-	CatalogTypeV2IconEmail      CatalogTypeV2Icon = "email"
-	CatalogTypeV2IconFiles      CatalogTypeV2Icon = "files"
-	CatalogTypeV2IconFlag       CatalogTypeV2Icon = "flag"
-	CatalogTypeV2IconFolder     CatalogTypeV2Icon = "folder"
-	CatalogTypeV2IconGlobe      CatalogTypeV2Icon = "globe"
-	CatalogTypeV2IconMoney      CatalogTypeV2Icon = "money"
-	CatalogTypeV2IconServer     CatalogTypeV2Icon = "server"
-	CatalogTypeV2IconSeverity   CatalogTypeV2Icon = "severity"
-	CatalogTypeV2IconStar       CatalogTypeV2Icon = "star"
-	CatalogTypeV2IconStore      CatalogTypeV2Icon = "store"
-	CatalogTypeV2IconTag        CatalogTypeV2Icon = "tag"
-	CatalogTypeV2IconUser       CatalogTypeV2Icon = "user"
-	CatalogTypeV2IconUsers      CatalogTypeV2Icon = "users"
+	CatalogTypeV2IconAlert          CatalogTypeV2Icon = "alert"
+	CatalogTypeV2IconBolt           CatalogTypeV2Icon = "bolt"
+	CatalogTypeV2IconBox            CatalogTypeV2Icon = "box"
+	CatalogTypeV2IconBriefcase      CatalogTypeV2Icon = "briefcase"
+	CatalogTypeV2IconBrowser        CatalogTypeV2Icon = "browser"
+	CatalogTypeV2IconBulb           CatalogTypeV2Icon = "bulb"
+	CatalogTypeV2IconCalendar       CatalogTypeV2Icon = "calendar"
+	CatalogTypeV2IconClock          CatalogTypeV2Icon = "clock"
+	CatalogTypeV2IconCog            CatalogTypeV2Icon = "cog"
+	CatalogTypeV2IconComponents     CatalogTypeV2Icon = "components"
+	CatalogTypeV2IconDatabase       CatalogTypeV2Icon = "database"
+	CatalogTypeV2IconDoc            CatalogTypeV2Icon = "doc"
+	CatalogTypeV2IconEmail          CatalogTypeV2Icon = "email"
+	CatalogTypeV2IconEscalationPath CatalogTypeV2Icon = "escalation-path"
+	CatalogTypeV2IconFiles          CatalogTypeV2Icon = "files"
+	CatalogTypeV2IconFlag           CatalogTypeV2Icon = "flag"
+	CatalogTypeV2IconFolder         CatalogTypeV2Icon = "folder"
+	CatalogTypeV2IconGlobe          CatalogTypeV2Icon = "globe"
+	CatalogTypeV2IconMoney          CatalogTypeV2Icon = "money"
+	CatalogTypeV2IconServer         CatalogTypeV2Icon = "server"
+	CatalogTypeV2IconSeverity       CatalogTypeV2Icon = "severity"
+	CatalogTypeV2IconStar           CatalogTypeV2Icon = "star"
+	CatalogTypeV2IconStatusPage     CatalogTypeV2Icon = "status-page"
+	CatalogTypeV2IconStore          CatalogTypeV2Icon = "store"
+	CatalogTypeV2IconTag            CatalogTypeV2Icon = "tag"
+	CatalogTypeV2IconUser           CatalogTypeV2Icon = "user"
+	CatalogTypeV2IconUsers          CatalogTypeV2Icon = "users"
 )
 
 // Defines values for CreateHTTPRequestBodyStatus.
 const (
 	Firing   CreateHTTPRequestBodyStatus = "firing"
 	Resolved CreateHTTPRequestBodyStatus = "resolved"
-)
-
-// Defines values for CreateManagedResourceRequestBodyResourceType.
-const (
-	CreateManagedResourceRequestBodyResourceTypeSchedule CreateManagedResourceRequestBodyResourceType = "schedule"
-	CreateManagedResourceRequestBodyResourceTypeWorkflow CreateManagedResourceRequestBodyResourceType = "workflow"
-)
-
-// Defines values for CreateRequestBody10Mode.
-const (
-	CreateRequestBody10ModeRetrospective CreateRequestBody10Mode = "retrospective"
-	CreateRequestBody10ModeStandard      CreateRequestBody10Mode = "standard"
-	CreateRequestBody10ModeTest          CreateRequestBody10Mode = "test"
-	CreateRequestBody10ModeTutorial      CreateRequestBody10Mode = "tutorial"
-)
-
-// Defines values for CreateRequestBody10Visibility.
-const (
-	CreateRequestBody10VisibilityPrivate CreateRequestBody10Visibility = "private"
-	CreateRequestBody10VisibilityPublic  CreateRequestBody10Visibility = "public"
 )
 
 // Defines values for CreateRequestBody2FieldType.
@@ -209,28 +210,6 @@ const (
 	CreateRequestBody8CategoryLive     CreateRequestBody8Category = "live"
 )
 
-// Defines values for CreateRequestBody9Mode.
-const (
-	CreateRequestBody9ModeReal CreateRequestBody9Mode = "real"
-	CreateRequestBody9ModeTest CreateRequestBody9Mode = "test"
-)
-
-// Defines values for CreateRequestBody9Status.
-const (
-	CreateRequestBody9StatusClosed        CreateRequestBody9Status = "closed"
-	CreateRequestBody9StatusDeclined      CreateRequestBody9Status = "declined"
-	CreateRequestBody9StatusFixing        CreateRequestBody9Status = "fixing"
-	CreateRequestBody9StatusInvestigating CreateRequestBody9Status = "investigating"
-	CreateRequestBody9StatusMonitoring    CreateRequestBody9Status = "monitoring"
-	CreateRequestBody9StatusTriage        CreateRequestBody9Status = "triage"
-)
-
-// Defines values for CreateRequestBody9Visibility.
-const (
-	CreateRequestBody9VisibilityPrivate CreateRequestBody9Visibility = "private"
-	CreateRequestBody9VisibilityPublic  CreateRequestBody9Visibility = "public"
-)
-
 // Defines values for CreateTypeRequestBodyCategories.
 const (
 	CreateTypeRequestBodyCategoriesCustomer       CreateTypeRequestBodyCategories = "customer"
@@ -255,51 +234,54 @@ const (
 
 // Defines values for CreateTypeRequestBodyIcon.
 const (
-	CreateTypeRequestBodyIconBolt       CreateTypeRequestBodyIcon = "bolt"
-	CreateTypeRequestBodyIconBox        CreateTypeRequestBodyIcon = "box"
-	CreateTypeRequestBodyIconBriefcase  CreateTypeRequestBodyIcon = "briefcase"
-	CreateTypeRequestBodyIconBrowser    CreateTypeRequestBodyIcon = "browser"
-	CreateTypeRequestBodyIconBulb       CreateTypeRequestBodyIcon = "bulb"
-	CreateTypeRequestBodyIconCalendar   CreateTypeRequestBodyIcon = "calendar"
-	CreateTypeRequestBodyIconClock      CreateTypeRequestBodyIcon = "clock"
-	CreateTypeRequestBodyIconCog        CreateTypeRequestBodyIcon = "cog"
-	CreateTypeRequestBodyIconComponents CreateTypeRequestBodyIcon = "components"
-	CreateTypeRequestBodyIconDatabase   CreateTypeRequestBodyIcon = "database"
-	CreateTypeRequestBodyIconDoc        CreateTypeRequestBodyIcon = "doc"
-	CreateTypeRequestBodyIconEmail      CreateTypeRequestBodyIcon = "email"
-	CreateTypeRequestBodyIconFiles      CreateTypeRequestBodyIcon = "files"
-	CreateTypeRequestBodyIconFlag       CreateTypeRequestBodyIcon = "flag"
-	CreateTypeRequestBodyIconFolder     CreateTypeRequestBodyIcon = "folder"
-	CreateTypeRequestBodyIconGlobe      CreateTypeRequestBodyIcon = "globe"
-	CreateTypeRequestBodyIconMoney      CreateTypeRequestBodyIcon = "money"
-	CreateTypeRequestBodyIconServer     CreateTypeRequestBodyIcon = "server"
-	CreateTypeRequestBodyIconSeverity   CreateTypeRequestBodyIcon = "severity"
-	CreateTypeRequestBodyIconStar       CreateTypeRequestBodyIcon = "star"
-	CreateTypeRequestBodyIconStore      CreateTypeRequestBodyIcon = "store"
-	CreateTypeRequestBodyIconTag        CreateTypeRequestBodyIcon = "tag"
-	CreateTypeRequestBodyIconUser       CreateTypeRequestBodyIcon = "user"
-	CreateTypeRequestBodyIconUsers      CreateTypeRequestBodyIcon = "users"
+	CreateTypeRequestBodyIconAlert          CreateTypeRequestBodyIcon = "alert"
+	CreateTypeRequestBodyIconBolt           CreateTypeRequestBodyIcon = "bolt"
+	CreateTypeRequestBodyIconBox            CreateTypeRequestBodyIcon = "box"
+	CreateTypeRequestBodyIconBriefcase      CreateTypeRequestBodyIcon = "briefcase"
+	CreateTypeRequestBodyIconBrowser        CreateTypeRequestBodyIcon = "browser"
+	CreateTypeRequestBodyIconBulb           CreateTypeRequestBodyIcon = "bulb"
+	CreateTypeRequestBodyIconCalendar       CreateTypeRequestBodyIcon = "calendar"
+	CreateTypeRequestBodyIconClock          CreateTypeRequestBodyIcon = "clock"
+	CreateTypeRequestBodyIconCog            CreateTypeRequestBodyIcon = "cog"
+	CreateTypeRequestBodyIconComponents     CreateTypeRequestBodyIcon = "components"
+	CreateTypeRequestBodyIconDatabase       CreateTypeRequestBodyIcon = "database"
+	CreateTypeRequestBodyIconDoc            CreateTypeRequestBodyIcon = "doc"
+	CreateTypeRequestBodyIconEmail          CreateTypeRequestBodyIcon = "email"
+	CreateTypeRequestBodyIconEscalationPath CreateTypeRequestBodyIcon = "escalation-path"
+	CreateTypeRequestBodyIconFiles          CreateTypeRequestBodyIcon = "files"
+	CreateTypeRequestBodyIconFlag           CreateTypeRequestBodyIcon = "flag"
+	CreateTypeRequestBodyIconFolder         CreateTypeRequestBodyIcon = "folder"
+	CreateTypeRequestBodyIconGlobe          CreateTypeRequestBodyIcon = "globe"
+	CreateTypeRequestBodyIconMoney          CreateTypeRequestBodyIcon = "money"
+	CreateTypeRequestBodyIconServer         CreateTypeRequestBodyIcon = "server"
+	CreateTypeRequestBodyIconSeverity       CreateTypeRequestBodyIcon = "severity"
+	CreateTypeRequestBodyIconStar           CreateTypeRequestBodyIcon = "star"
+	CreateTypeRequestBodyIconStatusPage     CreateTypeRequestBodyIcon = "status-page"
+	CreateTypeRequestBodyIconStore          CreateTypeRequestBodyIcon = "store"
+	CreateTypeRequestBodyIconTag            CreateTypeRequestBodyIcon = "tag"
+	CreateTypeRequestBodyIconUser           CreateTypeRequestBodyIcon = "user"
+	CreateTypeRequestBodyIconUsers          CreateTypeRequestBodyIcon = "users"
 )
 
-// Defines values for CreateWorkflowRequestBodyRunsOnIncidentModes.
+// Defines values for CreateWorkflowPayloadRunsOnIncidentModes.
 const (
-	CreateWorkflowRequestBodyRunsOnIncidentModesRetrospective CreateWorkflowRequestBodyRunsOnIncidentModes = "retrospective"
-	CreateWorkflowRequestBodyRunsOnIncidentModesStandard      CreateWorkflowRequestBodyRunsOnIncidentModes = "standard"
-	CreateWorkflowRequestBodyRunsOnIncidentModesTest          CreateWorkflowRequestBodyRunsOnIncidentModes = "test"
+	CreateWorkflowPayloadRunsOnIncidentModesRetrospective CreateWorkflowPayloadRunsOnIncidentModes = "retrospective"
+	CreateWorkflowPayloadRunsOnIncidentModesStandard      CreateWorkflowPayloadRunsOnIncidentModes = "standard"
+	CreateWorkflowPayloadRunsOnIncidentModesTest          CreateWorkflowPayloadRunsOnIncidentModes = "test"
 )
 
-// Defines values for CreateWorkflowRequestBodyRunsOnIncidents.
+// Defines values for CreateWorkflowPayloadRunsOnIncidents.
 const (
-	CreateWorkflowRequestBodyRunsOnIncidentsNewlyCreated          CreateWorkflowRequestBodyRunsOnIncidents = "newly_created"
-	CreateWorkflowRequestBodyRunsOnIncidentsNewlyCreatedAndActive CreateWorkflowRequestBodyRunsOnIncidents = "newly_created_and_active"
+	CreateWorkflowPayloadRunsOnIncidentsNewlyCreated          CreateWorkflowPayloadRunsOnIncidents = "newly_created"
+	CreateWorkflowPayloadRunsOnIncidentsNewlyCreatedAndActive CreateWorkflowPayloadRunsOnIncidents = "newly_created_and_active"
 )
 
-// Defines values for CreateWorkflowRequestBodyState.
+// Defines values for CreateWorkflowPayloadState.
 const (
-	CreateWorkflowRequestBodyStateActive   CreateWorkflowRequestBodyState = "active"
-	CreateWorkflowRequestBodyStateDisabled CreateWorkflowRequestBodyState = "disabled"
-	CreateWorkflowRequestBodyStateDraft    CreateWorkflowRequestBodyState = "draft"
-	CreateWorkflowRequestBodyStateError    CreateWorkflowRequestBodyState = "error"
+	CreateWorkflowPayloadStateActive   CreateWorkflowPayloadState = "active"
+	CreateWorkflowPayloadStateDisabled CreateWorkflowPayloadState = "disabled"
+	CreateWorkflowPayloadStateDraft    CreateWorkflowPayloadState = "draft"
+	CreateWorkflowPayloadStateError    CreateWorkflowPayloadState = "error"
 )
 
 // Defines values for CustomFieldTypeInfoV1FieldType.
@@ -309,6 +291,15 @@ const (
 	CustomFieldTypeInfoV1FieldTypeNumeric      CustomFieldTypeInfoV1FieldType = "numeric"
 	CustomFieldTypeInfoV1FieldTypeSingleSelect CustomFieldTypeInfoV1FieldType = "single_select"
 	CustomFieldTypeInfoV1FieldTypeText         CustomFieldTypeInfoV1FieldType = "text"
+)
+
+// Defines values for CustomFieldTypeInfoV2FieldType.
+const (
+	CustomFieldTypeInfoV2FieldTypeLink         CustomFieldTypeInfoV2FieldType = "link"
+	CustomFieldTypeInfoV2FieldTypeMultiSelect  CustomFieldTypeInfoV2FieldType = "multi_select"
+	CustomFieldTypeInfoV2FieldTypeNumeric      CustomFieldTypeInfoV2FieldType = "numeric"
+	CustomFieldTypeInfoV2FieldTypeSingleSelect CustomFieldTypeInfoV2FieldType = "single_select"
+	CustomFieldTypeInfoV2FieldTypeText         CustomFieldTypeInfoV2FieldType = "text"
 )
 
 // Defines values for CustomFieldV1FieldType.
@@ -336,17 +327,30 @@ const (
 
 // Defines values for CustomFieldV2FieldType.
 const (
-	Link         CustomFieldV2FieldType = "link"
-	MultiSelect  CustomFieldV2FieldType = "multi_select"
-	Numeric      CustomFieldV2FieldType = "numeric"
-	SingleSelect CustomFieldV2FieldType = "single_select"
-	Text         CustomFieldV2FieldType = "text"
+	CustomFieldV2FieldTypeLink         CustomFieldV2FieldType = "link"
+	CustomFieldV2FieldTypeMultiSelect  CustomFieldV2FieldType = "multi_select"
+	CustomFieldV2FieldTypeNumeric      CustomFieldV2FieldType = "numeric"
+	CustomFieldV2FieldTypeSingleSelect CustomFieldV2FieldType = "single_select"
+	CustomFieldV2FieldTypeText         CustomFieldV2FieldType = "text"
+)
+
+// Defines values for EmbeddedIncidentRoleV2RoleType.
+const (
+	EmbeddedIncidentRoleV2RoleTypeCustom   EmbeddedIncidentRoleV2RoleType = "custom"
+	EmbeddedIncidentRoleV2RoleTypeLead     EmbeddedIncidentRoleV2RoleType = "lead"
+	EmbeddedIncidentRoleV2RoleTypeReporter EmbeddedIncidentRoleV2RoleType = "reporter"
 )
 
 // Defines values for EscalationPathNodeLevelV2TimeToAckIntervalCondition.
 const (
 	EscalationPathNodeLevelV2TimeToAckIntervalConditionActive   EscalationPathNodeLevelV2TimeToAckIntervalCondition = "active"
 	EscalationPathNodeLevelV2TimeToAckIntervalConditionInactive EscalationPathNodeLevelV2TimeToAckIntervalCondition = "inactive"
+)
+
+// Defines values for EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition.
+const (
+	EscalationPathNodeNotifyChannelV2TimeToAckIntervalConditionActive   EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition = "active"
+	EscalationPathNodeNotifyChannelV2TimeToAckIntervalConditionInactive EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition = "inactive"
 )
 
 // Defines values for EscalationPathNodePayloadV2Type.
@@ -363,6 +367,14 @@ const (
 	EscalationPathNodeV2TypeLevel         EscalationPathNodeV2Type = "level"
 	EscalationPathNodeV2TypeNotifyChannel EscalationPathNodeV2Type = "notify_channel"
 	EscalationPathNodeV2TypeRepeat        EscalationPathNodeV2Type = "repeat"
+)
+
+// Defines values for EscalationPathTargetV2ScheduleMode.
+const (
+	EscalationPathTargetV2ScheduleModeAllUsers        EscalationPathTargetV2ScheduleMode = "all_users"
+	EscalationPathTargetV2ScheduleModeAllUsersForRota EscalationPathTargetV2ScheduleMode = "all_users_for_rota"
+	EscalationPathTargetV2ScheduleModeCurrentlyOnCall EscalationPathTargetV2ScheduleMode = "currently_on_call"
+	EscalationPathTargetV2ScheduleModeEmpty           EscalationPathTargetV2ScheduleMode = ""
 )
 
 // Defines values for EscalationPathTargetV2Type.
@@ -389,6 +401,7 @@ const (
 	ExpressionOperationPayloadV2OperationTypeNavigate ExpressionOperationPayloadV2OperationType = "navigate"
 	ExpressionOperationPayloadV2OperationTypeParse    ExpressionOperationPayloadV2OperationType = "parse"
 	ExpressionOperationPayloadV2OperationTypeRandom   ExpressionOperationPayloadV2OperationType = "random"
+	ExpressionOperationPayloadV2OperationTypeSum      ExpressionOperationPayloadV2OperationType = "sum"
 )
 
 // Defines values for ExpressionOperationV2OperationType.
@@ -402,6 +415,7 @@ const (
 	ExpressionOperationV2OperationTypeNavigate ExpressionOperationV2OperationType = "navigate"
 	ExpressionOperationV2OperationTypeParse    ExpressionOperationV2OperationType = "parse"
 	ExpressionOperationV2OperationTypeRandom   ExpressionOperationV2OperationType = "random"
+	ExpressionOperationV2OperationTypeSum      ExpressionOperationV2OperationType = "sum"
 )
 
 // Defines values for ExternalIssueReferenceV1Provider.
@@ -463,10 +477,47 @@ const (
 	IdentityV1RolesManageSettings            IdentityV1Roles = "manage_settings"
 	IdentityV1RolesOnCallEditor              IdentityV1Roles = "on_call_editor"
 	IdentityV1RolesPrivateWorkflowsEditor    IdentityV1Roles = "private_workflows_editor"
+	IdentityV1RolesScheduleOverridesEditor   IdentityV1Roles = "schedule_overrides_editor"
 	IdentityV1RolesSchedulesEditor           IdentityV1Roles = "schedules_editor"
 	IdentityV1RolesSchedulesReader           IdentityV1Roles = "schedules_reader"
 	IdentityV1RolesViewer                    IdentityV1Roles = "viewer"
 	IdentityV1RolesWorkflowsEditor           IdentityV1Roles = "workflows_editor"
+)
+
+// Defines values for IncidentCreatePayloadV1Mode.
+const (
+	IncidentCreatePayloadV1ModeReal IncidentCreatePayloadV1Mode = "real"
+	IncidentCreatePayloadV1ModeTest IncidentCreatePayloadV1Mode = "test"
+)
+
+// Defines values for IncidentCreatePayloadV1Status.
+const (
+	IncidentCreatePayloadV1StatusClosed        IncidentCreatePayloadV1Status = "closed"
+	IncidentCreatePayloadV1StatusDeclined      IncidentCreatePayloadV1Status = "declined"
+	IncidentCreatePayloadV1StatusFixing        IncidentCreatePayloadV1Status = "fixing"
+	IncidentCreatePayloadV1StatusInvestigating IncidentCreatePayloadV1Status = "investigating"
+	IncidentCreatePayloadV1StatusMonitoring    IncidentCreatePayloadV1Status = "monitoring"
+	IncidentCreatePayloadV1StatusTriage        IncidentCreatePayloadV1Status = "triage"
+)
+
+// Defines values for IncidentCreatePayloadV1Visibility.
+const (
+	IncidentCreatePayloadV1VisibilityPrivate IncidentCreatePayloadV1Visibility = "private"
+	IncidentCreatePayloadV1VisibilityPublic  IncidentCreatePayloadV1Visibility = "public"
+)
+
+// Defines values for IncidentCreatePayloadV2Mode.
+const (
+	IncidentCreatePayloadV2ModeRetrospective IncidentCreatePayloadV2Mode = "retrospective"
+	IncidentCreatePayloadV2ModeStandard      IncidentCreatePayloadV2Mode = "standard"
+	IncidentCreatePayloadV2ModeTest          IncidentCreatePayloadV2Mode = "test"
+	IncidentCreatePayloadV2ModeTutorial      IncidentCreatePayloadV2Mode = "tutorial"
+)
+
+// Defines values for IncidentCreatePayloadV2Visibility.
+const (
+	IncidentCreatePayloadV2VisibilityPrivate IncidentCreatePayloadV2Visibility = "private"
+	IncidentCreatePayloadV2VisibilityPublic  IncidentCreatePayloadV2Visibility = "public"
 )
 
 // Defines values for IncidentRoleV1RoleType.
@@ -478,9 +529,9 @@ const (
 
 // Defines values for IncidentRoleV2RoleType.
 const (
-	IncidentRoleV2RoleTypeCustom   IncidentRoleV2RoleType = "custom"
-	IncidentRoleV2RoleTypeLead     IncidentRoleV2RoleType = "lead"
-	IncidentRoleV2RoleTypeReporter IncidentRoleV2RoleType = "reporter"
+	Custom   IncidentRoleV2RoleType = "custom"
+	Lead     IncidentRoleV2RoleType = "lead"
+	Reporter IncidentRoleV2RoleType = "reporter"
 )
 
 // Defines values for IncidentStatusV1Category.
@@ -495,10 +546,28 @@ const (
 	IncidentStatusV1CategoryTriage   IncidentStatusV1Category = "triage"
 )
 
+// Defines values for IncidentStatusV2Category.
+const (
+	IncidentStatusV2CategoryCanceled IncidentStatusV2Category = "canceled"
+	IncidentStatusV2CategoryClosed   IncidentStatusV2Category = "closed"
+	IncidentStatusV2CategoryDeclined IncidentStatusV2Category = "declined"
+	IncidentStatusV2CategoryLearning IncidentStatusV2Category = "learning"
+	IncidentStatusV2CategoryLive     IncidentStatusV2Category = "live"
+	IncidentStatusV2CategoryMerged   IncidentStatusV2Category = "merged"
+	IncidentStatusV2CategoryPaused   IncidentStatusV2Category = "paused"
+	IncidentStatusV2CategoryTriage   IncidentStatusV2Category = "triage"
+)
+
 // Defines values for IncidentTypeV1CreateInTriage.
 const (
 	IncidentTypeV1CreateInTriageAlways   IncidentTypeV1CreateInTriage = "always"
 	IncidentTypeV1CreateInTriageOptional IncidentTypeV1CreateInTriage = "optional"
+)
+
+// Defines values for IncidentTypeV2CreateInTriage.
+const (
+	IncidentTypeV2CreateInTriageAlways   IncidentTypeV2CreateInTriage = "always"
+	IncidentTypeV2CreateInTriageOptional IncidentTypeV2CreateInTriage = "optional"
 )
 
 // Defines values for IncidentV1Mode.
@@ -510,12 +579,12 @@ const (
 
 // Defines values for IncidentV1Status.
 const (
-	IncidentV1StatusClosed        IncidentV1Status = "closed"
-	IncidentV1StatusDeclined      IncidentV1Status = "declined"
-	IncidentV1StatusFixing        IncidentV1Status = "fixing"
-	IncidentV1StatusInvestigating IncidentV1Status = "investigating"
-	IncidentV1StatusMonitoring    IncidentV1Status = "monitoring"
-	IncidentV1StatusTriage        IncidentV1Status = "triage"
+	Closed        IncidentV1Status = "closed"
+	Declined      IncidentV1Status = "declined"
+	Fixing        IncidentV1Status = "fixing"
+	Investigating IncidentV1Status = "investigating"
+	Monitoring    IncidentV1Status = "monitoring"
+	Triage        IncidentV1Status = "triage"
 )
 
 // Defines values for IncidentV1Visibility.
@@ -538,19 +607,6 @@ const (
 	IncidentV2VisibilityPublic  IncidentV2Visibility = "public"
 )
 
-// Defines values for ManagedResourceV2ManagedBy.
-const (
-	ManagedResourceV2ManagedByDashboard ManagedResourceV2ManagedBy = "dashboard"
-	ManagedResourceV2ManagedByExternal  ManagedResourceV2ManagedBy = "external"
-	ManagedResourceV2ManagedByTerraform ManagedResourceV2ManagedBy = "terraform"
-)
-
-// Defines values for ManagedResourceV2ResourceType.
-const (
-	ManagedResourceV2ResourceTypeSchedule ManagedResourceV2ResourceType = "schedule"
-	ManagedResourceV2ResourceTypeWorkflow ManagedResourceV2ResourceType = "workflow"
-)
-
 // Defines values for ManagementMetaV2ManagedBy.
 const (
 	Dashboard ManagementMetaV2ManagedBy = "dashboard"
@@ -565,29 +621,51 @@ const (
 	Weekly ScheduleRotationHandoverV2IntervalType = "weekly"
 )
 
+// Defines values for ScheduleRotationWorkingIntervalCreatePayloadV2Weekday.
+const (
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdayFriday    ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "friday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdayMonday    ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "monday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdaySaturday  ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "saturday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdaySunday    ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "sunday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdayThursday  ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "thursday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdayTuesday   ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "tuesday"
+	ScheduleRotationWorkingIntervalCreatePayloadV2WeekdayWednesday ScheduleRotationWorkingIntervalCreatePayloadV2Weekday = "wednesday"
+)
+
 // Defines values for ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday.
 const (
-	Friday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "friday"
-	Monday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "monday"
-	Saturday  ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "saturday"
-	Sunday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "sunday"
-	Thursday  ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "thursday"
-	Tuesday   ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "tuesday"
-	Wednesday ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "wednesday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdayFriday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "friday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdayMonday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "monday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdaySaturday  ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "saturday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdaySunday    ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "sunday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdayThursday  ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "thursday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdayTuesday   ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "tuesday"
+	ScheduleRotationWorkingIntervalUpdatePayloadV2WeekdayWednesday ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday = "wednesday"
 )
 
-// Defines values for UpdateRequestBody2Required.
+// Defines values for ScheduleRotationWorkingIntervalV2Weekday.
 const (
-	UpdateRequestBody2RequiredAlways        UpdateRequestBody2Required = "always"
-	UpdateRequestBody2RequiredBeforeClosure UpdateRequestBody2Required = "before_closure"
-	UpdateRequestBody2RequiredNever         UpdateRequestBody2Required = "never"
+	Friday    ScheduleRotationWorkingIntervalV2Weekday = "friday"
+	Monday    ScheduleRotationWorkingIntervalV2Weekday = "monday"
+	Saturday  ScheduleRotationWorkingIntervalV2Weekday = "saturday"
+	Sunday    ScheduleRotationWorkingIntervalV2Weekday = "sunday"
+	Thursday  ScheduleRotationWorkingIntervalV2Weekday = "thursday"
+	Tuesday   ScheduleRotationWorkingIntervalV2Weekday = "tuesday"
+	Wednesday ScheduleRotationWorkingIntervalV2Weekday = "wednesday"
 )
 
-// Defines values for UpdateRequestBody2RequiredV2.
+// Defines values for UpdateRequestBody3Required.
 const (
-	Always           UpdateRequestBody2RequiredV2 = "always"
-	BeforeResolution UpdateRequestBody2RequiredV2 = "before_resolution"
-	Never            UpdateRequestBody2RequiredV2 = "never"
+	UpdateRequestBody3RequiredAlways        UpdateRequestBody3Required = "always"
+	UpdateRequestBody3RequiredBeforeClosure UpdateRequestBody3Required = "before_closure"
+	UpdateRequestBody3RequiredNever         UpdateRequestBody3Required = "never"
+)
+
+// Defines values for UpdateRequestBody3RequiredV2.
+const (
+	UpdateRequestBody3RequiredV2Always           UpdateRequestBody3RequiredV2 = "always"
+	UpdateRequestBody3RequiredV2BeforeResolution UpdateRequestBody3RequiredV2 = "before_resolution"
+	UpdateRequestBody3RequiredV2Never            UpdateRequestBody3RequiredV2 = "never"
 )
 
 // Defines values for UpdateTypeRequestBodyCategories.
@@ -614,51 +692,54 @@ const (
 
 // Defines values for UpdateTypeRequestBodyIcon.
 const (
-	UpdateTypeRequestBodyIconBolt       UpdateTypeRequestBodyIcon = "bolt"
-	UpdateTypeRequestBodyIconBox        UpdateTypeRequestBodyIcon = "box"
-	UpdateTypeRequestBodyIconBriefcase  UpdateTypeRequestBodyIcon = "briefcase"
-	UpdateTypeRequestBodyIconBrowser    UpdateTypeRequestBodyIcon = "browser"
-	UpdateTypeRequestBodyIconBulb       UpdateTypeRequestBodyIcon = "bulb"
-	UpdateTypeRequestBodyIconCalendar   UpdateTypeRequestBodyIcon = "calendar"
-	UpdateTypeRequestBodyIconClock      UpdateTypeRequestBodyIcon = "clock"
-	UpdateTypeRequestBodyIconCog        UpdateTypeRequestBodyIcon = "cog"
-	UpdateTypeRequestBodyIconComponents UpdateTypeRequestBodyIcon = "components"
-	UpdateTypeRequestBodyIconDatabase   UpdateTypeRequestBodyIcon = "database"
-	UpdateTypeRequestBodyIconDoc        UpdateTypeRequestBodyIcon = "doc"
-	UpdateTypeRequestBodyIconEmail      UpdateTypeRequestBodyIcon = "email"
-	UpdateTypeRequestBodyIconFiles      UpdateTypeRequestBodyIcon = "files"
-	UpdateTypeRequestBodyIconFlag       UpdateTypeRequestBodyIcon = "flag"
-	UpdateTypeRequestBodyIconFolder     UpdateTypeRequestBodyIcon = "folder"
-	UpdateTypeRequestBodyIconGlobe      UpdateTypeRequestBodyIcon = "globe"
-	UpdateTypeRequestBodyIconMoney      UpdateTypeRequestBodyIcon = "money"
-	UpdateTypeRequestBodyIconServer     UpdateTypeRequestBodyIcon = "server"
-	UpdateTypeRequestBodyIconSeverity   UpdateTypeRequestBodyIcon = "severity"
-	UpdateTypeRequestBodyIconStar       UpdateTypeRequestBodyIcon = "star"
-	UpdateTypeRequestBodyIconStore      UpdateTypeRequestBodyIcon = "store"
-	UpdateTypeRequestBodyIconTag        UpdateTypeRequestBodyIcon = "tag"
-	UpdateTypeRequestBodyIconUser       UpdateTypeRequestBodyIcon = "user"
-	UpdateTypeRequestBodyIconUsers      UpdateTypeRequestBodyIcon = "users"
+	Alert          UpdateTypeRequestBodyIcon = "alert"
+	Bolt           UpdateTypeRequestBodyIcon = "bolt"
+	Box            UpdateTypeRequestBodyIcon = "box"
+	Briefcase      UpdateTypeRequestBodyIcon = "briefcase"
+	Browser        UpdateTypeRequestBodyIcon = "browser"
+	Bulb           UpdateTypeRequestBodyIcon = "bulb"
+	Calendar       UpdateTypeRequestBodyIcon = "calendar"
+	Clock          UpdateTypeRequestBodyIcon = "clock"
+	Cog            UpdateTypeRequestBodyIcon = "cog"
+	Components     UpdateTypeRequestBodyIcon = "components"
+	Database       UpdateTypeRequestBodyIcon = "database"
+	Doc            UpdateTypeRequestBodyIcon = "doc"
+	Email          UpdateTypeRequestBodyIcon = "email"
+	EscalationPath UpdateTypeRequestBodyIcon = "escalation-path"
+	Files          UpdateTypeRequestBodyIcon = "files"
+	Flag           UpdateTypeRequestBodyIcon = "flag"
+	Folder         UpdateTypeRequestBodyIcon = "folder"
+	Globe          UpdateTypeRequestBodyIcon = "globe"
+	Money          UpdateTypeRequestBodyIcon = "money"
+	Server         UpdateTypeRequestBodyIcon = "server"
+	Severity       UpdateTypeRequestBodyIcon = "severity"
+	Star           UpdateTypeRequestBodyIcon = "star"
+	StatusPage     UpdateTypeRequestBodyIcon = "status-page"
+	Store          UpdateTypeRequestBodyIcon = "store"
+	Tag            UpdateTypeRequestBodyIcon = "tag"
+	User           UpdateTypeRequestBodyIcon = "user"
+	Users          UpdateTypeRequestBodyIcon = "users"
 )
 
-// Defines values for UpdateWorkflowRequestBodyRunsOnIncidentModes.
+// Defines values for UpdateWorkflowPayloadRunsOnIncidentModes.
 const (
-	UpdateWorkflowRequestBodyRunsOnIncidentModesRetrospective UpdateWorkflowRequestBodyRunsOnIncidentModes = "retrospective"
-	UpdateWorkflowRequestBodyRunsOnIncidentModesStandard      UpdateWorkflowRequestBodyRunsOnIncidentModes = "standard"
-	UpdateWorkflowRequestBodyRunsOnIncidentModesTest          UpdateWorkflowRequestBodyRunsOnIncidentModes = "test"
+	UpdateWorkflowPayloadRunsOnIncidentModesRetrospective UpdateWorkflowPayloadRunsOnIncidentModes = "retrospective"
+	UpdateWorkflowPayloadRunsOnIncidentModesStandard      UpdateWorkflowPayloadRunsOnIncidentModes = "standard"
+	UpdateWorkflowPayloadRunsOnIncidentModesTest          UpdateWorkflowPayloadRunsOnIncidentModes = "test"
 )
 
-// Defines values for UpdateWorkflowRequestBodyRunsOnIncidents.
+// Defines values for UpdateWorkflowPayloadRunsOnIncidents.
 const (
-	UpdateWorkflowRequestBodyRunsOnIncidentsNewlyCreated          UpdateWorkflowRequestBodyRunsOnIncidents = "newly_created"
-	UpdateWorkflowRequestBodyRunsOnIncidentsNewlyCreatedAndActive UpdateWorkflowRequestBodyRunsOnIncidents = "newly_created_and_active"
+	UpdateWorkflowPayloadRunsOnIncidentsNewlyCreated          UpdateWorkflowPayloadRunsOnIncidents = "newly_created"
+	UpdateWorkflowPayloadRunsOnIncidentsNewlyCreatedAndActive UpdateWorkflowPayloadRunsOnIncidents = "newly_created_and_active"
 )
 
-// Defines values for UpdateWorkflowRequestBodyState.
+// Defines values for UpdateWorkflowPayloadState.
 const (
-	UpdateWorkflowRequestBodyStateActive   UpdateWorkflowRequestBodyState = "active"
-	UpdateWorkflowRequestBodyStateDisabled UpdateWorkflowRequestBodyState = "disabled"
-	UpdateWorkflowRequestBodyStateDraft    UpdateWorkflowRequestBodyState = "draft"
-	UpdateWorkflowRequestBodyStateError    UpdateWorkflowRequestBodyState = "error"
+	UpdateWorkflowPayloadStateActive   UpdateWorkflowPayloadState = "active"
+	UpdateWorkflowPayloadStateDisabled UpdateWorkflowPayloadState = "disabled"
+	UpdateWorkflowPayloadStateDraft    UpdateWorkflowPayloadState = "draft"
+	UpdateWorkflowPayloadStateError    UpdateWorkflowPayloadState = "error"
 )
 
 // Defines values for UserV1Role.
@@ -670,13 +751,22 @@ const (
 	UserV1RoleViewer        UserV1Role = "viewer"
 )
 
+// Defines values for UserV2Role.
+const (
+	UserV2RoleAdministrator UserV2Role = "administrator"
+	UserV2RoleOwner         UserV2Role = "owner"
+	UserV2RoleResponder     UserV2Role = "responder"
+	UserV2RoleUnset         UserV2Role = "unset"
+	UserV2RoleViewer        UserV2Role = "viewer"
+)
+
 // Defines values for UserWithRolesV2Role.
 const (
-	Administrator UserWithRolesV2Role = "administrator"
-	Owner         UserWithRolesV2Role = "owner"
-	Responder     UserWithRolesV2Role = "responder"
-	Unset         UserWithRolesV2Role = "unset"
-	Viewer        UserWithRolesV2Role = "viewer"
+	UserWithRolesV2RoleAdministrator UserWithRolesV2Role = "administrator"
+	UserWithRolesV2RoleOwner         UserWithRolesV2Role = "owner"
+	UserWithRolesV2RoleResponder     UserWithRolesV2Role = "responder"
+	UserWithRolesV2RoleUnset         UserWithRolesV2Role = "unset"
+	UserWithRolesV2RoleViewer        UserWithRolesV2Role = "viewer"
 )
 
 // Defines values for WorkflowRunsOnIncidentModes.
@@ -715,10 +805,10 @@ const (
 
 // Defines values for WorkflowSlimState.
 const (
-	Active   WorkflowSlimState = "active"
-	Disabled WorkflowSlimState = "disabled"
-	Draft    WorkflowSlimState = "draft"
-	Error    WorkflowSlimState = "error"
+	WorkflowSlimStateActive   WorkflowSlimState = "active"
+	WorkflowSlimStateDisabled WorkflowSlimState = "disabled"
+	WorkflowSlimStateDraft    WorkflowSlimState = "draft"
+	WorkflowSlimStateError    WorkflowSlimState = "error"
 )
 
 // Defines values for ActionsV1ListParamsIncidentMode.
@@ -761,6 +851,15 @@ const (
 	Test          FollowUpsV2ListParamsIncidentMode = "test"
 	Tutorial      FollowUpsV2ListParamsIncidentMode = "tutorial"
 )
+
+// APIKeyV1 defines model for APIKeyV1.
+type APIKeyV1 struct {
+	// Id Unique identifier for this API key
+	Id string `json:"id"`
+
+	// Name The name of the API key, for the user's reference
+	Name string `json:"name"`
+}
 
 // APIKeyV2 defines model for APIKeyV2.
 type APIKeyV2 struct {
@@ -806,7 +905,7 @@ type ActionV1Status string
 
 // ActionV2 defines model for ActionV2.
 type ActionV2 struct {
-	Assignee *UserV1 `json:"assignee,omitempty"`
+	Assignee *UserV2 `json:"assignee,omitempty"`
 
 	// CompletedAt When the action was completed
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
@@ -833,10 +932,16 @@ type ActionV2 struct {
 // ActionV2Status Status of the action
 type ActionV2Status string
 
+// ActorV1 defines model for ActorV1.
+type ActorV1 struct {
+	ApiKey *APIKeyV1 `json:"api_key,omitempty"`
+	User   *UserV1   `json:"user,omitempty"`
+}
+
 // ActorV2 defines model for ActorV2.
 type ActorV2 struct {
 	ApiKey *APIKeyV2 `json:"api_key,omitempty"`
-	User   *UserV1   `json:"user,omitempty"`
+	User   *UserV2   `json:"user,omitempty"`
 }
 
 // AfterPaginationMetaResultV2 defines model for AfterPaginationMetaResultV2.
@@ -869,6 +974,138 @@ type AlertResultMessage string
 // AlertResultStatus Status of the event
 type AlertResultStatus string
 
+// AlertRouteAlertSourcePayloadV2 defines model for AlertRouteAlertSourcePayloadV2.
+type AlertRouteAlertSourcePayloadV2 struct {
+	// AlertSourceId The alert source ID that will match for the route
+	AlertSourceId string `json:"alert_source_id"`
+
+	// ConditionGroups What conditions should alerts from this source meet to be included in this alert route?
+	ConditionGroups []ConditionGroupPayloadV2 `json:"condition_groups"`
+}
+
+// AlertRouteEscalationBindingPayloadV2 defines model for AlertRouteEscalationBindingPayloadV2.
+type AlertRouteEscalationBindingPayloadV2 struct {
+	Binding EngineParamBindingPayloadV2 `json:"binding"`
+}
+
+// AlertRouteEscalationBindingV2 defines model for AlertRouteEscalationBindingV2.
+type AlertRouteEscalationBindingV2 struct {
+	Binding EngineParamBindingV2 `json:"binding"`
+}
+
+// AlertRouteIncidentTemplatePayloadV2 defines model for AlertRouteIncidentTemplatePayloadV2.
+type AlertRouteIncidentTemplatePayloadV2 struct {
+	// CustomFieldPriorities lookup of the priority options for each custom field in the template
+	CustomFieldPriorities map[string]string `json:"custom_field_priorities"`
+
+	// CustomFields Custom field keys mapped to values
+	CustomFields *map[string]EngineParamBindingPayloadV2 `json:"custom_fields,omitempty"`
+	IncidentMode *EngineParamBindingPayloadV2            `json:"incident_mode,omitempty"`
+	IncidentType *EngineParamBindingPayloadV2            `json:"incident_type,omitempty"`
+	Name         *EngineParamBindingPayloadV2            `json:"name,omitempty"`
+
+	// PrioritySeverity option defining whether to cause subsequent alerts to increase the severity
+	PrioritySeverity AlertRouteIncidentTemplatePayloadV2PrioritySeverity `json:"priority_severity"`
+	Severity         *EngineParamBindingPayloadV2                        `json:"severity,omitempty"`
+	Summary          *EngineParamBindingPayloadV2                        `json:"summary,omitempty"`
+	Workspace        *EngineParamBindingPayloadV2                        `json:"workspace,omitempty"`
+}
+
+// AlertRouteIncidentTemplatePayloadV2PrioritySeverity option defining whether to cause subsequent alerts to increase the severity
+type AlertRouteIncidentTemplatePayloadV2PrioritySeverity string
+
+// AlertRouteIncidentTemplateV2 defines model for AlertRouteIncidentTemplateV2.
+type AlertRouteIncidentTemplateV2 struct {
+	// CustomFieldPriorities lookup of the priority options for each custom field in the template
+	CustomFieldPriorities map[string]AlertRouteIncidentTemplateV2CustomFieldPriorities `json:"custom_field_priorities"`
+
+	// CustomFields Custom field keys mapped to values
+	CustomFields *map[string]EngineParamBindingV2 `json:"custom_fields,omitempty"`
+	IncidentMode *EngineParamBindingV2            `json:"incident_mode,omitempty"`
+	IncidentType *EngineParamBindingV2            `json:"incident_type,omitempty"`
+	Name         *EngineParamBindingV2            `json:"name,omitempty"`
+
+	// PrioritySeverity binding to use to resolve the workspace to create an incident in
+	PrioritySeverity AlertRouteIncidentTemplateV2PrioritySeverity `json:"priority_severity"`
+	Severity         *EngineParamBindingV2                        `json:"severity,omitempty"`
+	Summary          *EngineParamBindingV2                        `json:"summary,omitempty"`
+	Workspace        *EngineParamBindingV2                        `json:"workspace,omitempty"`
+}
+
+// AlertRouteIncidentTemplateV2CustomFieldPriorities defines model for AlertRouteIncidentTemplateV2.CustomFieldPriorities.
+type AlertRouteIncidentTemplateV2CustomFieldPriorities string
+
+// AlertRouteIncidentTemplateV2PrioritySeverity binding to use to resolve the workspace to create an incident in
+type AlertRouteIncidentTemplateV2PrioritySeverity string
+
+// AlertRoutePayloadV2 defines model for AlertRoutePayloadV2.
+type AlertRoutePayloadV2 struct {
+	// AlertSources Which alert sources should this alert route match?
+	AlertSources *[]AlertRouteAlertSourcePayloadV2 `json:"alert_sources,omitempty"`
+
+	// AutoDeclineEnabled Should triage incidents be declined when alerts are resolved?
+	AutoDeclineEnabled *bool `json:"auto_decline_enabled,omitempty"`
+
+	// ConditionGroups What condition groups must be true for this alert route to fire?
+	ConditionGroups *[]ConditionGroupPayloadV2 `json:"condition_groups,omitempty"`
+
+	// DeferTimeSeconds How long should the escalation defer time be?
+	DeferTimeSeconds *int64 `json:"defer_time_seconds,omitempty"`
+
+	// Enabled Whether this alert route is enabled or not
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// EscalationBindings Which escalation paths should this alert route escalate to?
+	EscalationBindings *[]AlertRouteEscalationBindingPayloadV2 `json:"escalation_bindings,omitempty"`
+
+	// Expressions The expressions used in this template
+	Expressions *[]ExpressionPayloadV2 `json:"expressions,omitempty"`
+
+	// GroupingKeys Which attributes should this alert route use to group alerts?
+	GroupingKeys *[]GroupingKeyV2 `json:"grouping_keys,omitempty"`
+
+	// GroupingWindowSeconds How large should the grouping window be?
+	GroupingWindowSeconds *int64 `json:"grouping_window_seconds,omitempty"`
+
+	// IncidentConditionGroups What condition groups must be true for this alert route to create an incident?
+	IncidentConditionGroups *[]ConditionGroupPayloadV2 `json:"incident_condition_groups,omitempty"`
+
+	// IncidentEnabled Whether this alert route will create incidents or not
+	IncidentEnabled *bool `json:"incident_enabled,omitempty"`
+
+	// Name The name of this alert route config, for the user's reference
+	Name     *string                              `json:"name,omitempty"`
+	Template *AlertRouteIncidentTemplatePayloadV2 `json:"template,omitempty"`
+}
+
+// AlertRouteV2 defines model for AlertRouteV2.
+type AlertRouteV2 struct {
+	// ConditionGroups What condition groups must be true for this alert route to fire?
+	ConditionGroups []ConditionGroupV2 `json:"condition_groups"`
+
+	// DeferTimeSeconds How long should the escalation defer time be?
+	DeferTimeSeconds int64 `json:"defer_time_seconds"`
+
+	// EscalationBindings Which escalation paths should this alert route escalate to?
+	EscalationBindings []AlertRouteEscalationBindingV2 `json:"escalation_bindings"`
+
+	// Expressions The expressions used in this template
+	Expressions *[]ExpressionV2 `json:"expressions,omitempty"`
+
+	// GroupingKeys Which attributes should this alert route use to group alerts?
+	GroupingKeys []GroupingKeyV2 `json:"grouping_keys"`
+
+	// GroupingWindowSeconds How large should the grouping window be?
+	GroupingWindowSeconds int64 `json:"grouping_window_seconds"`
+
+	// Id Unique identifier for this alert route config
+	Id string `json:"id"`
+
+	// Name The name of this alert route config, for the user's reference
+	Name     string                        `json:"name"`
+	Template *AlertRouteIncidentTemplateV2 `json:"template,omitempty"`
+}
+
 // CatalogEntryEngineParamBindingV2 defines model for CatalogEntryEngineParamBindingV2.
 type CatalogEntryEngineParamBindingV2 struct {
 	// ArrayValue If array_value is set, this helps render the values
@@ -880,13 +1117,13 @@ type CatalogEntryEngineParamBindingV2 struct {
 type CatalogEntryEngineParamBindingValueV2 struct {
 	CatalogEntry *CatalogEntryReferenceV2 `json:"catalog_entry,omitempty"`
 
-	// Helptext Gives a description of the option to the user
+	// Helptext This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	Helptext *string `json:"helptext,omitempty"`
 
-	// ImageUrl If appropriate, URL to an image that can be displayed alongside the option
+	// ImageUrl This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	ImageUrl *string `json:"image_url,omitempty"`
 
-	// IsImageSlackIcon If true, the image_url is a Slack icon and should be displayed as such
+	// IsImageSlackIcon This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	IsImageSlackIcon *bool `json:"is_image_slack_icon,omitempty"`
 
 	// Label Human readable label to be displayed for user to select
@@ -895,16 +1132,16 @@ type CatalogEntryEngineParamBindingValueV2 struct {
 	// Literal If set, this is the literal value of the step parameter
 	Literal *string `json:"literal,omitempty"`
 
-	// Reference If set, this is the reference into the trigger scope that is the value of this parameter
+	// Reference This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	Reference *string `json:"reference,omitempty"`
 
-	// SortKey Gives an indication of how to sort the options when displayed to the user
+	// SortKey This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	SortKey string `json:"sort_key"`
 
-	// Unavailable Unavailable is true if we've failed to build the value for this binding
+	// Unavailable This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	Unavailable *bool `json:"unavailable,omitempty"`
 
-	// Value Either the reference or the literal: this field is designed purely to make working with react-select easier
+	// Value This field is deprecated. It will not be present in any responses, and will be removed in a future version
 	Value *string `json:"value,omitempty"`
 }
 
@@ -1103,7 +1340,7 @@ type CatalogTypeV2 struct {
 	RequiredIntegrations *[]string           `json:"required_integrations,omitempty"`
 	Schema               CatalogTypeSchemaV2 `json:"schema"`
 
-	// SemanticType Semantic type of this resource (unused)
+	// SemanticType What type of resource this catalog type should be understodd as
 	SemanticType string `json:"semantic_type"`
 
 	// SourceRepoUrl The url of the external repository where this type is managed
@@ -1134,20 +1371,11 @@ type ConditionGroupPayloadV2 struct {
 // ConditionGroupV2 defines model for ConditionGroupV2.
 type ConditionGroupV2 struct {
 	// Conditions All conditions in this list must be satisfied for the group to be satisfied
-	Conditions []ConditionV3 `json:"conditions"`
+	Conditions []ConditionV2 `json:"conditions"`
 }
 
 // ConditionOperationV2 defines model for ConditionOperationV2.
 type ConditionOperationV2 struct {
-	// Label Human readable label to be displayed for user to select
-	Label string `json:"label"`
-
-	// Value Unique identifier for this option
-	Value string `json:"value"`
-}
-
-// ConditionOperationV3 defines model for ConditionOperationV3.
-type ConditionOperationV3 struct {
 	// Label Human readable label to be displayed for user to select
 	Label string `json:"label"`
 
@@ -1176,15 +1404,6 @@ type ConditionSubjectV2 struct {
 	Reference string `json:"reference"`
 }
 
-// ConditionSubjectV3 defines model for ConditionSubjectV3.
-type ConditionSubjectV3 struct {
-	// Label Human readable identifier for the subject
-	Label string `json:"label"`
-
-	// Reference Reference into the scope for the value of the subject
-	Reference string `json:"reference"`
-}
-
 // ConditionV2 defines model for ConditionV2.
 type ConditionV2 struct {
 	Operation ConditionOperationV2 `json:"operation"`
@@ -1192,15 +1411,6 @@ type ConditionV2 struct {
 	// ParamBindings Bindings for the operation parameters
 	ParamBindings []EngineParamBindingV2 `json:"param_bindings"`
 	Subject       ConditionSubjectV2     `json:"subject"`
-}
-
-// ConditionV3 defines model for ConditionV3.
-type ConditionV3 struct {
-	Operation ConditionOperationV3 `json:"operation"`
-
-	// ParamBindings Bindings for the operation parameters
-	ParamBindings []EngineParamBindingV3 `json:"param_bindings"`
-	Subject       ConditionSubjectV3     `json:"subject"`
 }
 
 // CreateEntryRequestBody defines model for CreateEntryRequestBody.
@@ -1253,36 +1463,9 @@ type CreateHTTPRequestBody struct {
 // CreateHTTPRequestBodyStatus Current status of this alert
 type CreateHTTPRequestBodyStatus string
 
-// CreateManagedResourceRequestBody defines model for CreateManagedResourceRequestBody.
-type CreateManagedResourceRequestBody struct {
-	// Annotations Annotations that track metadata about this resource
-	Annotations map[string]string `json:"annotations"`
-
-	// ResourceId The ID of the related resource
-	ResourceId string `json:"resource_id"`
-
-	// ResourceType The type of the related resource
-	ResourceType CreateManagedResourceRequestBodyResourceType `json:"resource_type"`
-}
-
-// CreateManagedResourceRequestBodyResourceType The type of the related resource
-type CreateManagedResourceRequestBodyResourceType string
-
-// CreateManagedResourceResponseBody defines model for CreateManagedResourceResponseBody.
-type CreateManagedResourceResponseBody struct {
-	ManagedResource ManagedResourceV2 `json:"managed_resource"`
-}
-
-// CreatePathRequestBody defines model for CreatePathRequestBody.
-type CreatePathRequestBody struct {
-	// Name The name of this escalation path, for the user's reference.
-	Name string `json:"name"`
-
-	// Path The nodes that form the levels and branches of this escalation path.
-	Path []EscalationPathNodePayloadV2 `json:"path"`
-
-	// WorkingHours The working hours for this escalation path.
-	WorkingHours *[]WeekdayIntervalConfigV2 `json:"working_hours,omitempty"`
+// CreateOverrideResponseBody defines model for CreateOverrideResponseBody.
+type CreateOverrideResponseBody struct {
+	Override ScheduleOverrideV2 `json:"override"`
 }
 
 // CreatePathResponseBody defines model for CreatePathResponseBody.
@@ -1304,63 +1487,6 @@ type CreateRequestBody struct {
 
 // CreateRequestBody10 defines model for CreateRequestBody10.
 type CreateRequestBody10 struct {
-	// CustomFieldEntries Set the incident's custom fields to these values
-	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
-
-	// Id Unique identifier for the incident
-	Id *string `json:"id,omitempty"`
-
-	// IdempotencyKey Unique string used to de-duplicate incident create requests
-	IdempotencyKey string `json:"idempotency_key"`
-
-	// IncidentRoleAssignments Assign incident roles to these people
-	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV2 `json:"incident_role_assignments,omitempty"`
-
-	// IncidentStatusId Incident status to assign to the incident
-	IncidentStatusId *string `json:"incident_status_id,omitempty"`
-
-	// IncidentTimestampValues Assign the incident's timestamps to these values
-	IncidentTimestampValues *[]IncidentTimestampValuePayloadV2 `json:"incident_timestamp_values,omitempty"`
-
-	// IncidentTypeId Incident type to create this incident as
-	IncidentTypeId *string `json:"incident_type_id,omitempty"`
-
-	// Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
-	Mode *CreateRequestBody10Mode `json:"mode,omitempty"`
-
-	// Name Explanation of the incident
-	Name                         *string                         `json:"name,omitempty"`
-	RetrospectiveIncidentOptions *RetrospectiveIncidentOptionsV2 `json:"retrospective_incident_options,omitempty"`
-
-	// SeverityId Severity to create incident as
-	SeverityId *string `json:"severity_id,omitempty"`
-
-	// SlackChannelNameOverride Name of the Slack channel to create for this incident
-	SlackChannelNameOverride *string `json:"slack_channel_name_override,omitempty"`
-
-	// SlackTeamId Slack Team to create the incident in
-	SlackTeamId *string `json:"slack_team_id,omitempty"`
-
-	// Summary Detailed description of the incident
-	Summary *string `json:"summary,omitempty"`
-
-	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-	Visibility CreateRequestBody10Visibility `json:"visibility"`
-}
-
-// CreateRequestBody10Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
-type CreateRequestBody10Mode string
-
-// CreateRequestBody10Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-type CreateRequestBody10Visibility string
-
-// CreateRequestBody11 defines model for CreateRequestBody11.
-type CreateRequestBody11 struct {
-	Schedule ScheduleCreatePayloadV2 `json:"schedule"`
-}
-
-// CreateRequestBody12 defines model for CreateRequestBody12.
-type CreateRequestBody12 struct {
 	// Description Description of the severity
 	Description string `json:"description"`
 
@@ -1497,62 +1623,21 @@ type CreateRequestBody8Category string
 
 // CreateRequestBody9 defines model for CreateRequestBody9.
 type CreateRequestBody9 struct {
-	// CustomFieldEntries Set the incident's custom fields to these values
-	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
-
-	// IdempotencyKey Unique string used to de-duplicate incident create requests
-	IdempotencyKey string `json:"idempotency_key"`
-
-	// IncidentRoleAssignments Assign incident roles to these people
-	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV1 `json:"incident_role_assignments,omitempty"`
-
-	// IncidentTypeId Incident type to create this incident as
-	IncidentTypeId *string `json:"incident_type_id,omitempty"`
-
-	// Mode Whether the incident is real or test
-	Mode *CreateRequestBody9Mode `json:"mode,omitempty"`
-
-	// Name Explanation of the incident
-	Name *string `json:"name,omitempty"`
-
-	// SeverityId Severity to create incident as
-	SeverityId *string `json:"severity_id,omitempty"`
-
-	// SlackTeamId ID of the Slack team / workspace. This is only required if you are using a Slack Enterprise Grid with multiple teams.
-	SlackTeamId *string `json:"slack_team_id,omitempty"`
-
-	// SourceMessageChannelId Channel ID of the source message, if this incident was created from one
-	SourceMessageChannelId *string `json:"source_message_channel_id,omitempty"`
-
-	// SourceMessageTimestamp Timestamp of the source message, if this incident was created from one
-	SourceMessageTimestamp *string `json:"source_message_timestamp,omitempty"`
-
-	// Status Current status of the incident
-	Status *CreateRequestBody9Status `json:"status,omitempty"`
-
-	// Summary Detailed description of the incident
-	Summary *string `json:"summary,omitempty"`
-
-	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-	Visibility CreateRequestBody9Visibility `json:"visibility"`
+	Schedule ScheduleCreatePayloadV2 `json:"schedule"`
 }
-
-// CreateRequestBody9Mode Whether the incident is real or test
-type CreateRequestBody9Mode string
-
-// CreateRequestBody9Status Current status of the incident
-type CreateRequestBody9Status string
-
-// CreateRequestBody9Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
-type CreateRequestBody9Visibility string
 
 // CreateResponseBody defines model for CreateResponseBody.
 type CreateResponseBody struct {
-	IncidentAttachment IncidentAttachmentV1 `json:"incident_attachment"`
+	AlertRoute AlertRouteV2 `json:"alert_route"`
 }
 
 // CreateResponseBody2 defines model for CreateResponseBody2.
 type CreateResponseBody2 struct {
+	IncidentAttachment IncidentAttachmentV1 `json:"incident_attachment"`
+}
+
+// CreateResponseBody3 defines model for CreateResponseBody3.
+type CreateResponseBody3 struct {
 	IncidentMembership IncidentMembership `json:"incident_membership"`
 }
 
@@ -1600,8 +1685,8 @@ type CreateTypeResponseBody struct {
 	CatalogType CatalogTypeV2 `json:"catalog_type"`
 }
 
-// CreateWorkflowRequestBody defines model for CreateWorkflowRequestBody.
-type CreateWorkflowRequestBody struct {
+// CreateWorkflowPayload defines model for CreateWorkflowPayload.
+type CreateWorkflowPayload struct {
 	// Annotations Annotations that track metadata about this resource
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
@@ -1628,13 +1713,16 @@ type CreateWorkflowRequestBody struct {
 	OnceFor []string `json:"once_for"`
 
 	// RunsOnIncidentModes Which modes of incident this should run on (defaults to just standard incidents)
-	RunsOnIncidentModes []CreateWorkflowRequestBodyRunsOnIncidentModes `json:"runs_on_incident_modes"`
+	RunsOnIncidentModes []CreateWorkflowPayloadRunsOnIncidentModes `json:"runs_on_incident_modes"`
 
 	// RunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
-	RunsOnIncidents CreateWorkflowRequestBodyRunsOnIncidents `json:"runs_on_incidents"`
+	RunsOnIncidents CreateWorkflowPayloadRunsOnIncidents `json:"runs_on_incidents"`
+
+	// Shortform Shortform used to trigger manual workflows in Slack - e.g. `/inc workflows page-ceo`
+	Shortform *string `json:"shortform,omitempty"`
 
 	// State The state of the workflow (e.g. is it draft, or disabled)
-	State *CreateWorkflowRequestBodyState `json:"state,omitempty"`
+	State *CreateWorkflowPayloadState `json:"state,omitempty"`
 
 	// Steps List of step to execute as part of the workflow
 	Steps []StepConfigPayload `json:"steps"`
@@ -1643,14 +1731,14 @@ type CreateWorkflowRequestBody struct {
 	Trigger string `json:"trigger"`
 }
 
-// CreateWorkflowRequestBodyRunsOnIncidentModes defines model for CreateWorkflowRequestBody.RunsOnIncidentModes.
-type CreateWorkflowRequestBodyRunsOnIncidentModes string
+// CreateWorkflowPayloadRunsOnIncidentModes Incident mode that workflows can run on
+type CreateWorkflowPayloadRunsOnIncidentModes string
 
-// CreateWorkflowRequestBodyRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
-type CreateWorkflowRequestBodyRunsOnIncidents string
+// CreateWorkflowPayloadRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
+type CreateWorkflowPayloadRunsOnIncidents string
 
-// CreateWorkflowRequestBodyState The state of the workflow (e.g. is it draft, or disabled)
-type CreateWorkflowRequestBodyState string
+// CreateWorkflowPayloadState The state of the workflow (e.g. is it draft, or disabled)
+type CreateWorkflowPayloadState string
 
 // CustomFieldEntryPayloadV1 defines model for CustomFieldEntryPayloadV1.
 type CustomFieldEntryPayloadV1 struct {
@@ -1661,6 +1749,15 @@ type CustomFieldEntryPayloadV1 struct {
 	Values []CustomFieldValuePayloadV1 `json:"values"`
 }
 
+// CustomFieldEntryPayloadV2 defines model for CustomFieldEntryPayloadV2.
+type CustomFieldEntryPayloadV2 struct {
+	// CustomFieldId ID of the custom field this entry is linked against
+	CustomFieldId string `json:"custom_field_id"`
+
+	// Values List of values to associate with this entry. Use an empty array to unset the value of the custom field.
+	Values []CustomFieldValuePayloadV2 `json:"values"`
+}
+
 // CustomFieldEntryV1 defines model for CustomFieldEntryV1.
 type CustomFieldEntryV1 struct {
 	CustomField CustomFieldTypeInfoV1 `json:"custom_field"`
@@ -1669,8 +1766,31 @@ type CustomFieldEntryV1 struct {
 	Values []CustomFieldValueV1 `json:"values"`
 }
 
+// CustomFieldEntryV2 defines model for CustomFieldEntryV2.
+type CustomFieldEntryV2 struct {
+	CustomField CustomFieldTypeInfoV2 `json:"custom_field"`
+
+	// Values List of custom field values set on this entry
+	Values []CustomFieldValueV2 `json:"values"`
+}
+
 // CustomFieldOptionV1 defines model for CustomFieldOptionV1.
 type CustomFieldOptionV1 struct {
+	// CustomFieldId ID of the custom field this option belongs to
+	CustomFieldId string `json:"custom_field_id"`
+
+	// Id Unique identifier for the custom field option
+	Id string `json:"id"`
+
+	// SortKey Sort key used to order the custom field options correctly
+	SortKey int64 `json:"sort_key"`
+
+	// Value Human readable name for the custom field option
+	Value string `json:"value"`
+}
+
+// CustomFieldOptionV2 defines model for CustomFieldOptionV2.
+type CustomFieldOptionV2 struct {
 	// CustomFieldId ID of the custom field this option belongs to
 	CustomFieldId string `json:"custom_field_id"`
 
@@ -1704,6 +1824,27 @@ type CustomFieldTypeInfoV1 struct {
 
 // CustomFieldTypeInfoV1FieldType Type of custom field
 type CustomFieldTypeInfoV1FieldType string
+
+// CustomFieldTypeInfoV2 defines model for CustomFieldTypeInfoV2.
+type CustomFieldTypeInfoV2 struct {
+	// Description Description of the custom field
+	Description string `json:"description"`
+
+	// FieldType Type of custom field
+	FieldType CustomFieldTypeInfoV2FieldType `json:"field_type"`
+
+	// Id Unique identifier for the custom field
+	Id string `json:"id"`
+
+	// Name Human readable name for the custom field
+	Name string `json:"name"`
+
+	// Options What options are available for this custom field, if this field has options
+	Options []CustomFieldOptionV2 `json:"options"`
+}
+
+// CustomFieldTypeInfoV2FieldType Type of custom field
+type CustomFieldTypeInfoV2FieldType string
 
 // CustomFieldV1 defines model for CustomFieldV1.
 type CustomFieldV1 struct {
@@ -1810,6 +1951,30 @@ type CustomFieldValuePayloadV1 struct {
 	ValueTimestamp *string `json:"value_timestamp,omitempty"`
 }
 
+// CustomFieldValuePayloadV2 defines model for CustomFieldValuePayloadV2.
+type CustomFieldValuePayloadV2 struct {
+	// Id Unique identifier for the custom field value
+	Id *string `json:"id,omitempty"`
+
+	// ValueCatalogEntryId ID of the catalog entry. You can also use an ExternalID or an Alias of the catalog entry.
+	ValueCatalogEntryId *string `json:"value_catalog_entry_id,omitempty"`
+
+	// ValueLink If the custom field type is 'link', this will contain the value assigned.
+	ValueLink *string `json:"value_link,omitempty"`
+
+	// ValueNumeric If the custom field type is 'numeric', this will contain the value assigned.
+	ValueNumeric *string `json:"value_numeric,omitempty"`
+
+	// ValueOptionId ID of the custom field option
+	ValueOptionId *string `json:"value_option_id,omitempty"`
+
+	// ValueText If the custom field type is 'text', this will contain the value assigned.
+	ValueText *string `json:"value_text,omitempty"`
+
+	// ValueTimestamp Deprecated: please use incident timestamp values instead
+	ValueTimestamp *string `json:"value_timestamp,omitempty"`
+}
+
 // CustomFieldValueV1 defines model for CustomFieldValueV1.
 type CustomFieldValueV1 struct {
 	ValueCatalogEntry *EmbeddedCatalogEntryV1 `json:"value_catalog_entry,omitempty"`
@@ -1820,6 +1985,21 @@ type CustomFieldValueV1 struct {
 	// ValueNumeric If the custom field type is 'numeric', this will contain the value assigned.
 	ValueNumeric *string              `json:"value_numeric,omitempty"`
 	ValueOption  *CustomFieldOptionV1 `json:"value_option,omitempty"`
+
+	// ValueText If the custom field type is 'text', this will contain the value assigned.
+	ValueText *string `json:"value_text,omitempty"`
+}
+
+// CustomFieldValueV2 defines model for CustomFieldValueV2.
+type CustomFieldValueV2 struct {
+	ValueCatalogEntry *EmbeddedCatalogEntryV2 `json:"value_catalog_entry,omitempty"`
+
+	// ValueLink If the custom field type is 'link', this will contain the value assigned.
+	ValueLink *string `json:"value_link,omitempty"`
+
+	// ValueNumeric If the custom field type is 'numeric', this will contain the value assigned.
+	ValueNumeric *string              `json:"value_numeric,omitempty"`
+	ValueOption  *CustomFieldOptionV2 `json:"value_option,omitempty"`
 
 	// ValueText If the custom field type is 'text', this will contain the value assigned.
 	ValueText *string `json:"value_text,omitempty"`
@@ -1848,6 +2028,54 @@ type EmbeddedCatalogEntryV1 struct {
 	Name string `json:"name"`
 }
 
+// EmbeddedCatalogEntryV2 defines model for EmbeddedCatalogEntryV2.
+type EmbeddedCatalogEntryV2 struct {
+	// Aliases Optional aliases that can be used to reference this entry
+	Aliases *[]string `json:"aliases,omitempty"`
+
+	// ExternalId An optional alternative ID for this entry, which is ensured to be unique for the type
+	ExternalId *string `json:"external_id,omitempty"`
+
+	// Id ID of this catalog entry
+	Id string `json:"id"`
+
+	// Name Name is the human readable name of this entry
+	Name string `json:"name"`
+}
+
+// EmbeddedIncidentRoleV2 defines model for EmbeddedIncidentRoleV2.
+type EmbeddedIncidentRoleV2 struct {
+	// CreatedAt When the role was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Describes the purpose of the role
+	Description string `json:"description"`
+
+	// Id Unique identifier for the role
+	Id string `json:"id"`
+
+	// Instructions Provided to whoever is nominated for the role. Note that this will be empty for the 'reporter' role.
+	Instructions string `json:"instructions"`
+
+	// Name Human readable name of the incident role
+	Name string `json:"name"`
+
+	// Required This field is deprecated.
+	Required *bool `json:"required,omitempty"`
+
+	// RoleType Type of incident role
+	RoleType EmbeddedIncidentRoleV2RoleType `json:"role_type"`
+
+	// Shortform Short human readable name for Slack. Note that this will be empty for the 'reporter' role.
+	Shortform string `json:"shortform"`
+
+	// UpdatedAt When the role was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// EmbeddedIncidentRoleV2RoleType Type of incident role
+type EmbeddedIncidentRoleV2RoleType string
+
 // EngineParamBindingPayloadV2 defines model for EngineParamBindingPayloadV2.
 type EngineParamBindingPayloadV2 struct {
 	// ArrayValue If set, this is the array value of the step parameter
@@ -1862,13 +2090,6 @@ type EngineParamBindingV2 struct {
 	Value      *EngineParamBindingValueV2   `json:"value,omitempty"`
 }
 
-// EngineParamBindingV3 defines model for EngineParamBindingV3.
-type EngineParamBindingV3 struct {
-	// ArrayValue If array_value is set, this helps render the values
-	ArrayValue *[]EngineParamBindingValueV3 `json:"array_value,omitempty"`
-	Value      *EngineParamBindingValueV3   `json:"value,omitempty"`
-}
-
 // EngineParamBindingValuePayloadV2 defines model for EngineParamBindingValuePayloadV2.
 type EngineParamBindingValuePayloadV2 struct {
 	// Literal If set, this is the literal value of the step parameter
@@ -1880,18 +2101,6 @@ type EngineParamBindingValuePayloadV2 struct {
 
 // EngineParamBindingValueV2 defines model for EngineParamBindingValueV2.
 type EngineParamBindingValueV2 struct {
-	// Label Human readable label to be displayed for user to select
-	Label string `json:"label"`
-
-	// Literal If set, this is the literal value of the step parameter
-	Literal *string `json:"literal,omitempty"`
-
-	// Reference If set, this is the reference into the trigger scope that is the value of this parameter
-	Reference *string `json:"reference,omitempty"`
-}
-
-// EngineParamBindingValueV3 defines model for EngineParamBindingValueV3.
-type EngineParamBindingValueV3 struct {
 	// Label Human readable label to be displayed for user to select
 	Label string `json:"label"`
 
@@ -1943,6 +2152,8 @@ type EscalationPathNodeIfElseV2 struct {
 
 // EscalationPathNodeLevelV2 defines model for EscalationPathNodeLevelV2.
 type EscalationPathNodeLevelV2 struct {
+	RoundRobinConfig *EscalationPathRoundRobinConfigV2 `json:"round_robin_config,omitempty"`
+
 	// Targets The targets for this level
 	Targets []EscalationPathTargetV2 `json:"targets"`
 
@@ -1959,13 +2170,32 @@ type EscalationPathNodeLevelV2 struct {
 // EscalationPathNodeLevelV2TimeToAckIntervalCondition If the time to ack is relative to a time window, this defines whether we move when the window is active or inactive
 type EscalationPathNodeLevelV2TimeToAckIntervalCondition string
 
+// EscalationPathNodeNotifyChannelV2 defines model for EscalationPathNodeNotifyChannelV2.
+type EscalationPathNodeNotifyChannelV2 struct {
+	// Targets The targets for this level
+	Targets []EscalationPathTargetV2 `json:"targets"`
+
+	// TimeToAckIntervalCondition If the time to ack is relative to a time window, this defines whether we move when the window is active or inactive
+	TimeToAckIntervalCondition *EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition `json:"time_to_ack_interval_condition,omitempty"`
+
+	// TimeToAckSeconds How long should we wait for this level to acknowledge before escalating?
+	TimeToAckSeconds *int64 `json:"time_to_ack_seconds,omitempty"`
+
+	// TimeToAckWeekdayIntervalConfigId If the time to ack is relative to a time window, this identifies which window it is relative to
+	TimeToAckWeekdayIntervalConfigId *string `json:"time_to_ack_weekday_interval_config_id,omitempty"`
+}
+
+// EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition If the time to ack is relative to a time window, this defines whether we move when the window is active or inactive
+type EscalationPathNodeNotifyChannelV2TimeToAckIntervalCondition string
+
 // EscalationPathNodePayloadV2 defines model for EscalationPathNodePayloadV2.
 type EscalationPathNodePayloadV2 struct {
 	// Id Unique internal ID of the escalation path node
-	Id     string                             `json:"id"`
-	IfElse *EscalationPathNodeIfElsePayloadV2 `json:"if_else,omitempty"`
-	Level  *EscalationPathNodeLevelV2         `json:"level,omitempty"`
-	Repeat *EscalationPathNodeRepeatV2        `json:"repeat,omitempty"`
+	Id            string                             `json:"id"`
+	IfElse        *EscalationPathNodeIfElsePayloadV2 `json:"if_else,omitempty"`
+	Level         *EscalationPathNodeLevelV2         `json:"level,omitempty"`
+	NotifyChannel *EscalationPathNodeNotifyChannelV2 `json:"notify_channel,omitempty"`
+	Repeat        *EscalationPathNodeRepeatV2        `json:"repeat,omitempty"`
 
 	// Type The type of this node: level or branch
 	Type EscalationPathNodePayloadV2Type `json:"type"`
@@ -1986,10 +2216,11 @@ type EscalationPathNodeRepeatV2 struct {
 // EscalationPathNodeV2 defines model for EscalationPathNodeV2.
 type EscalationPathNodeV2 struct {
 	// Id Unique internal ID of the escalation path node
-	Id     string                      `json:"id"`
-	IfElse *EscalationPathNodeIfElseV2 `json:"if_else,omitempty"`
-	Level  *EscalationPathNodeLevelV2  `json:"level,omitempty"`
-	Repeat *EscalationPathNodeRepeatV2 `json:"repeat,omitempty"`
+	Id            string                             `json:"id"`
+	IfElse        *EscalationPathNodeIfElseV2        `json:"if_else,omitempty"`
+	Level         *EscalationPathNodeLevelV2         `json:"level,omitempty"`
+	NotifyChannel *EscalationPathNodeNotifyChannelV2 `json:"notify_channel,omitempty"`
+	Repeat        *EscalationPathNodeRepeatV2        `json:"repeat,omitempty"`
 
 	// Type The type of this node: level or branch
 	Type EscalationPathNodeV2Type `json:"type"`
@@ -1998,19 +2229,44 @@ type EscalationPathNodeV2 struct {
 // EscalationPathNodeV2Type The type of this node: level or branch
 type EscalationPathNodeV2Type string
 
+// EscalationPathPayloadV2 defines model for EscalationPathPayloadV2.
+type EscalationPathPayloadV2 struct {
+	// Name The name of this escalation path, for the user's reference.
+	Name string `json:"name"`
+
+	// Path The nodes that form the levels and branches of this escalation path.
+	Path []EscalationPathNodePayloadV2 `json:"path"`
+
+	// WorkingHours The working hours for this escalation path.
+	WorkingHours *[]WeekdayIntervalConfigV2 `json:"working_hours,omitempty"`
+}
+
+// EscalationPathRoundRobinConfigV2 defines model for EscalationPathRoundRobinConfigV2.
+type EscalationPathRoundRobinConfigV2 struct {
+	// Enabled Whether round robin is enabled for this level
+	Enabled bool `json:"enabled"`
+
+	// RotateAfterSeconds How long should we wait before rotating to the next target in a round robin, if not set will stick with a single target per level.
+	RotateAfterSeconds *int64 `json:"rotate_after_seconds,omitempty"`
+}
+
 // EscalationPathTargetV2 defines model for EscalationPathTargetV2.
 type EscalationPathTargetV2 struct {
 	// Id Uniquely identifies an entity of this type
 	Id string `json:"id"`
 
-	// Type Controls what type of entity this target identifies, such as EscalationPolicy or User
-	Type EscalationPathTargetV2Type `json:"type"`
+	// ScheduleMode Only set for schedule targets, and either currently_on_call, all_users or all_users_for_rota and specifies which users to fetch from the schedule
+	ScheduleMode *EscalationPathTargetV2ScheduleMode `json:"schedule_mode,omitempty"`
+	Type         EscalationPathTargetV2Type          `json:"type"`
 
 	// Urgency The urgency of this escalation path target
 	Urgency EscalationPathTargetV2Urgency `json:"urgency"`
 }
 
-// EscalationPathTargetV2Type Controls what type of entity this target identifies, such as EscalationPolicy or User
+// EscalationPathTargetV2ScheduleMode Only set for schedule targets, and either currently_on_call, all_users or all_users_for_rota and specifies which users to fetch from the schedule
+type EscalationPathTargetV2ScheduleMode string
+
+// EscalationPathTargetV2Type defines model for EscalationPathTargetV2.Type.
 type EscalationPathTargetV2Type string
 
 // EscalationPathTargetV2Urgency The urgency of this escalation path target
@@ -2042,7 +2298,7 @@ type ExpressionBranchPayloadV2 struct {
 type ExpressionBranchV2 struct {
 	// ConditionGroups When one of these condition groups are satisfied, this branch will be evaluated
 	ConditionGroups []ConditionGroupV2   `json:"condition_groups"`
-	Result          EngineParamBindingV3 `json:"result"`
+	Result          EngineParamBindingV2 `json:"result"`
 }
 
 // ExpressionBranchesOptsPayloadV2 defines model for ExpressionBranchesOptsPayloadV2.
@@ -2066,7 +2322,7 @@ type ExpressionElseBranchPayloadV2 struct {
 
 // ExpressionElseBranchV2 defines model for ExpressionElseBranchV2.
 type ExpressionElseBranchV2 struct {
-	Result EngineParamBindingV3 `json:"result"`
+	Result EngineParamBindingV2 `json:"result"`
 }
 
 // ExpressionFilterOptsPayloadV2 defines model for ExpressionFilterOptsPayloadV2.
@@ -2104,7 +2360,7 @@ type ExpressionOperationPayloadV2 struct {
 
 	// OperationType The type of the operation
 	OperationType ExpressionOperationPayloadV2OperationType `json:"operation_type"`
-	Parse         *ExpressionParseOptsV2                    `json:"parse,omitempty"`
+	Parse         *ExpressionParseOptsPayloadV2             `json:"parse,omitempty"`
 }
 
 // ExpressionOperationPayloadV2OperationType The type of the operation
@@ -2124,6 +2380,14 @@ type ExpressionOperationV2 struct {
 
 // ExpressionOperationV2OperationType The type of the operation
 type ExpressionOperationV2OperationType string
+
+// ExpressionParseOptsPayloadV2 defines model for ExpressionParseOptsPayloadV2.
+type ExpressionParseOptsPayloadV2 struct {
+	Returns ReturnsMetaV2 `json:"returns"`
+
+	// Source Source expression that is evaluated to a result
+	Source string `json:"source"`
+}
 
 // ExpressionParseOptsV2 defines model for ExpressionParseOptsV2.
 type ExpressionParseOptsV2 struct {
@@ -2229,7 +2493,7 @@ type FollowUpPriorityV2 struct {
 
 // FollowUpV2 defines model for FollowUpV2.
 type FollowUpV2 struct {
-	Assignee *UserV1 `json:"assignee,omitempty"`
+	Assignee *UserV2 `json:"assignee,omitempty"`
 
 	// CompletedAt When the follow-up was completed
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
@@ -2261,6 +2525,12 @@ type FollowUpV2 struct {
 // FollowUpV2Status Status of the follow-up
 type FollowUpV2Status string
 
+// GroupingKeyV2 defines model for GroupingKeyV2.
+type GroupingKeyV2 struct {
+	// Id Unique identifier of the alert attribute the user wishes to group on
+	Id string `json:"id"`
+}
+
 // IdentityResponseBody defines model for IdentityResponseBody.
 type IdentityResponseBody struct {
 	Identity IdentityV1 `json:"identity"`
@@ -2278,7 +2548,7 @@ type IdentityV1 struct {
 	Roles []IdentityV1Roles `json:"roles"`
 }
 
-// IdentityV1Roles defines model for IdentityV1.Roles.
+// IdentityV1Roles API key roles
 type IdentityV1Roles string
 
 // IncidentAttachmentV1 defines model for IncidentAttachmentV1.
@@ -2290,6 +2560,109 @@ type IncidentAttachmentV1 struct {
 	IncidentId string             `json:"incident_id"`
 	Resource   ExternalResourceV1 `json:"resource"`
 }
+
+// IncidentCreatePayloadV1 defines model for IncidentCreatePayloadV1.
+type IncidentCreatePayloadV1 struct {
+	// CustomFieldEntries Set the incident's custom fields to these values
+	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
+
+	// IdempotencyKey Unique string used to de-duplicate incident create requests
+	IdempotencyKey string `json:"idempotency_key"`
+
+	// IncidentRoleAssignments Assign incident roles to these people
+	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV1 `json:"incident_role_assignments,omitempty"`
+
+	// IncidentTypeId Incident type to create this incident as
+	IncidentTypeId *string `json:"incident_type_id,omitempty"`
+
+	// Mode Whether the incident is real or test
+	Mode *IncidentCreatePayloadV1Mode `json:"mode,omitempty"`
+
+	// Name Explanation of the incident
+	Name *string `json:"name,omitempty"`
+
+	// SeverityId Severity to create incident as
+	SeverityId *string `json:"severity_id,omitempty"`
+
+	// SlackTeamId ID of the Slack team / workspace. This is only required if you are using a Slack Enterprise Grid with multiple teams.
+	SlackTeamId *string `json:"slack_team_id,omitempty"`
+
+	// SourceMessageChannelId Channel ID of the source message, if this incident was created from one
+	SourceMessageChannelId *string `json:"source_message_channel_id,omitempty"`
+
+	// SourceMessageTimestamp Timestamp of the source message, if this incident was created from one
+	SourceMessageTimestamp *string `json:"source_message_timestamp,omitempty"`
+
+	// Status Current status of the incident
+	Status *IncidentCreatePayloadV1Status `json:"status,omitempty"`
+
+	// Summary Detailed description of the incident
+	Summary *string `json:"summary,omitempty"`
+
+	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+	Visibility IncidentCreatePayloadV1Visibility `json:"visibility"`
+}
+
+// IncidentCreatePayloadV1Mode Whether the incident is real or test
+type IncidentCreatePayloadV1Mode string
+
+// IncidentCreatePayloadV1Status Current status of the incident
+type IncidentCreatePayloadV1Status string
+
+// IncidentCreatePayloadV1Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+type IncidentCreatePayloadV1Visibility string
+
+// IncidentCreatePayloadV2 defines model for IncidentCreatePayloadV2.
+type IncidentCreatePayloadV2 struct {
+	// CustomFieldEntries Set the incident's custom fields to these values
+	CustomFieldEntries *[]CustomFieldEntryPayloadV2 `json:"custom_field_entries,omitempty"`
+
+	// Id Unique identifier for the incident
+	Id *string `json:"id,omitempty"`
+
+	// IdempotencyKey Unique string used to de-duplicate incident create requests
+	IdempotencyKey string `json:"idempotency_key"`
+
+	// IncidentRoleAssignments Assign incident roles to these people
+	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV2 `json:"incident_role_assignments,omitempty"`
+
+	// IncidentStatusId Incident status to assign to the incident
+	IncidentStatusId *string `json:"incident_status_id,omitempty"`
+
+	// IncidentTimestampValues Assign the incident's timestamps to these values
+	IncidentTimestampValues *[]IncidentTimestampValuePayloadV2 `json:"incident_timestamp_values,omitempty"`
+
+	// IncidentTypeId Incident type to create this incident as
+	IncidentTypeId *string `json:"incident_type_id,omitempty"`
+
+	// Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
+	Mode *IncidentCreatePayloadV2Mode `json:"mode,omitempty"`
+
+	// Name Explanation of the incident
+	Name                         *string                         `json:"name,omitempty"`
+	RetrospectiveIncidentOptions *RetrospectiveIncidentOptionsV2 `json:"retrospective_incident_options,omitempty"`
+
+	// SeverityId Severity to create incident as
+	SeverityId *string `json:"severity_id,omitempty"`
+
+	// SlackChannelNameOverride Name of the Slack channel to create for this incident
+	SlackChannelNameOverride *string `json:"slack_channel_name_override,omitempty"`
+
+	// SlackTeamId Slack Team to create the incident in
+	SlackTeamId *string `json:"slack_team_id,omitempty"`
+
+	// Summary Detailed description of the incident
+	Summary *string `json:"summary,omitempty"`
+
+	// Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+	Visibility IncidentCreatePayloadV2Visibility `json:"visibility"`
+}
+
+// IncidentCreatePayloadV2Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
+type IncidentCreatePayloadV2Mode string
+
+// IncidentCreatePayloadV2Visibility Whether the incident should be open to anyone in your Slack workspace (public), or invite-only (private). For more information on Private Incidents see our [help centre](https://help.incident.io/en/articles/5947963-can-we-mark-incidents-as-sensitive-and-restrict-access).
+type IncidentCreatePayloadV2Visibility string
 
 // IncidentDurationMetricV2 defines model for IncidentDurationMetricV2.
 type IncidentDurationMetricV2 struct {
@@ -2314,7 +2687,7 @@ type IncidentEditPayloadV2 struct {
 	CallUrl *string `json:"call_url,omitempty"`
 
 	// CustomFieldEntries Set the incident's custom fields to these values
-	CustomFieldEntries *[]CustomFieldEntryPayloadV1 `json:"custom_field_entries,omitempty"`
+	CustomFieldEntries *[]CustomFieldEntryPayloadV2 `json:"custom_field_entries,omitempty"`
 
 	// IncidentRoleAssignments Assign incident roles to these people
 	IncidentRoleAssignments *[]IncidentRoleAssignmentPayloadV2 `json:"incident_role_assignments,omitempty"`
@@ -2330,6 +2703,9 @@ type IncidentEditPayloadV2 struct {
 
 	// SeverityId Severity to change incident to
 	SeverityId *string `json:"severity_id,omitempty"`
+
+	// SlackChannelNameOverride Override the name of the incident Slack channel
+	SlackChannelNameOverride *string `json:"slack_channel_name_override,omitempty"`
 
 	// Summary Detailed description of the incident
 	Summary *string `json:"summary,omitempty"`
@@ -2348,7 +2724,7 @@ type IncidentMembership struct {
 
 	// UpdatedAt When the membership was last updated
 	UpdatedAt time.Time `json:"updated_at"`
-	User      UserV1    `json:"user"`
+	User      UserV2    `json:"user"`
 }
 
 // IncidentRoleAssignmentPayloadV1 defines model for IncidentRoleAssignmentPayloadV1.
@@ -2361,7 +2737,7 @@ type IncidentRoleAssignmentPayloadV1 struct {
 
 // IncidentRoleAssignmentPayloadV2 defines model for IncidentRoleAssignmentPayloadV2.
 type IncidentRoleAssignmentPayloadV2 struct {
-	Assignee *UserReferencePayloadV1 `json:"assignee,omitempty"`
+	Assignee *UserReferencePayloadV2 `json:"assignee,omitempty"`
 
 	// IncidentRoleId Unique ID of an incident role
 	IncidentRoleId string `json:"incident_role_id"`
@@ -2371,6 +2747,12 @@ type IncidentRoleAssignmentPayloadV2 struct {
 type IncidentRoleAssignmentV1 struct {
 	Assignee *UserV1        `json:"assignee,omitempty"`
 	Role     IncidentRoleV1 `json:"role"`
+}
+
+// IncidentRoleAssignmentV2 defines model for IncidentRoleAssignmentV2.
+type IncidentRoleAssignmentV2 struct {
+	Assignee *UserV2                `json:"assignee,omitempty"`
+	Role     EmbeddedIncidentRoleV2 `json:"role"`
 }
 
 // IncidentRoleV1 defines model for IncidentRoleV1.
@@ -2459,6 +2841,29 @@ type IncidentStatusV1 struct {
 // IncidentStatusV1Category What category of status it is. All statuses apart from live (renamed in the app to Active) and learning (renamed in the app to Post-incident) are managed by incident.io and cannot be configured
 type IncidentStatusV1Category string
 
+// IncidentStatusV2 defines model for IncidentStatusV2.
+type IncidentStatusV2 struct {
+	// Category What category of status it is. All statuses apart from live (renamed in the app to Active) and learning (renamed in the app to Post-incident) are managed by incident.io and cannot be configured
+	Category  IncidentStatusV2Category `json:"category"`
+	CreatedAt time.Time                `json:"created_at"`
+
+	// Description Rich text description of the incident status
+	Description string `json:"description"`
+
+	// Id Unique ID of this incident status
+	Id string `json:"id"`
+
+	// Name Unique name of this status
+	Name string `json:"name"`
+
+	// Rank Order of this incident status
+	Rank      int64     `json:"rank"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// IncidentStatusV2Category What category of status it is. All statuses apart from live (renamed in the app to Active) and learning (renamed in the app to Post-incident) are managed by incident.io and cannot be configured
+type IncidentStatusV2Category string
+
 // IncidentTimestampV1 defines model for IncidentTimestampV1.
 type IncidentTimestampV1 struct {
 	// LastOccurredAt When this last occurred, if it did
@@ -2531,6 +2936,36 @@ type IncidentTypeV1 struct {
 // IncidentTypeV1CreateInTriage Whether incidents of this must always, or can optionally, be created in triage
 type IncidentTypeV1CreateInTriage string
 
+// IncidentTypeV2 defines model for IncidentTypeV2.
+type IncidentTypeV2 struct {
+	// CreateInTriage Whether incidents of this must always, or can optionally, be created in triage
+	CreateInTriage IncidentTypeV2CreateInTriage `json:"create_in_triage"`
+
+	// CreatedAt When this resource was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description What is this incident type for?
+	Description string `json:"description"`
+
+	// Id Unique identifier for this Incident Type
+	Id string `json:"id"`
+
+	// IsDefault The default Incident Type is used when no other type is explicitly specified
+	IsDefault bool `json:"is_default"`
+
+	// Name The name of this Incident Type
+	Name string `json:"name"`
+
+	// PrivateIncidentsOnly Should all incidents created with this Incident Type be private?
+	PrivateIncidentsOnly bool `json:"private_incidents_only"`
+
+	// UpdatedAt When this resource was last updated
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// IncidentTypeV2CreateInTriage Whether incidents of this must always, or can optionally, be created in triage
+type IncidentTypeV2CreateInTriage string
+
 // IncidentUpdateV2 defines model for IncidentUpdateV2.
 type IncidentUpdateV2 struct {
 	// CreatedAt When the update was created
@@ -2547,7 +2982,7 @@ type IncidentUpdateV2 struct {
 
 	// Message Message that explains the context behind the update
 	Message           *string          `json:"message,omitempty"`
-	NewIncidentStatus IncidentStatusV1 `json:"new_incident_status"`
+	NewIncidentStatus IncidentStatusV2 `json:"new_incident_status"`
 	NewSeverity       *SeverityV2      `json:"new_severity,omitempty"`
 	Updater           ActorV2          `json:"updater"`
 }
@@ -2559,7 +2994,7 @@ type IncidentV1 struct {
 
 	// CreatedAt When the incident was created
 	CreatedAt time.Time `json:"created_at"`
-	Creator   ActorV2   `json:"creator"`
+	Creator   ActorV1   `json:"creator"`
 
 	// CustomFieldEntries Custom field entries for this incident
 	CustomFieldEntries []CustomFieldEntryV1 `json:"custom_field_entries"`
@@ -2585,7 +3020,7 @@ type IncidentV1 struct {
 
 	// Reference Reference to this incident, as displayed across the product
 	Reference string      `json:"reference"`
-	Severity  *SeverityV2 `json:"severity,omitempty"`
+	Severity  *SeverityV1 `json:"severity,omitempty"`
 
 	// SlackChannelId ID of the Slack channel in the organisation Slack workspace. Note that the channel is sometimes created asynchronously, so may not be present when the incident is just created.
 	SlackChannelId string `json:"slack_channel_id"`
@@ -2631,22 +3066,25 @@ type IncidentV2 struct {
 	Creator   ActorV2   `json:"creator"`
 
 	// CustomFieldEntries Custom field entries for this incident
-	CustomFieldEntries []CustomFieldEntryV1 `json:"custom_field_entries"`
+	CustomFieldEntries []CustomFieldEntryV2 `json:"custom_field_entries"`
 
 	// DurationMetrics Incident duration metrics and their measurements for this incident
 	DurationMetrics        *[]IncidentDurationMetricWithValueV2 `json:"duration_metrics,omitempty"`
 	ExternalIssueReference *ExternalIssueReferenceV2            `json:"external_issue_reference,omitempty"`
 
+	// HasDebrief If this incident has a debrief attached
+	HasDebrief *bool `json:"has_debrief,omitempty"`
+
 	// Id Unique identifier for the incident
 	Id string `json:"id"`
 
 	// IncidentRoleAssignments A list of who is assigned to each role for this incident
-	IncidentRoleAssignments []IncidentRoleAssignmentV1 `json:"incident_role_assignments"`
-	IncidentStatus          IncidentStatusV1           `json:"incident_status"`
+	IncidentRoleAssignments []IncidentRoleAssignmentV2 `json:"incident_role_assignments"`
+	IncidentStatus          IncidentStatusV2           `json:"incident_status"`
 
 	// IncidentTimestampValues Incident lifecycle events and when they occurred
 	IncidentTimestampValues *[]IncidentTimestampWithValueV2 `json:"incident_timestamp_values,omitempty"`
-	IncidentType            *IncidentTypeV1                 `json:"incident_type,omitempty"`
+	IncidentType            *IncidentTypeV2                 `json:"incident_type,omitempty"`
 
 	// Mode Whether the incident is real, a test, a tutorial, or importing as a retrospective incident
 	Mode IncidentV2Mode `json:"mode"`
@@ -2759,7 +3197,7 @@ type ListResponseBody16 struct {
 
 // ListResponseBody17 defines model for ListResponseBody17.
 type ListResponseBody17 struct {
-	Severities []SeverityV2 `json:"severities"`
+	Severities []SeverityV1 `json:"severities"`
 }
 
 // ListResponseBody18 defines model for ListResponseBody18.
@@ -2824,30 +3262,6 @@ type ListTypesResponseBody struct {
 type ListWorkflowsResponseBody struct {
 	Workflows []WorkflowSlim `json:"workflows"`
 }
-
-// ManagedResourceV2 defines model for ManagedResourceV2.
-type ManagedResourceV2 struct {
-	// Annotations Annotations that track metadata about this resource
-	Annotations map[string]string `json:"annotations"`
-
-	// ManagedBy How is this resource managed
-	ManagedBy ManagedResourceV2ManagedBy `json:"managed_by"`
-
-	// ResourceId The ID of the related resource
-	ResourceId string `json:"resource_id"`
-
-	// ResourceType The type of the related resource
-	ResourceType ManagedResourceV2ResourceType `json:"resource_type"`
-
-	// SourceUrl The url of the external repository where this resource is managed (if there is one)
-	SourceUrl *string `json:"source_url,omitempty"`
-}
-
-// ManagedResourceV2ManagedBy How is this resource managed
-type ManagedResourceV2ManagedBy string
-
-// ManagedResourceV2ResourceType The type of the related resource
-type ManagedResourceV2ResourceType string
 
 // ManagementMetaV2 defines model for ManagementMetaV2.
 type ManagementMetaV2 struct {
@@ -2937,8 +3351,9 @@ type ScheduleConfigV2 struct {
 // ScheduleCreatePayloadV2 defines model for ScheduleCreatePayloadV2.
 type ScheduleCreatePayloadV2 struct {
 	// Annotations Annotations that can track metadata about the schedule
-	Annotations *map[string]string             `json:"annotations,omitempty"`
-	Config      *ScheduleConfigCreatePayloadV2 `json:"config,omitempty"`
+	Annotations          *map[string]string                     `json:"annotations,omitempty"`
+	Config               *ScheduleConfigCreatePayloadV2         `json:"config,omitempty"`
+	HolidaysPublicConfig *ScheduleHolidaysPublicConfigPayloadV2 `json:"holidays_public_config,omitempty"`
 
 	// Name Name of the schedule
 	Name *string `json:"name,omitempty"`
@@ -2970,7 +3385,19 @@ type ScheduleEntryV2 struct {
 	// RotationId If present, the rotation this entry applies to on the schedule
 	RotationId *string   `json:"rotation_id,omitempty"`
 	StartAt    time.Time `json:"start_at"`
-	User       *UserV1   `json:"user,omitempty"`
+	User       *UserV2   `json:"user,omitempty"`
+}
+
+// ScheduleHolidaysPublicConfigPayloadV2 defines model for ScheduleHolidaysPublicConfigPayloadV2.
+type ScheduleHolidaysPublicConfigPayloadV2 struct {
+	// CountryCodes ISO 3166-1 alpha-2 country codes for the countries that this schedule is configured to view holidays for
+	CountryCodes []string `json:"country_codes"`
+}
+
+// ScheduleHolidaysPublicConfigV2 defines model for ScheduleHolidaysPublicConfigV2.
+type ScheduleHolidaysPublicConfigV2 struct {
+	// CountryCodes ISO 3166-1 alpha-2 country codes for the countries that this schedule is configured to view holidays for
+	CountryCodes []string `json:"country_codes"`
 }
 
 // ScheduleLayerCreatePayloadV2 defines model for ScheduleLayerCreatePayloadV2.
@@ -2982,6 +3409,15 @@ type ScheduleLayerCreatePayloadV2 struct {
 	Name string `json:"name"`
 }
 
+// ScheduleLayerUpdatePayloadV2 defines model for ScheduleLayerUpdatePayloadV2.
+type ScheduleLayerUpdatePayloadV2 struct {
+	// Id Unique identifier of the layer
+	Id *string `json:"id,omitempty"`
+
+	// Name Name of the layer
+	Name *string `json:"name,omitempty"`
+}
+
 // ScheduleLayerV2 defines model for ScheduleLayerV2.
 type ScheduleLayerV2 struct {
 	// Id Unique identifier of the layer
@@ -2989,6 +3425,50 @@ type ScheduleLayerV2 struct {
 
 	// Name Name of the layer
 	Name *string `json:"name,omitempty"`
+}
+
+// ScheduleOverrideCreatePayloadV2 defines model for ScheduleOverrideCreatePayloadV2.
+type ScheduleOverrideCreatePayloadV2 struct {
+	// EndAt End time of the override
+	EndAt time.Time `json:"end_at"`
+
+	// LayerId The layer this override applies to
+	LayerId string `json:"layer_id"`
+
+	// RotationId The rotation this override applies to
+	RotationId string `json:"rotation_id"`
+
+	// ScheduleId The schedule this override applies to
+	ScheduleId string `json:"schedule_id"`
+
+	// StartAt Start time of the override
+	StartAt time.Time              `json:"start_at"`
+	User    UserReferencePayloadV2 `json:"user"`
+}
+
+// ScheduleOverrideV2 defines model for ScheduleOverrideV2.
+type ScheduleOverrideV2 struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// EndAt End of the override
+	EndAt time.Time `json:"end_at"`
+
+	// Id Unique internal ID of the schedule override
+	Id string `json:"id"`
+
+	// LayerId The layer on the rotation on the schedule that this override applies to
+	LayerId string `json:"layer_id"`
+
+	// RotationId The rotation on the schedule that this override applies to
+	RotationId string `json:"rotation_id"`
+
+	// ScheduleId The schedule that this override applies to
+	ScheduleId string `json:"schedule_id"`
+
+	// StartAt Start of the override
+	StartAt   time.Time `json:"start_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	User      UserV2    `json:"user"`
 }
 
 // ScheduleRotationCreatePayloadV2 defines model for ScheduleRotationCreatePayloadV2.
@@ -3002,18 +3482,20 @@ type ScheduleRotationCreatePayloadV2 struct {
 	Layers *[]ScheduleLayerCreatePayloadV2 `json:"layers,omitempty"`
 
 	// Name Name of the rotation
-	Name            string                    `json:"name"`
-	Users           *[]UserReferencePayloadV1 `json:"users,omitempty"`
-	WorkingInterval *[]WeekdayIntervalV2      `json:"working_interval,omitempty"`
+	Name            string                                            `json:"name"`
+	Users           *[]UserReferencePayloadV2                         `json:"users,omitempty"`
+	WorkingInterval *[]ScheduleRotationWorkingIntervalCreatePayloadV2 `json:"working_interval,omitempty"`
 }
 
 // ScheduleRotationHandoverV2 defines model for ScheduleRotationHandoverV2.
 type ScheduleRotationHandoverV2 struct {
-	Interval     *int64                                  `json:"interval,omitempty"`
+	Interval *int64 `json:"interval,omitempty"`
+
+	// IntervalType How often a handover occurs
 	IntervalType *ScheduleRotationHandoverV2IntervalType `json:"interval_type,omitempty"`
 }
 
-// ScheduleRotationHandoverV2IntervalType defines model for ScheduleRotationHandoverV2.IntervalType.
+// ScheduleRotationHandoverV2IntervalType How often a handover occurs
 type ScheduleRotationHandoverV2IntervalType string
 
 // ScheduleRotationUpdatePayloadV2 defines model for ScheduleRotationUpdatePayloadV2.
@@ -3023,12 +3505,12 @@ type ScheduleRotationUpdatePayloadV2 struct {
 	Handovers       *[]ScheduleRotationHandoverV2 `json:"handovers,omitempty"`
 
 	// Id Unique identifier of the rotation
-	Id     *string            `json:"id,omitempty"`
-	Layers *[]ScheduleLayerV2 `json:"layers,omitempty"`
+	Id     *string                         `json:"id,omitempty"`
+	Layers *[]ScheduleLayerUpdatePayloadV2 `json:"layers,omitempty"`
 
 	// Name Name of the rotation
 	Name            *string                                           `json:"name,omitempty"`
-	Users           *[]UserReferencePayloadV1                         `json:"users,omitempty"`
+	Users           *[]UserReferencePayloadV2                         `json:"users,omitempty"`
 	WorkingInterval *[]ScheduleRotationWorkingIntervalUpdatePayloadV2 `json:"working_interval,omitempty"`
 }
 
@@ -3050,10 +3532,25 @@ type ScheduleRotationV2 struct {
 	Layers []ScheduleLayerV2 `json:"layers"`
 
 	// Name Human readable name synced from external provider
-	Name            string               `json:"name"`
-	Users           *[]UserV1            `json:"users,omitempty"`
-	WorkingInterval *[]WeekdayIntervalV2 `json:"working_interval,omitempty"`
+	Name            string                               `json:"name"`
+	Users           *[]UserV2                            `json:"users,omitempty"`
+	WorkingInterval *[]ScheduleRotationWorkingIntervalV2 `json:"working_interval,omitempty"`
 }
+
+// ScheduleRotationWorkingIntervalCreatePayloadV2 defines model for ScheduleRotationWorkingIntervalCreatePayloadV2.
+type ScheduleRotationWorkingIntervalCreatePayloadV2 struct {
+	// EndTime End time of the interval, in 24hr format
+	EndTime string `json:"end_time"`
+
+	// StartTime Start time of the interval, in 24hr format
+	StartTime string `json:"start_time"`
+
+	// Weekday Weekdays for use with a schedule
+	Weekday ScheduleRotationWorkingIntervalCreatePayloadV2Weekday `json:"weekday"`
+}
+
+// ScheduleRotationWorkingIntervalCreatePayloadV2Weekday Weekdays for use with a schedule
+type ScheduleRotationWorkingIntervalCreatePayloadV2Weekday string
 
 // ScheduleRotationWorkingIntervalUpdatePayloadV2 defines model for ScheduleRotationWorkingIntervalUpdatePayloadV2.
 type ScheduleRotationWorkingIntervalUpdatePayloadV2 struct {
@@ -3063,18 +3560,34 @@ type ScheduleRotationWorkingIntervalUpdatePayloadV2 struct {
 	// StartTime Start time of the interval, in 24hr format
 	StartTime *string `json:"start_time,omitempty"`
 
-	// Weekday Weekday this interval applies to
+	// Weekday Weekdays for use with a schedule
 	Weekday *ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday `json:"weekday,omitempty"`
 }
 
-// ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday Weekday this interval applies to
+// ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday Weekdays for use with a schedule
 type ScheduleRotationWorkingIntervalUpdatePayloadV2Weekday string
+
+// ScheduleRotationWorkingIntervalV2 defines model for ScheduleRotationWorkingIntervalV2.
+type ScheduleRotationWorkingIntervalV2 struct {
+	// EndTime End time of the interval, in 24hr format
+	EndTime string `json:"end_time"`
+
+	// StartTime Start time of the interval, in 24hr format
+	StartTime string `json:"start_time"`
+
+	// Weekday Weekdays for use with a schedule
+	Weekday ScheduleRotationWorkingIntervalV2Weekday `json:"weekday"`
+}
+
+// ScheduleRotationWorkingIntervalV2Weekday Weekdays for use with a schedule
+type ScheduleRotationWorkingIntervalV2Weekday string
 
 // ScheduleUpdatePayloadV2 defines model for ScheduleUpdatePayloadV2.
 type ScheduleUpdatePayloadV2 struct {
 	// Annotations Annotations that can track metadata about the schedule
-	Annotations *map[string]string             `json:"annotations,omitempty"`
-	Config      *ScheduleConfigUpdatePayloadV2 `json:"config,omitempty"`
+	Annotations          *map[string]string                     `json:"annotations,omitempty"`
+	Config               *ScheduleConfigUpdatePayloadV2         `json:"config,omitempty"`
+	HolidaysPublicConfig *ScheduleHolidaysPublicConfigPayloadV2 `json:"holidays_public_config,omitempty"`
 
 	// Name Name of the schedule
 	Name *string `json:"name,omitempty"`
@@ -3091,7 +3604,8 @@ type ScheduleV2 struct {
 	CreatedAt   time.Time         `json:"created_at"`
 
 	// CurrentShifts Shifts that are on-going for this schedule, if a native schedule
-	CurrentShifts *[]ScheduleEntryV2 `json:"current_shifts,omitempty"`
+	CurrentShifts        *[]ScheduleEntryV2              `json:"current_shifts,omitempty"`
+	HolidaysPublicConfig *ScheduleHolidaysPublicConfigV2 `json:"holidays_public_config,omitempty"`
 
 	// Id Unique internal ID of the schedule
 	Id string `json:"id"`
@@ -3101,6 +3615,27 @@ type ScheduleV2 struct {
 
 	// Timezone Timezone of the schedule, as interpreted at the point of generating the report
 	Timezone  string    `json:"timezone"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// SeverityV1 defines model for SeverityV1.
+type SeverityV1 struct {
+	// CreatedAt When the action was created
+	CreatedAt time.Time `json:"created_at"`
+
+	// Description Description of the severity
+	Description string `json:"description"`
+
+	// Id Unique identifier of the severity
+	Id string `json:"id"`
+
+	// Name Human readable name of the severity
+	Name string `json:"name"`
+
+	// Rank Rank to help sort severities (lower numbers are less severe)
+	Rank int64 `json:"rank"`
+
+	// UpdatedAt When the action was last updated
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
@@ -3163,7 +3698,7 @@ type ShowResponseBody14 struct {
 
 // ShowResponseBody15 defines model for ShowResponseBody15.
 type ShowResponseBody15 struct {
-	Severity SeverityV2 `json:"severity"`
+	Severity SeverityV1 `json:"severity"`
 }
 
 // ShowResponseBody16 defines model for ShowResponseBody16.
@@ -3232,7 +3767,7 @@ type StepConfig struct {
 	Name string `json:"name"`
 
 	// ParamBindings Bindings for the step parameters
-	ParamBindings []EngineParamBindingV3 `json:"param_bindings"`
+	ParamBindings []EngineParamBindingV2 `json:"param_bindings"`
 }
 
 // StepConfigPayload defines model for StepConfigPayload.
@@ -3257,6 +3792,33 @@ type StepConfigSlim struct {
 
 	// Name Unique name of the step in the engine
 	Name string `json:"name"`
+}
+
+// TextMark defines model for TextMark.
+type TextMark struct {
+	// Attrs type-specific mark attributes
+	Attrs *map[string]interface{} `json:"attrs,omitempty"`
+
+	// Type the type of the node, eg 'text'
+	Type string `json:"type"`
+}
+
+// TextNode defines model for TextNode.
+type TextNode struct {
+	// Attrs type-specific node attributes
+	Attrs *map[string]interface{} `json:"attrs,omitempty"`
+
+	// Content children of this node
+	Content *[]TextNode `json:"content,omitempty"`
+
+	// Marks marks that apply to this node, eg 'bold'
+	Marks *[]TextMark `json:"marks,omitempty"`
+
+	// Text if this node doesn't have children, it has text content
+	Text *string `json:"text,omitempty"`
+
+	// Type the type of the node
+	Type string `json:"type"`
 }
 
 // TriggerSlim defines model for TriggerSlim.
@@ -3288,6 +3850,46 @@ type UpdateEntryRequestBody struct {
 
 // UpdateRequestBody defines model for UpdateRequestBody.
 type UpdateRequestBody struct {
+	// AlertSources Which alert sources should this alert route match?
+	AlertSources []AlertRouteAlertSourcePayloadV2 `json:"alert_sources"`
+
+	// AutoDeclineEnabled Should triage incidents be declined when alerts are resolved?
+	AutoDeclineEnabled bool `json:"auto_decline_enabled"`
+
+	// ConditionGroups What condition groups must be true for this alert route to fire?
+	ConditionGroups []ConditionGroupPayloadV2 `json:"condition_groups"`
+
+	// DeferTimeSeconds How long should the escalation defer time be?
+	DeferTimeSeconds int64 `json:"defer_time_seconds"`
+
+	// Enabled Whether this alert route is enabled or not
+	Enabled bool `json:"enabled"`
+
+	// EscalationBindings Which escalation paths should this alert route escalate to?
+	EscalationBindings []AlertRouteEscalationBindingPayloadV2 `json:"escalation_bindings"`
+
+	// Expressions The expressions used in this template
+	Expressions *[]ExpressionPayloadV2 `json:"expressions,omitempty"`
+
+	// GroupingKeys Which attributes should this alert route use to group alerts?
+	GroupingKeys []GroupingKeyV2 `json:"grouping_keys"`
+
+	// GroupingWindowSeconds How large should the grouping window be?
+	GroupingWindowSeconds int64 `json:"grouping_window_seconds"`
+
+	// IncidentConditionGroups What condition groups must be true for this alert route to create an incident?
+	IncidentConditionGroups []ConditionGroupPayloadV2 `json:"incident_condition_groups"`
+
+	// IncidentEnabled Whether this alert route will create incidents or not
+	IncidentEnabled bool `json:"incident_enabled"`
+
+	// Name The name of this alert route config, for the user's reference
+	Name     string                               `json:"name"`
+	Template *AlertRouteIncidentTemplatePayloadV2 `json:"template,omitempty"`
+}
+
+// UpdateRequestBody2 defines model for UpdateRequestBody2.
+type UpdateRequestBody2 struct {
 	// SortKey Sort key used to order the custom field options correctly
 	SortKey int64 `json:"sort_key"`
 
@@ -3295,8 +3897,8 @@ type UpdateRequestBody struct {
 	Value string `json:"value"`
 }
 
-// UpdateRequestBody2 defines model for UpdateRequestBody2.
-type UpdateRequestBody2 struct {
+// UpdateRequestBody3 defines model for UpdateRequestBody3.
+type UpdateRequestBody3 struct {
 	// Description Description of the custom field
 	Description string `json:"description"`
 
@@ -3304,10 +3906,10 @@ type UpdateRequestBody2 struct {
 	Name string `json:"name"`
 
 	// Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
-	Required *UpdateRequestBody2Required `json:"required,omitempty"`
+	Required *UpdateRequestBody3Required `json:"required,omitempty"`
 
 	// RequiredV2 When this custom field must be set during the incident lifecycle.
-	RequiredV2 *UpdateRequestBody2RequiredV2 `json:"required_v2,omitempty"`
+	RequiredV2 *UpdateRequestBody3RequiredV2 `json:"required_v2,omitempty"`
 
 	// ShowBeforeClosure Whether a custom field should be shown in the incident resolve modal. If this custom field is required before resolution, but no value has been set for it, the field will be shown in the resolve modal whatever the value of this setting.
 	ShowBeforeClosure bool `json:"show_before_closure"`
@@ -3322,14 +3924,14 @@ type UpdateRequestBody2 struct {
 	ShowInAnnouncementPost *bool `json:"show_in_announcement_post,omitempty"`
 }
 
-// UpdateRequestBody2Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
-type UpdateRequestBody2Required string
+// UpdateRequestBody3Required When this custom field must be set during the incident lifecycle. [DEPRECATED: please use required_v2 instead].
+type UpdateRequestBody3Required string
 
-// UpdateRequestBody2RequiredV2 When this custom field must be set during the incident lifecycle.
-type UpdateRequestBody2RequiredV2 string
+// UpdateRequestBody3RequiredV2 When this custom field must be set during the incident lifecycle.
+type UpdateRequestBody3RequiredV2 string
 
-// UpdateRequestBody3 defines model for UpdateRequestBody3.
-type UpdateRequestBody3 struct {
+// UpdateRequestBody4 defines model for UpdateRequestBody4.
+type UpdateRequestBody4 struct {
 	// Description Description of the custom field
 	Description string `json:"description"`
 
@@ -3337,8 +3939,8 @@ type UpdateRequestBody3 struct {
 	Name string `json:"name"`
 }
 
-// UpdateRequestBody4 defines model for UpdateRequestBody4.
-type UpdateRequestBody4 struct {
+// UpdateRequestBody5 defines model for UpdateRequestBody5.
+type UpdateRequestBody5 struct {
 	// Description Describes the purpose of the role
 	Description string `json:"description"`
 
@@ -3355,8 +3957,8 @@ type UpdateRequestBody4 struct {
 	Shortform string `json:"shortform"`
 }
 
-// UpdateRequestBody5 defines model for UpdateRequestBody5.
-type UpdateRequestBody5 struct {
+// UpdateRequestBody6 defines model for UpdateRequestBody6.
+type UpdateRequestBody6 struct {
 	// Description Describes the purpose of the role
 	Description string `json:"description"`
 
@@ -3370,8 +3972,8 @@ type UpdateRequestBody5 struct {
 	Shortform string `json:"shortform"`
 }
 
-// UpdateRequestBody6 defines model for UpdateRequestBody6.
-type UpdateRequestBody6 struct {
+// UpdateRequestBody7 defines model for UpdateRequestBody7.
+type UpdateRequestBody7 struct {
 	// Description Rich text description of the incident status
 	Description string `json:"description"`
 
@@ -3379,8 +3981,8 @@ type UpdateRequestBody6 struct {
 	Name string `json:"name"`
 }
 
-// UpdateRequestBody7 defines model for UpdateRequestBody7.
-type UpdateRequestBody7 struct {
+// UpdateRequestBody8 defines model for UpdateRequestBody8.
+type UpdateRequestBody8 struct {
 	Schedule ScheduleUpdatePayloadV2 `json:"schedule"`
 }
 
@@ -3426,8 +4028,8 @@ type UpdateTypeSchemaRequestBody struct {
 	Version    int64                           `json:"version"`
 }
 
-// UpdateWorkflowRequestBody defines model for UpdateWorkflowRequestBody.
-type UpdateWorkflowRequestBody struct {
+// UpdateWorkflowPayload defines model for UpdateWorkflowPayload.
+type UpdateWorkflowPayload struct {
 	// Annotations Annotations that track metadata about this resource
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
@@ -3454,29 +4056,44 @@ type UpdateWorkflowRequestBody struct {
 	OnceFor []string `json:"once_for"`
 
 	// RunsOnIncidentModes Which modes of incident this should run on (defaults to just standard incidents)
-	RunsOnIncidentModes []UpdateWorkflowRequestBodyRunsOnIncidentModes `json:"runs_on_incident_modes"`
+	RunsOnIncidentModes []UpdateWorkflowPayloadRunsOnIncidentModes `json:"runs_on_incident_modes"`
 
 	// RunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
-	RunsOnIncidents UpdateWorkflowRequestBodyRunsOnIncidents `json:"runs_on_incidents"`
+	RunsOnIncidents UpdateWorkflowPayloadRunsOnIncidents `json:"runs_on_incidents"`
+
+	// Shortform Shortform used to trigger manual workflows in Slack - e.g. `/inc workflows page-ceo`
+	Shortform *string `json:"shortform,omitempty"`
 
 	// State The state of the workflow (e.g. is it draft, or disabled)
-	State *UpdateWorkflowRequestBodyState `json:"state,omitempty"`
+	State *UpdateWorkflowPayloadState `json:"state,omitempty"`
 
 	// Steps List of step to execute as part of the workflow
 	Steps []StepConfigPayload `json:"steps"`
 }
 
-// UpdateWorkflowRequestBodyRunsOnIncidentModes defines model for UpdateWorkflowRequestBody.RunsOnIncidentModes.
-type UpdateWorkflowRequestBodyRunsOnIncidentModes string
+// UpdateWorkflowPayloadRunsOnIncidentModes defines model for UpdateWorkflowPayload.RunsOnIncidentModes.
+type UpdateWorkflowPayloadRunsOnIncidentModes string
 
-// UpdateWorkflowRequestBodyRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
-type UpdateWorkflowRequestBodyRunsOnIncidents string
+// UpdateWorkflowPayloadRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
+type UpdateWorkflowPayloadRunsOnIncidents string
 
-// UpdateWorkflowRequestBodyState The state of the workflow (e.g. is it draft, or disabled)
-type UpdateWorkflowRequestBodyState string
+// UpdateWorkflowPayloadState The state of the workflow (e.g. is it draft, or disabled)
+type UpdateWorkflowPayloadState string
 
 // UserReferencePayloadV1 defines model for UserReferencePayloadV1.
 type UserReferencePayloadV1 struct {
+	// Email The user's email address, matching the email on their Slack account
+	Email *string `json:"email,omitempty"`
+
+	// Id The incident.io ID of a user
+	Id *string `json:"id,omitempty"`
+
+	// SlackUserId The ID of the user's Slack account.
+	SlackUserId *string `json:"slack_user_id,omitempty"`
+}
+
+// UserReferencePayloadV2 defines model for UserReferencePayloadV2.
+type UserReferencePayloadV2 struct {
 	// Email The user's email address, matching the email on their Slack account
 	Email *string `json:"email,omitempty"`
 
@@ -3507,6 +4124,27 @@ type UserV1 struct {
 
 // UserV1Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
 type UserV1Role string
+
+// UserV2 defines model for UserV2.
+type UserV2 struct {
+	// Email Email address of the user.
+	Email *string `json:"email,omitempty"`
+
+	// Id Unique identifier of the user
+	Id string `json:"id"`
+
+	// Name Name of the user
+	Name string `json:"name"`
+
+	// Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
+	Role UserV2Role `json:"role"`
+
+	// SlackUserId Slack ID of the user
+	SlackUserId *string `json:"slack_user_id,omitempty"`
+}
+
+// UserV2Role DEPRECATED: Role of the user as of March 9th 2023, this value is no longer updated.
+type UserV2Role string
 
 // UserWithRolesV2 defines model for UserWithRolesV2.
 type UserWithRolesV2 struct {
@@ -3552,9 +4190,7 @@ type WeekdayIntervalV2 struct {
 
 	// StartTime Start time of the interval, in 24hr format
 	StartTime string `json:"start_time"`
-
-	// Weekday Weekday this interval applies to
-	Weekday string `json:"weekday"`
+	Weekday   string `json:"weekday"`
 }
 
 // Workflow defines model for Workflow.
@@ -3593,6 +4229,9 @@ type Workflow struct {
 	// RunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
 	RunsOnIncidents WorkflowRunsOnIncidents `json:"runs_on_incidents"`
 
+	// Shortform Shortform used to trigger manual workflows in Slack - e.g. `/inc workflows page-ceo`
+	Shortform *string `json:"shortform,omitempty"`
+
 	// State The state of the workflow (e.g. is it draft, or disabled)
 	State WorkflowState `json:"state"`
 
@@ -3604,7 +4243,7 @@ type Workflow struct {
 	Version int64 `json:"version"`
 }
 
-// WorkflowRunsOnIncidentModes defines model for Workflow.RunsOnIncidentModes.
+// WorkflowRunsOnIncidentModes Incident mode that workflows can run on
 type WorkflowRunsOnIncidentModes string
 
 // WorkflowRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
@@ -3658,6 +4297,9 @@ type WorkflowSlim struct {
 	// RunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
 	RunsOnIncidents WorkflowSlimRunsOnIncidents `json:"runs_on_incidents"`
 
+	// Shortform Shortform used to trigger manual workflows in Slack - e.g. `/inc workflows page-ceo`
+	Shortform *string `json:"shortform,omitempty"`
+
 	// State The state of the workflow (e.g. is it draft, or disabled)
 	State WorkflowSlimState `json:"state"`
 
@@ -3669,7 +4311,7 @@ type WorkflowSlim struct {
 	Version int64 `json:"version"`
 }
 
-// WorkflowSlimRunsOnIncidentModes defines model for WorkflowSlim.RunsOnIncidentModes.
+// WorkflowSlimRunsOnIncidentModes Incident mode that workflows can run on
 type WorkflowSlimRunsOnIncidentModes string
 
 // WorkflowSlimRunsOnIncidents Which incidents should the workflow be applied to? (newly_created or newly_created_and_active)
@@ -3760,6 +4402,9 @@ type CatalogV2ListEntriesParams struct {
 
 	// After An record's ID. This endpoint will return a list of records after this ID in relation to the API response order.
 	After *string `form:"after,omitempty" json:"after,omitempty"`
+
+	// IncludeReferences Whether to include attribute references to other catalog entries. Defaults to true, if not set.
+	IncludeReferences *bool `form:"include_references,omitempty" json:"include_references,omitempty"`
 }
 
 // FollowUpsV2ListParams defines parameters for FollowUpsV2List.
@@ -3802,6 +4447,9 @@ type IncidentsV2ListParams struct {
 
 	// CreatedAt Filter on incident created at timestamp. The accepted operators are 'gte', 'lte' and 'date_range'.
 	CreatedAt *map[string][]string `form:"created_at,omitempty" json:"created_at,omitempty"`
+
+	// UpdatedAt Filter on incident updated at timestamp. The accepted operators are 'gte', 'lte' and 'date_range'.
+	UpdatedAt *map[string][]string `form:"updated_at,omitempty" json:"updated_at,omitempty"`
 
 	// Severity Filter on incident severity. The accepted operators are 'one_of', 'not_in', 'gte', 'lte'.
 	Severity *map[string][]string `form:"severity,omitempty" json:"severity,omitempty"`
@@ -3859,13 +4507,13 @@ type UsersV2ListParams struct {
 type CustomFieldOptionsV1CreateJSONRequestBody = CreateRequestBody
 
 // CustomFieldOptionsV1UpdateJSONRequestBody defines body for CustomFieldOptionsV1Update for application/json ContentType.
-type CustomFieldOptionsV1UpdateJSONRequestBody = UpdateRequestBody
+type CustomFieldOptionsV1UpdateJSONRequestBody = UpdateRequestBody2
 
 // CustomFieldsV1CreateJSONRequestBody defines body for CustomFieldsV1Create for application/json ContentType.
 type CustomFieldsV1CreateJSONRequestBody = CreateRequestBody2
 
 // CustomFieldsV1UpdateJSONRequestBody defines body for CustomFieldsV1Update for application/json ContentType.
-type CustomFieldsV1UpdateJSONRequestBody = UpdateRequestBody2
+type CustomFieldsV1UpdateJSONRequestBody = UpdateRequestBody3
 
 // IncidentAttachmentsV1CreateJSONRequestBody defines body for IncidentAttachmentsV1Create for application/json ContentType.
 type IncidentAttachmentsV1CreateJSONRequestBody = CreateRequestBody4
@@ -3880,25 +4528,31 @@ type IncidentMembershipsV1RevokeJSONRequestBody = CreateRequestBody5
 type IncidentRolesV1CreateJSONRequestBody = CreateRequestBody6
 
 // IncidentRolesV1UpdateJSONRequestBody defines body for IncidentRolesV1Update for application/json ContentType.
-type IncidentRolesV1UpdateJSONRequestBody = UpdateRequestBody4
+type IncidentRolesV1UpdateJSONRequestBody = UpdateRequestBody5
 
 // IncidentStatusesV1CreateJSONRequestBody defines body for IncidentStatusesV1Create for application/json ContentType.
 type IncidentStatusesV1CreateJSONRequestBody = CreateRequestBody8
 
 // IncidentStatusesV1UpdateJSONRequestBody defines body for IncidentStatusesV1Update for application/json ContentType.
-type IncidentStatusesV1UpdateJSONRequestBody = UpdateRequestBody6
+type IncidentStatusesV1UpdateJSONRequestBody = UpdateRequestBody7
 
 // IncidentsV1CreateJSONRequestBody defines body for IncidentsV1Create for application/json ContentType.
-type IncidentsV1CreateJSONRequestBody = CreateRequestBody9
+type IncidentsV1CreateJSONRequestBody = IncidentCreatePayloadV1
 
 // SeveritiesV1CreateJSONRequestBody defines body for SeveritiesV1Create for application/json ContentType.
-type SeveritiesV1CreateJSONRequestBody = CreateRequestBody12
+type SeveritiesV1CreateJSONRequestBody = CreateRequestBody10
 
 // SeveritiesV1UpdateJSONRequestBody defines body for SeveritiesV1Update for application/json ContentType.
-type SeveritiesV1UpdateJSONRequestBody = CreateRequestBody12
+type SeveritiesV1UpdateJSONRequestBody = CreateRequestBody10
 
 // AlertEventsV2CreateHTTPJSONRequestBody defines body for AlertEventsV2CreateHTTP for application/json ContentType.
 type AlertEventsV2CreateHTTPJSONRequestBody = CreateHTTPRequestBody
+
+// AlertRoutesV2CreateJSONRequestBody defines body for AlertRoutesV2Create for application/json ContentType.
+type AlertRoutesV2CreateJSONRequestBody = AlertRoutePayloadV2
+
+// AlertRoutesV2UpdateJSONRequestBody defines body for AlertRoutesV2Update for application/json ContentType.
+type AlertRoutesV2UpdateJSONRequestBody = UpdateRequestBody
 
 // CatalogV2CreateEntryJSONRequestBody defines body for CatalogV2CreateEntry for application/json ContentType.
 type CatalogV2CreateEntryJSONRequestBody = CreateEntryRequestBody
@@ -3919,40 +4573,40 @@ type CatalogV2UpdateTypeSchemaJSONRequestBody = UpdateTypeSchemaRequestBody
 type CustomFieldsV2CreateJSONRequestBody = CreateRequestBody3
 
 // CustomFieldsV2UpdateJSONRequestBody defines body for CustomFieldsV2Update for application/json ContentType.
-type CustomFieldsV2UpdateJSONRequestBody = UpdateRequestBody3
+type CustomFieldsV2UpdateJSONRequestBody = UpdateRequestBody4
 
 // EscalationsV2CreatePathJSONRequestBody defines body for EscalationsV2CreatePath for application/json ContentType.
-type EscalationsV2CreatePathJSONRequestBody = CreatePathRequestBody
+type EscalationsV2CreatePathJSONRequestBody = EscalationPathPayloadV2
 
 // EscalationsV2UpdatePathJSONRequestBody defines body for EscalationsV2UpdatePath for application/json ContentType.
-type EscalationsV2UpdatePathJSONRequestBody = CreatePathRequestBody
+type EscalationsV2UpdatePathJSONRequestBody = EscalationPathPayloadV2
 
 // IncidentRolesV2CreateJSONRequestBody defines body for IncidentRolesV2Create for application/json ContentType.
 type IncidentRolesV2CreateJSONRequestBody = CreateRequestBody7
 
 // IncidentRolesV2UpdateJSONRequestBody defines body for IncidentRolesV2Update for application/json ContentType.
-type IncidentRolesV2UpdateJSONRequestBody = UpdateRequestBody5
+type IncidentRolesV2UpdateJSONRequestBody = UpdateRequestBody6
 
 // IncidentsV2CreateJSONRequestBody defines body for IncidentsV2Create for application/json ContentType.
-type IncidentsV2CreateJSONRequestBody = CreateRequestBody10
+type IncidentsV2CreateJSONRequestBody = IncidentCreatePayloadV2
 
 // IncidentsV2EditJSONRequestBody defines body for IncidentsV2Edit for application/json ContentType.
 type IncidentsV2EditJSONRequestBody = EditRequestBody
 
-// ManagedResourcesV2CreateManagedResourceJSONRequestBody defines body for ManagedResourcesV2CreateManagedResource for application/json ContentType.
-type ManagedResourcesV2CreateManagedResourceJSONRequestBody = CreateManagedResourceRequestBody
+// SchedulesV2CreateOverrideJSONRequestBody defines body for SchedulesV2CreateOverride for application/json ContentType.
+type SchedulesV2CreateOverrideJSONRequestBody = ScheduleOverrideCreatePayloadV2
 
 // SchedulesV2CreateJSONRequestBody defines body for SchedulesV2Create for application/json ContentType.
-type SchedulesV2CreateJSONRequestBody = CreateRequestBody11
+type SchedulesV2CreateJSONRequestBody = CreateRequestBody9
 
 // SchedulesV2UpdateJSONRequestBody defines body for SchedulesV2Update for application/json ContentType.
-type SchedulesV2UpdateJSONRequestBody = UpdateRequestBody7
+type SchedulesV2UpdateJSONRequestBody = UpdateRequestBody8
 
 // WorkflowsV2CreateWorkflowJSONRequestBody defines body for WorkflowsV2CreateWorkflow for application/json ContentType.
-type WorkflowsV2CreateWorkflowJSONRequestBody = CreateWorkflowRequestBody
+type WorkflowsV2CreateWorkflowJSONRequestBody = CreateWorkflowPayload
 
 // WorkflowsV2UpdateWorkflowJSONRequestBody defines body for WorkflowsV2UpdateWorkflow for application/json ContentType.
-type WorkflowsV2UpdateWorkflowJSONRequestBody = UpdateWorkflowRequestBody
+type WorkflowsV2UpdateWorkflowJSONRequestBody = UpdateWorkflowPayload
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -4186,6 +4840,22 @@ type ClientInterface interface {
 
 	AlertEventsV2CreateHTTP(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// AlertRoutesV2Create request with any body
+	AlertRoutesV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AlertRoutesV2Create(ctx context.Context, body AlertRoutesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AlertRoutesV2Destroy request
+	AlertRoutesV2Destroy(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AlertRoutesV2Show request
+	AlertRoutesV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AlertRoutesV2Update request with any body
+	AlertRoutesV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AlertRoutesV2Update(ctx context.Context, id string, body AlertRoutesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// CatalogV2ListEntries request
 	CatalogV2ListEntries(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4317,13 +4987,13 @@ type ClientInterface interface {
 
 	IncidentsV2Edit(ctx context.Context, id string, body IncidentsV2EditJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ManagedResourcesV2CreateManagedResource request with any body
-	ManagedResourcesV2CreateManagedResourceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	ManagedResourcesV2CreateManagedResource(ctx context.Context, body ManagedResourcesV2CreateManagedResourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// SchedulesV2ListScheduleEntries request
 	SchedulesV2ListScheduleEntries(ctx context.Context, params *SchedulesV2ListScheduleEntriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SchedulesV2CreateOverride request with any body
+	SchedulesV2CreateOverrideWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	SchedulesV2CreateOverride(ctx context.Context, body SchedulesV2CreateOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SchedulesV2List request
 	SchedulesV2List(ctx context.Context, params *SchedulesV2ListParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5066,6 +5736,78 @@ func (c *Client) AlertEventsV2CreateHTTP(ctx context.Context, alertSourceConfigI
 	return c.Client.Do(req)
 }
 
+func (c *Client) AlertRoutesV2CreateWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2CreateRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertRoutesV2Create(ctx context.Context, body AlertRoutesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2CreateRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertRoutesV2Destroy(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2DestroyRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertRoutesV2Show(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2ShowRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertRoutesV2UpdateWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2UpdateRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AlertRoutesV2Update(ctx context.Context, id string, body AlertRoutesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAlertRoutesV2UpdateRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) CatalogV2ListEntries(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCatalogV2ListEntriesRequest(c.Server, params)
 	if err != nil {
@@ -5642,32 +6384,32 @@ func (c *Client) IncidentsV2Edit(ctx context.Context, id string, body IncidentsV
 	return c.Client.Do(req)
 }
 
-func (c *Client) ManagedResourcesV2CreateManagedResourceWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewManagedResourcesV2CreateManagedResourceRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ManagedResourcesV2CreateManagedResource(ctx context.Context, body ManagedResourcesV2CreateManagedResourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewManagedResourcesV2CreateManagedResourceRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) SchedulesV2ListScheduleEntries(ctx context.Context, params *SchedulesV2ListScheduleEntriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSchedulesV2ListScheduleEntriesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SchedulesV2CreateOverrideWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSchedulesV2CreateOverrideRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) SchedulesV2CreateOverride(ctx context.Context, body SchedulesV2CreateOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSchedulesV2CreateOverrideRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7633,6 +8375,161 @@ func NewAlertEventsV2CreateHTTPRequestWithBody(server string, alertSourceConfigI
 	return req, nil
 }
 
+// NewAlertRoutesV2CreateRequest calls the generic AlertRoutesV2Create builder with application/json body
+func NewAlertRoutesV2CreateRequest(server string, body AlertRoutesV2CreateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAlertRoutesV2CreateRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewAlertRoutesV2CreateRequestWithBody generates requests for AlertRoutesV2Create with any type of body
+func NewAlertRoutesV2CreateRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/alert_routes")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewAlertRoutesV2DestroyRequest generates requests for AlertRoutesV2Destroy
+func NewAlertRoutesV2DestroyRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/alert_routes/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAlertRoutesV2ShowRequest generates requests for AlertRoutesV2Show
+func NewAlertRoutesV2ShowRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/alert_routes/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAlertRoutesV2UpdateRequest calls the generic AlertRoutesV2Update builder with application/json body
+func NewAlertRoutesV2UpdateRequest(server string, id string, body AlertRoutesV2UpdateJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAlertRoutesV2UpdateRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewAlertRoutesV2UpdateRequestWithBody generates requests for AlertRoutesV2Update with any type of body
+func NewAlertRoutesV2UpdateRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/alert_routes/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewCatalogV2ListEntriesRequest generates requests for CatalogV2ListEntries
 func NewCatalogV2ListEntriesRequest(server string, params *CatalogV2ListEntriesParams) (*http.Request, error) {
 	var err error
@@ -7685,6 +8582,22 @@ func NewCatalogV2ListEntriesRequest(server string, params *CatalogV2ListEntriesP
 	if params.After != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "after", runtime.ParamLocationQuery, *params.After); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.IncludeReferences != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "include_references", runtime.ParamLocationQuery, *params.IncludeReferences); err != nil {
 			return nil, err
 		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 			return nil, err
@@ -8976,6 +9889,22 @@ func NewIncidentsV2ListRequest(server string, params *IncidentsV2ListParams) (*h
 
 	}
 
+	if params.UpdatedAt != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updated_at", runtime.ParamLocationQuery, *params.UpdatedAt); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
 	if params.Severity != nil {
 
 		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "severity", runtime.ParamLocationQuery, *params.Severity); err != nil {
@@ -9187,46 +10116,6 @@ func NewIncidentsV2EditRequestWithBody(server string, id string, contentType str
 	return req, nil
 }
 
-// NewManagedResourcesV2CreateManagedResourceRequest calls the generic ManagedResourcesV2CreateManagedResource builder with application/json body
-func NewManagedResourcesV2CreateManagedResourceRequest(server string, body ManagedResourcesV2CreateManagedResourceJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewManagedResourcesV2CreateManagedResourceRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewManagedResourcesV2CreateManagedResourceRequestWithBody generates requests for ManagedResourcesV2CreateManagedResource with any type of body
-func NewManagedResourcesV2CreateManagedResourceRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v2/managed_resources")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewSchedulesV2ListScheduleEntriesRequest generates requests for SchedulesV2ListScheduleEntries
 func NewSchedulesV2ListScheduleEntriesRequest(server string, params *SchedulesV2ListScheduleEntriesParams) (*http.Request, error) {
 	var err error
@@ -9298,6 +10187,46 @@ func NewSchedulesV2ListScheduleEntriesRequest(server string, params *SchedulesV2
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewSchedulesV2CreateOverrideRequest calls the generic SchedulesV2CreateOverride builder with application/json body
+func NewSchedulesV2CreateOverrideRequest(server string, body SchedulesV2CreateOverrideJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSchedulesV2CreateOverrideRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSchedulesV2CreateOverrideRequestWithBody generates requests for SchedulesV2CreateOverride with any type of body
+func NewSchedulesV2CreateOverrideRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v2/schedule_overrides")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -10033,6 +10962,22 @@ type ClientWithResponsesInterface interface {
 
 	AlertEventsV2CreateHTTPWithResponse(ctx context.Context, alertSourceConfigId string, params *AlertEventsV2CreateHTTPParams, body AlertEventsV2CreateHTTPJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertEventsV2CreateHTTPResponse, error)
 
+	// AlertRoutesV2Create request with any body
+	AlertRoutesV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertRoutesV2CreateResponse, error)
+
+	AlertRoutesV2CreateWithResponse(ctx context.Context, body AlertRoutesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertRoutesV2CreateResponse, error)
+
+	// AlertRoutesV2Destroy request
+	AlertRoutesV2DestroyWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*AlertRoutesV2DestroyResponse, error)
+
+	// AlertRoutesV2Show request
+	AlertRoutesV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*AlertRoutesV2ShowResponse, error)
+
+	// AlertRoutesV2Update request with any body
+	AlertRoutesV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertRoutesV2UpdateResponse, error)
+
+	AlertRoutesV2UpdateWithResponse(ctx context.Context, id string, body AlertRoutesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertRoutesV2UpdateResponse, error)
+
 	// CatalogV2ListEntries request
 	CatalogV2ListEntriesWithResponse(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*CatalogV2ListEntriesResponse, error)
 
@@ -10164,13 +11109,13 @@ type ClientWithResponsesInterface interface {
 
 	IncidentsV2EditWithResponse(ctx context.Context, id string, body IncidentsV2EditJSONRequestBody, reqEditors ...RequestEditorFn) (*IncidentsV2EditResponse, error)
 
-	// ManagedResourcesV2CreateManagedResource request with any body
-	ManagedResourcesV2CreateManagedResourceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ManagedResourcesV2CreateManagedResourceResponse, error)
-
-	ManagedResourcesV2CreateManagedResourceWithResponse(ctx context.Context, body ManagedResourcesV2CreateManagedResourceJSONRequestBody, reqEditors ...RequestEditorFn) (*ManagedResourcesV2CreateManagedResourceResponse, error)
-
 	// SchedulesV2ListScheduleEntries request
 	SchedulesV2ListScheduleEntriesWithResponse(ctx context.Context, params *SchedulesV2ListScheduleEntriesParams, reqEditors ...RequestEditorFn) (*SchedulesV2ListScheduleEntriesResponse, error)
+
+	// SchedulesV2CreateOverride request with any body
+	SchedulesV2CreateOverrideWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SchedulesV2CreateOverrideResponse, error)
+
+	SchedulesV2CreateOverrideWithResponse(ctx context.Context, body SchedulesV2CreateOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*SchedulesV2CreateOverrideResponse, error)
 
 	// SchedulesV2List request
 	SchedulesV2ListWithResponse(ctx context.Context, params *SchedulesV2ListParams, reqEditors ...RequestEditorFn) (*SchedulesV2ListResponse, error)
@@ -10526,7 +11471,7 @@ func (r IncidentAttachmentsV1ListResponse) StatusCode() int {
 type IncidentAttachmentsV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *CreateResponseBody
+	JSON201      *CreateResponseBody2
 }
 
 // Status returns HTTPResponse.Status
@@ -10569,7 +11514,7 @@ func (r IncidentAttachmentsV1DeleteResponse) StatusCode() int {
 type IncidentMembershipsV1CreateResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *CreateResponseBody2
+	JSON201      *CreateResponseBody3
 }
 
 // Status returns HTTPResponse.Status
@@ -10940,7 +11885,7 @@ func (r IncidentsV1ShowResponse) StatusCode() int {
 type UtilitiesV1OpenAPIResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *openapi_types.File
+	JSON200      *interface{}
 }
 
 // Status returns HTTPResponse.Status
@@ -10962,7 +11907,7 @@ func (r UtilitiesV1OpenAPIResponse) StatusCode() int {
 type UtilitiesV1OpenAPIV3Response struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *openapi_types.File
+	JSON200      *interface{}
 }
 
 // Status returns HTTPResponse.Status
@@ -11150,6 +12095,93 @@ func (r AlertEventsV2CreateHTTPResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r AlertEventsV2CreateHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AlertRoutesV2CreateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *CreateResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r AlertRoutesV2CreateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AlertRoutesV2CreateResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AlertRoutesV2DestroyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r AlertRoutesV2DestroyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AlertRoutesV2DestroyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AlertRoutesV2ShowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CreateResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r AlertRoutesV2ShowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AlertRoutesV2ShowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AlertRoutesV2UpdateResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CreateResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r AlertRoutesV2UpdateResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AlertRoutesV2UpdateResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11921,28 +12953,6 @@ func (r IncidentsV2EditResponse) StatusCode() int {
 	return 0
 }
 
-type ManagedResourcesV2CreateManagedResourceResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *CreateManagedResourceResponseBody
-}
-
-// Status returns HTTPResponse.Status
-func (r ManagedResourcesV2CreateManagedResourceResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ManagedResourcesV2CreateManagedResourceResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type SchedulesV2ListScheduleEntriesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -11959,6 +12969,28 @@ func (r SchedulesV2ListScheduleEntriesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r SchedulesV2ListScheduleEntriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SchedulesV2CreateOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *CreateOverrideResponseBody
+}
+
+// Status returns HTTPResponse.Status
+func (r SchedulesV2CreateOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SchedulesV2CreateOverrideResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -12734,6 +13766,58 @@ func (c *ClientWithResponses) AlertEventsV2CreateHTTPWithResponse(ctx context.Co
 	return ParseAlertEventsV2CreateHTTPResponse(rsp)
 }
 
+// AlertRoutesV2CreateWithBodyWithResponse request with arbitrary body returning *AlertRoutesV2CreateResponse
+func (c *ClientWithResponses) AlertRoutesV2CreateWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertRoutesV2CreateResponse, error) {
+	rsp, err := c.AlertRoutesV2CreateWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2CreateResponse(rsp)
+}
+
+func (c *ClientWithResponses) AlertRoutesV2CreateWithResponse(ctx context.Context, body AlertRoutesV2CreateJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertRoutesV2CreateResponse, error) {
+	rsp, err := c.AlertRoutesV2Create(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2CreateResponse(rsp)
+}
+
+// AlertRoutesV2DestroyWithResponse request returning *AlertRoutesV2DestroyResponse
+func (c *ClientWithResponses) AlertRoutesV2DestroyWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*AlertRoutesV2DestroyResponse, error) {
+	rsp, err := c.AlertRoutesV2Destroy(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2DestroyResponse(rsp)
+}
+
+// AlertRoutesV2ShowWithResponse request returning *AlertRoutesV2ShowResponse
+func (c *ClientWithResponses) AlertRoutesV2ShowWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*AlertRoutesV2ShowResponse, error) {
+	rsp, err := c.AlertRoutesV2Show(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2ShowResponse(rsp)
+}
+
+// AlertRoutesV2UpdateWithBodyWithResponse request with arbitrary body returning *AlertRoutesV2UpdateResponse
+func (c *ClientWithResponses) AlertRoutesV2UpdateWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AlertRoutesV2UpdateResponse, error) {
+	rsp, err := c.AlertRoutesV2UpdateWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2UpdateResponse(rsp)
+}
+
+func (c *ClientWithResponses) AlertRoutesV2UpdateWithResponse(ctx context.Context, id string, body AlertRoutesV2UpdateJSONRequestBody, reqEditors ...RequestEditorFn) (*AlertRoutesV2UpdateResponse, error) {
+	rsp, err := c.AlertRoutesV2Update(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAlertRoutesV2UpdateResponse(rsp)
+}
+
 // CatalogV2ListEntriesWithResponse request returning *CatalogV2ListEntriesResponse
 func (c *ClientWithResponses) CatalogV2ListEntriesWithResponse(ctx context.Context, params *CatalogV2ListEntriesParams, reqEditors ...RequestEditorFn) (*CatalogV2ListEntriesResponse, error) {
 	rsp, err := c.CatalogV2ListEntries(ctx, params, reqEditors...)
@@ -13153,23 +14237,6 @@ func (c *ClientWithResponses) IncidentsV2EditWithResponse(ctx context.Context, i
 	return ParseIncidentsV2EditResponse(rsp)
 }
 
-// ManagedResourcesV2CreateManagedResourceWithBodyWithResponse request with arbitrary body returning *ManagedResourcesV2CreateManagedResourceResponse
-func (c *ClientWithResponses) ManagedResourcesV2CreateManagedResourceWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ManagedResourcesV2CreateManagedResourceResponse, error) {
-	rsp, err := c.ManagedResourcesV2CreateManagedResourceWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseManagedResourcesV2CreateManagedResourceResponse(rsp)
-}
-
-func (c *ClientWithResponses) ManagedResourcesV2CreateManagedResourceWithResponse(ctx context.Context, body ManagedResourcesV2CreateManagedResourceJSONRequestBody, reqEditors ...RequestEditorFn) (*ManagedResourcesV2CreateManagedResourceResponse, error) {
-	rsp, err := c.ManagedResourcesV2CreateManagedResource(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseManagedResourcesV2CreateManagedResourceResponse(rsp)
-}
-
 // SchedulesV2ListScheduleEntriesWithResponse request returning *SchedulesV2ListScheduleEntriesResponse
 func (c *ClientWithResponses) SchedulesV2ListScheduleEntriesWithResponse(ctx context.Context, params *SchedulesV2ListScheduleEntriesParams, reqEditors ...RequestEditorFn) (*SchedulesV2ListScheduleEntriesResponse, error) {
 	rsp, err := c.SchedulesV2ListScheduleEntries(ctx, params, reqEditors...)
@@ -13177,6 +14244,23 @@ func (c *ClientWithResponses) SchedulesV2ListScheduleEntriesWithResponse(ctx con
 		return nil, err
 	}
 	return ParseSchedulesV2ListScheduleEntriesResponse(rsp)
+}
+
+// SchedulesV2CreateOverrideWithBodyWithResponse request with arbitrary body returning *SchedulesV2CreateOverrideResponse
+func (c *ClientWithResponses) SchedulesV2CreateOverrideWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SchedulesV2CreateOverrideResponse, error) {
+	rsp, err := c.SchedulesV2CreateOverrideWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSchedulesV2CreateOverrideResponse(rsp)
+}
+
+func (c *ClientWithResponses) SchedulesV2CreateOverrideWithResponse(ctx context.Context, body SchedulesV2CreateOverrideJSONRequestBody, reqEditors ...RequestEditorFn) (*SchedulesV2CreateOverrideResponse, error) {
+	rsp, err := c.SchedulesV2CreateOverride(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSchedulesV2CreateOverrideResponse(rsp)
 }
 
 // SchedulesV2ListWithResponse request returning *SchedulesV2ListResponse
@@ -13678,7 +14762,7 @@ func ParseIncidentAttachmentsV1CreateResponse(rsp *http.Response) (*IncidentAtta
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest CreateResponseBody
+		var dest CreateResponseBody2
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -13720,7 +14804,7 @@ func ParseIncidentMembershipsV1CreateResponse(rsp *http.Response) (*IncidentMemb
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest CreateResponseBody2
+		var dest CreateResponseBody3
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -14132,7 +15216,7 @@ func ParseUtilitiesV1OpenAPIResponse(rsp *http.Response) (*UtilitiesV1OpenAPIRes
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest openapi_types.File
+		var dest interface{}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -14158,7 +15242,7 @@ func ParseUtilitiesV1OpenAPIV3Response(rsp *http.Response) (*UtilitiesV1OpenAPIV
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest openapi_types.File
+		var dest interface{}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -14361,6 +15445,100 @@ func ParseAlertEventsV2CreateHTTPResponse(rsp *http.Response) (*AlertEventsV2Cre
 			return nil, err
 		}
 		response.JSON202 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAlertRoutesV2CreateResponse parses an HTTP response from a AlertRoutesV2CreateWithResponse call
+func ParseAlertRoutesV2CreateResponse(rsp *http.Response) (*AlertRoutesV2CreateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AlertRoutesV2CreateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CreateResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAlertRoutesV2DestroyResponse parses an HTTP response from a AlertRoutesV2DestroyWithResponse call
+func ParseAlertRoutesV2DestroyResponse(rsp *http.Response) (*AlertRoutesV2DestroyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AlertRoutesV2DestroyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseAlertRoutesV2ShowResponse parses an HTTP response from a AlertRoutesV2ShowWithResponse call
+func ParseAlertRoutesV2ShowResponse(rsp *http.Response) (*AlertRoutesV2ShowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AlertRoutesV2ShowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CreateResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseAlertRoutesV2UpdateResponse parses an HTTP response from a AlertRoutesV2UpdateWithResponse call
+func ParseAlertRoutesV2UpdateResponse(rsp *http.Response) (*AlertRoutesV2UpdateResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AlertRoutesV2UpdateResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CreateResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	}
 
@@ -15227,32 +16405,6 @@ func ParseIncidentsV2EditResponse(rsp *http.Response) (*IncidentsV2EditResponse,
 	return response, nil
 }
 
-// ParseManagedResourcesV2CreateManagedResourceResponse parses an HTTP response from a ManagedResourcesV2CreateManagedResourceWithResponse call
-func ParseManagedResourcesV2CreateManagedResourceResponse(rsp *http.Response) (*ManagedResourcesV2CreateManagedResourceResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ManagedResourcesV2CreateManagedResourceResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CreateManagedResourceResponseBody
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseSchedulesV2ListScheduleEntriesResponse parses an HTTP response from a SchedulesV2ListScheduleEntriesWithResponse call
 func ParseSchedulesV2ListScheduleEntriesResponse(rsp *http.Response) (*SchedulesV2ListScheduleEntriesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -15273,6 +16425,32 @@ func ParseSchedulesV2ListScheduleEntriesResponse(rsp *http.Response) (*Schedules
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSchedulesV2CreateOverrideResponse parses an HTTP response from a SchedulesV2CreateOverrideWithResponse call
+func ParseSchedulesV2CreateOverrideResponse(rsp *http.Response) (*SchedulesV2CreateOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SchedulesV2CreateOverrideResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest CreateOverrideResponseBody
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	}
 
