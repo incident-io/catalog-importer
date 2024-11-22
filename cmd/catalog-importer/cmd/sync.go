@@ -23,15 +23,16 @@ import (
 )
 
 type SyncOptions struct {
-	ConfigFile     string
-	APIEndpoint    string
-	APIKey         string
-	Targets        []string
-	SampleLength   int
-	DryRun         bool
-	Prune          bool
-	AllowDeleteAll bool
-	SourceRepoUrl  string
+	ConfigFile                string
+	APIEndpoint               string
+	APIKey                    string
+	Targets                   []string
+	SampleLength              int
+	DryRun                    bool
+	Prune                     bool
+	AllowDeleteAll            bool
+	SourceRepoUrl             string
+	CatalogEntriesAPIPageSize int
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -59,6 +60,10 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		BoolVar(&opt.Prune)
 	cmd.Flag("allow-delete-all", "Allow removing all entries from a catalog entry").
 		BoolVar(&opt.AllowDeleteAll)
+	cmd.Flag("catalog-entries-api-page-size", "The page size to use when listing catalog entries from the API").
+		Envar("CATALOG_ENTRIES_API_PAGE_SIZE").
+		Default("250").
+		IntVar(&opt.CatalogEntriesAPIPageSize)
 
 	return opt
 }
@@ -473,7 +478,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
 				catalogType := catalogTypesByOutput[outputType.TypeName]
 
-				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun))
+				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
 				}
@@ -509,7 +514,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
 				catalogType := catalogTypesByOutput[enumModel.TypeName]
-				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun))
+				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
@@ -530,7 +535,7 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 	}
 
 	return reconcile.EntriesClient{
-		GetEntries: func(ctx context.Context, catalogTypeID string) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
+		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
 			// We're in dry-run and this catalog type is yet to be created. We can't ask the API
 			// for the entries of a type that doesn't exist, so we return the type we faked from
 			// the dry-run create and an empty list of entries.
@@ -545,7 +550,7 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 			}
 
 			// We're just a normal catalog type, use the real client.
-			return reconcile.GetEntries(ctx, cl, catalogTypeID)
+			return reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize)
 		},
 		Delete: func(ctx context.Context, entry *client.CatalogEntryV2) error {
 			DIFF("      ", *entry, client.CatalogEntryV2{})
