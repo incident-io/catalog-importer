@@ -15,7 +15,7 @@ import (
 )
 
 type EntriesClient struct {
-	GetEntries func(ctx context.Context, catalogTypeID string) (*client.CatalogTypeV2, []client.CatalogEntryV2, error)
+	GetEntries func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error)
 	Delete     func(ctx context.Context, entry *client.CatalogEntryV2) error
 	Create     func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error)
 	Update     func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error)
@@ -26,8 +26,8 @@ type EntriesClient struct {
 // actually perform updates.
 func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 	return EntriesClient{
-		GetEntries: func(ctx context.Context, catalogTypeID string) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
-			return GetEntries(ctx, cl, catalogTypeID)
+		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
+			return GetEntries(ctx, cl, catalogTypeID, pageSize)
 		},
 		Delete: func(ctx context.Context, entry *client.CatalogEntryV2) error {
 			_, err := cl.CatalogV2DestroyEntryWithResponse(ctx, entry.Id)
@@ -65,7 +65,7 @@ type EntriesProgress struct {
 	OnUpdateProgress func()
 }
 
-func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress) error {
+func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress, pageSize int) error {
 	logger = kitlog.With(logger,
 		"catalog_type_id", catalogType.Id,
 		"catalog_type_name", catalogType.TypeName,
@@ -77,7 +77,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	}
 
 	logger.Log("msg", "listing existing entries")
-	catalogType, entries, err := cl.GetEntries(ctx, catalogType.Id)
+	catalogType, entries, err := cl.GetEntries(ctx, catalogType.Id, pageSize)
 	if err != nil {
 		return errors.Wrap(err, "listing entries")
 	}
@@ -307,7 +307,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 }
 
 // GetEntries paginates through all catalog entries for the given type.
-func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string) (catalogType *client.CatalogTypeV2, entries []client.CatalogEntryV2, err error) {
+func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string, pageSize int) (catalogType *client.CatalogTypeV2, entries []client.CatalogEntryV2, err error) {
 	var (
 		after *string
 	)
@@ -315,7 +315,7 @@ func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogType
 	for {
 		result, err := cl.CatalogV2ListEntriesWithResponse(ctx, &client.CatalogV2ListEntriesParams{
 			CatalogTypeId: catalogTypeID,
-			PageSize:      lo.ToPtr(int64(250)),
+			PageSize:      lo.ToPtr(int64(pageSize)),
 			After:         after,
 		})
 		if err != nil {
