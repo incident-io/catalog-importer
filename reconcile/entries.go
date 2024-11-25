@@ -82,10 +82,23 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 		return errors.Wrap(err, "listing entries")
 	}
 
-	// Prepare a quick lookup of model by external ID, to power deletion.
-	modelsByExternalID := map[string]*output.CatalogEntryModel{}
+	// Prepare a quick lookup of model by external ID, to power deletion. We only need
+	// to store a boolean here, because we only care about the presence of a model by
+	// external ID.
+	modelsByExternalID := map[string]bool{}
 	for _, model := range entryModels {
-		modelsByExternalID[model.ExternalID] = model
+		// If we encounter two (or more) models with the same external ID, then we should
+		// log a warning. The external ID must be unique, so in the next phase we'll only
+		// create one catalog entry per external ID.
+		_, ok := modelsByExternalID[model.ExternalID]
+		if ok {
+			logger.Log(
+				"msg", "two entries with the same external ID provided, the first will be ignored",
+				"external_id", model.ExternalID,
+			)
+		}
+
+		modelsByExternalID[model.ExternalID] = true
 	}
 
 	{
