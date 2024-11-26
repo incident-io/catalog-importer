@@ -152,6 +152,9 @@
           // This is how the type will be displayed in the catalog dashboard.
           name: 'Team',
           description: 'Teams in the Product Development function.',
+          // This will determine the group in which this type will appear under. They can be one of the following:
+          // 'customer', 'issue-tracker', 'on-call', 'product-feature', 'service', 'team', 'user'
+          categories: ['team'],    
 
           // The unique type name for this catalog type. If other catalog types
           // create attributes that point at this type, they should set the
