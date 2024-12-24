@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Sync
           command: |
-            if [[ "${$CIRCLE_BRANCH}" == "master" ]]; then
+            if [[ "${CIRCLE_BRANCH}" == "master" || "${CIRCLE_BRANCH}" == "main" ]]; then
               /tmp/catalog-importer sync --config importer.jsonnet
             else
               /tmp/catalog-importer sync --config importer.jsonnet --dry-run
