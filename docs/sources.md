@@ -9,7 +9,7 @@ These are:
 - [`local`](#local) from local files
 - [`backstage`](#backstage) for catalog data pulled from the Backstage API
 - [`github`](#github) to load from files in GitHub repositories
-- [`exec`](#local) from the output of a command
+- [`exec`](#exec) from the output of a command
 - [`graphql`](#graphql) for GraphQL APIs
 
 For each of the sources, we support parsing JSON, YAML – both single and
