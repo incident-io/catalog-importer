@@ -627,6 +627,9 @@
         name: 'Zoom',
         description: 'Use Zoom to automatically start call links for your incident channels, and more.',
         owner: 'response',
+        contacts: [
+          'support@zoom.com',
+        ]
       },
     ]
   ],

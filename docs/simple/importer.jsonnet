@@ -153,6 +153,18 @@ local catalog = import 'catalog.jsonnet';
               type: 'Text',
               source: '$.description',
             },
+            {
+              id: 'contacts',
+              name: 'Contacts',
+              array: true,
+              source: '$.contacts',
+              enum: {
+                name: 'Integration Contact',
+                type_name: 'Custom["IntegrationContact"]',
+                description: 'Contact we have in the company for this integration.',
+                enable_backlink: true,
+              }
+            }
           ],
         },
       ],

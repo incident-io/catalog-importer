@@ -85,19 +85,33 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		// The enums we generate should be returned as types too, as we'll need to sync them
 		// just as any other.
 		if attr.Enum != nil {
-			enumTypes = append(enumTypes, &CatalogTypeModel{
-				Name:        attr.Enum.Name,
-				Description: attr.Enum.Description,
-				TypeName:    attr.Enum.TypeName,
-				Ranked:      output.Ranked,
-				Attributes: []client.CatalogTypeAttributePayloadV2{
-					{
-						Id:   lo.ToPtr("description"),
-						Name: "Description",
-						Type: "String",
-						Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeManual),
-					},
+			attributes := []client.CatalogTypeAttributePayloadV2{
+				{
+					Id:   lo.ToPtr("description"),
+					Name: "Description",
+					Type: "String",
+					Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeManual),
 				},
+			}
+			if attr.Enum.EnableBacklink {
+				attributes = append(attributes,
+					client.CatalogTypeAttributePayloadV2{
+						Id:   lo.ToPtr("enum_backlink"),
+						Name: base.Name,
+						Type: base.TypeName,
+						// An enum value can be used by multiple entries,
+						// by definition enums are either one-to-many or many-to-many.
+						Array:             true,
+						BacklinkAttribute: lo.ToPtr(attr.ID),
+						Mode:              lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeBacklink),
+					})
+			}
+			enumTypes = append(enumTypes, &CatalogTypeModel{
+				Name:            attr.Enum.Name,
+				Description:     attr.Enum.Description,
+				TypeName:        attr.Enum.TypeName,
+				Ranked:          output.Ranked,
+				Attributes:      attributes,
 				SourceAttribute: lo.ToPtr(*attr),
 			})
 		}
