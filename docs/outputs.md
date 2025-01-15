@@ -91,3 +91,72 @@ given a single attribute:
 For more information on how to use filter expressions, read [Using
 expressions](expressions.md) or look at the [Backstage](backstage) example for
 real-life use cases.
+
+### Enum attribute
+
+Enums are useful when you have an attribute of 'String' type (both array and non-array), that you'd like to have as as separate catalog type, such as tags. Using the above example of `BackstageAPIType`, we can instead generate it from `BackstageAPI`
+
+```jsonnet
+{
+  sync_id: 'example-org/example-repo',
+  pipelines: [
+    // Backstage API
+    {
+      sources: [
+        {
+          inline: {
+            entries: [
+              {
+                name: "Payments API",
+                external_id: "payments"
+                type: "grpc",
+              }
+            ],
+          },
+        },
+      ],
+      outputs: [
+        {
+          name: 'Backstage API',
+          description: 'APIs that we have',
+          type_name: 'Custom["BackstageAPI"]',
+          source: {
+            name: 'name',
+            external_id: 'external_id',
+          },
+          categories: ['service'],
+          attributes: [
+            {
+              id: "type",
+              name: "API type",
+              array: false,
+              source: "$.type"
+              enum: {
+                name: 'Backstage API Type',
+                description: 'Type or format of the API.',
+                type_name: 'Custom["BackstageAPIType"]',
+                enable_backlink: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
+```
+
+The above we generate the following catalog types:
+
+- `BackstageAPI` with attributes:
+  - `Name`
+  - `API type`
+- `BackstageAPIType` with attributes:
+  - `Name`
+  - `Backstage API`
+
+The `enable_backlink` option allows you to specify if the created enum should have an attribute pointing back to the 
+attribute that created it. If disabled, the `BackstageAPIType` above will not have a `Backstage API` attribute.
+
+
+See [simple/importer.jsonnet](https://github.com/incident-io/catalog-importer/blob/bbb659c312af7c45a626a68643e1cd4e890376d5/docs/simple/importer.jsonnet#L161-L166) for a working example
