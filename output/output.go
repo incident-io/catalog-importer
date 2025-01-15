@@ -76,7 +76,8 @@ func (a Attribute) Validate() error {
 }
 
 type AttributeEnum struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	TypeName    string `json:"type_name"`
+	Name           string `json:"name"`
+	Description    string `json:"description"`
+	TypeName       string `json:"type_name"`
+	EnableBacklink bool   `json:"enable_backlink"`
 }
