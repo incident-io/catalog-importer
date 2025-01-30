@@ -57,4 +57,4 @@ catalog UI, and add a link in the UI from those types to your repository.
 
 We're happy to accept open-source contributions or feedback. Just open a
 PR/issue and we'll get back to you. This repo contains details on
-[how to get started with local development](./development.md), and [how to publish a new release](./release.md).
+[how to get started with local development](./development.md), and [how to publish a new release](./RELEASE.md).
