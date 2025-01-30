@@ -43,6 +43,13 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 				return nil, err
 			}
 
+			if result == nil {
+				return nil, errors.New("unexpected nil response")
+			}
+			if result.JSON201 == nil {
+				return nil, errors.New("unexpected nil 201 response")
+			}
+
 			return &result.JSON201.CatalogEntry, nil
 		},
 		Update: func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error) {
