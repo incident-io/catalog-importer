@@ -43,11 +43,13 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 				return nil, err
 			}
 
-			if result == nil {
-				return nil, errors.New("unexpected nil response")
-			}
 			if result.JSON201 == nil {
-				return nil, errors.New("unexpected nil 201 response")
+				return nil, errors.Errorf(
+					`unexpected nil 201 response. Status Code: %d, Content-Type: %s, Bytes Length: %d`,
+					result.HTTPResponse.StatusCode,
+					result.HTTPResponse.Header.Get("Content-Type"),
+					len(result.Body),
+				)
 			}
 
 			return &result.JSON201.CatalogEntry, nil
