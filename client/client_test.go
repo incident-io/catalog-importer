@@ -53,8 +53,6 @@ var _ = Describe("New", func() {
 		}
 		server.Listener = countingListener
 
-		By(server.URL)
-
 		// Set up the client that we're testing
 		apiKey := lo.RandomString(10, lo.AlphanumericCharset)
 		c, clientErr := New(ctx, apiKey, server.URL, "1", logger)
@@ -63,7 +61,7 @@ var _ = Describe("New", func() {
 	})
 
 	AfterEach(func() {
-		defer server.Close()
+		server.Close()
 	})
 
 	When("making concurrent requests", func() {
