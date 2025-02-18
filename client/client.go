@@ -63,6 +63,9 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	retryClient.Logger = &retryableHttpLogger{logger}
 	retryClient.RetryMax = maxRetries
 	retryClient.Backoff = attentiveBackoff
+	retryClient.HTTPClient.Transport = &http.Transport{
+		MaxConnsPerHost: 10,
+	}
 
 	base := retryClient.StandardClient()
 
