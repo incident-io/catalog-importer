@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/go-retryablehttp"
+	"github.com/oapi-codegen/oapi-codegen/v2/pkg/securityprovider"
 	"github.com/pkg/errors"
 )
 
