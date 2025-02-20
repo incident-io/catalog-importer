@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -22,7 +23,7 @@ func (s SourceInline) String() string {
 	return "inline" // we can't put all entries here, that would be too much
 }
 
-func (s SourceInline) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+func (s SourceInline) Load(ctx context.Context, logger kitlog.Logger, _ *http.Client) ([]*SourceEntry, error) {
 	entries := []*SourceEntry{}
 	for idx, entry := range s.Entries {
 		data, err := json.Marshal(entry)

@@ -3,10 +3,12 @@ package source
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"reflect"
 
 	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-cleanhttp"
 )
 
 // SourceEntry is an entry that has been discovered in a source, with the contents of the
@@ -54,7 +56,7 @@ func (s Source) Validate() error {
 
 type SourceBackend interface {
 	String() string
-	Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error)
+	Load(ctx context.Context, logger kitlog.Logger, client *http.Client) ([]*SourceEntry, error)
 }
 
 func (s Source) Backend() (SourceBackend, error) {
@@ -88,5 +90,5 @@ func (s Source) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry,
 		return nil, err
 	}
 
-	return source.Load(ctx, logger)
+	return source.Load(ctx, logger, cleanhttp.DefaultClient())
 }

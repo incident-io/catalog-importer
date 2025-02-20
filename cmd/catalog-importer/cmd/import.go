@@ -8,6 +8,7 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/hashicorp/go-cleanhttp"
 	"github.com/incident-io/catalog-importer/v2/config"
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/incident-io/catalog-importer/v2/source"
@@ -69,7 +70,7 @@ func (opt *ImportOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	}
 
 	logger.Log("msg", "loading entries from files", "files", opt.Files)
-	sourceEntries, err := src.Load(ctx, logger)
+	sourceEntries, err := src.Load(ctx, logger, cleanhttp.DefaultClient())
 	if err != nil {
 		return errors.Wrap(err, "reading source files")
 	}

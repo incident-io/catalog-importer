@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 	"strings"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/hashicorp/go-cleanhttp"
 	"github.com/machinebox/graphql"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
@@ -60,10 +60,9 @@ func (s SourceGraphQL) String() string {
 	return fmt.Sprintf("graphql (endpoint=%s)", s.Endpoint)
 }
 
-func (s SourceGraphQL) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
-	client := graphql.NewClient(string(s.Endpoint),
-		graphql.WithHTTPClient(cleanhttp.DefaultClient()))
-	client.Log = func(msg string) {
+func (s SourceGraphQL) Load(ctx context.Context, logger kitlog.Logger, client *http.Client) ([]*SourceEntry, error) {
+	graphQLClient := graphql.NewClient(string(s.Endpoint), graphql.WithHTTPClient(client))
+	graphQLClient.Log = func(msg string) {
 		logger.Log("msg", msg)
 	}
 
@@ -102,7 +101,7 @@ func (s SourceGraphQL) Load(ctx context.Context, logger kitlog.Logger) ([]*Sourc
 
 		logger.Log("msg", "issuing GraphQL query",
 			"page", page, "offset", offset, "cursor", cursor)
-		err := client.Run(ctx, req, &data)
+		err := graphQLClient.Run(ctx, req, &data)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to execute GraphQL query")
 		}

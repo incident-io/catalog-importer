@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-ozzo/ozzo-validation/is"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/golang-jwt/jwt"
-	"github.com/hashicorp/go-cleanhttp"
 	"github.com/pkg/errors"
 )
 
@@ -21,6 +22,8 @@ type SourceBackstage struct {
 	Token    Credential `json:"token"`
 	SignJWT  *bool      `json:"sign_jwt"`
 	Header   string     `json:"header"`
+	PageSize int        `json:"page_size"`
+	Filter   string     `json:"filter"`
 }
 
 func (s SourceBackstage) Validate() error {
@@ -36,7 +39,7 @@ func (s SourceBackstage) String() string {
 	return fmt.Sprintf("backstage (endpoint=%s)", s.Endpoint)
 }
 
-func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client *http.Client) ([]*SourceEntry, error) {
 	var token string
 	if s.Token != "" {
 		// If not provided or explicitly enabled, sign the token into a JWT and use that as
@@ -53,26 +56,36 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger) ([]*Sou
 		}
 	}
 
-	client := cleanhttp.DefaultClient()
-
 	var (
 		limit  = 100
 		offset = 0
 	)
 
+	if s.PageSize != 0 {
+		limit = s.PageSize
+	}
+
 	entries := []*SourceEntry{}
 	for {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.Endpoint+fmt.Sprintf("?limit=%d&offset=%d", limit, offset), nil)
+		query := url.Values{}
+		query.Set("limit", strconv.Itoa(limit))
+		query.Set("offset", strconv.Itoa(offset))
+
+		if s.Filter != "" {
+			query.Set("filter", s.Filter)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.Endpoint+"?"+query.Encode(), nil)
 		if err != nil {
 			return nil, errors.Wrap(err, "building Backstage URL")
 		}
 
 		if token != "" {
 
-			header := s.Header;
+			header := s.Header
 
 			if header == "" {
-				header = "Authorization";
+				header = "Authorization"
 			}
 
 			req.Header.Add(header, fmt.Sprintf("Bearer %s", token))

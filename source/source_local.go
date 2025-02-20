@@ -3,6 +3,7 @@ package source
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -27,7 +28,7 @@ func (s SourceLocal) String() string {
 	return fmt.Sprintf("local (files=%s)", strings.Join(s.Files, ","))
 }
 
-func (s SourceLocal) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+func (s SourceLocal) Load(ctx context.Context, logger kitlog.Logger, _ *http.Client) ([]*SourceEntry, error) {
 	results := map[string]*SourceEntry{}
 	for _, pattern := range s.Files {
 		matches, err := filepathx.Glob(pattern)

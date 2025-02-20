@@ -160,6 +160,13 @@ https://api.roadie.so/api/catalog/entities
 
 And you should append `sign_jwt: false,` to your jsonnet, as explained above.
 
+### Other parameters
+
+You can also specify the following parameters in your source:
+
+* `page_size`: Allows you to customise how many entities we fetch from Backstage at once.
+* `filter`: Allows you to filter entities as per [the Backstage API spec](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities), for example `kind=user,metadata.namespace=default`.
+
 ## `github`
 
 This source can pull files matching a pattern from across repositories in a
