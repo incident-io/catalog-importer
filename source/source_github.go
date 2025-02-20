@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 	"sync"
@@ -36,7 +37,7 @@ func (s SourceGitHub) String() string {
 	return fmt.Sprintf("github (repos=%s files=%s)", s.Repos, s.Files)
 }
 
-func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger, _ *http.Client) ([]*SourceEntry, error) {
 	client := github.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: string(s.Token)},
 	)))

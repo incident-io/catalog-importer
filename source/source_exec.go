@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -28,7 +29,7 @@ func (s SourceExec) String() string {
 	return fmt.Sprintf("exec (command=%s)", strings.Join(s.Command, ","))
 }
 
-func (s SourceExec) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
+func (s SourceExec) Load(ctx context.Context, logger kitlog.Logger, _ *http.Client) ([]*SourceEntry, error) {
 	var (
 		command = s.Command[0]
 		args    = s.Command[1:]
