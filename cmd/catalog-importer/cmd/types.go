@@ -41,7 +41,7 @@ func (opt *TypesOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		return err
 	}
 
-	resp, err := cl.CatalogV2ListResourcesWithResponse(ctx)
+	resp, err := cl.CatalogV3ListResourcesWithResponse(ctx)
 	if err != nil {
 		return errors.Wrap(err, "finding catalog resources")
 	}
@@ -52,10 +52,10 @@ func (opt *TypesOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	tbl := table.New("Name", "Type name", "Category", "Description", "Value")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
-	ranks := map[client.CatalogResourceV2Category]int{
-		client.CatalogResourceV2CategoryPrimitive: 1,
-		client.CatalogResourceV2CategoryCustom:    2,
-		client.CatalogResourceV2CategoryExternal:  3,
+	ranks := map[client.CatalogResourceV3Category]int{
+		client.CatalogResourceV3CategoryPrimitive: 1,
+		client.CatalogResourceV3CategoryCustom:    2,
+		client.CatalogResourceV3CategoryExternal:  3,
 	}
 
 	resources := resp.JSON200.Resources

@@ -110,13 +110,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 
 	// Load existing catalog types
-	result, err := cl.CatalogV2ListTypesWithResponse(ctx)
+	result, err := cl.CatalogV3ListTypesWithResponse(ctx)
 	if err != nil {
 		return errors.Wrap(err, "listing catalog types")
 	}
 	OUT("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
 
-	existingCatalogTypes := []client.CatalogTypeV2{}
+	existingCatalogTypes := []client.CatalogTypeV3{}
 	for _, catalogType := range result.JSON200.CatalogTypes {
 		logger := kitlog.With(logger,
 			"catalog_type_id", catalogType.Id,
@@ -135,7 +135,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 
 	logger.Log("msg", "found managed catalog types",
-		"catalog_types", strings.Join(lo.Map(existingCatalogTypes, func(ct client.CatalogTypeV2, _ int) string {
+		"catalog_types", strings.Join(lo.Map(existingCatalogTypes, func(ct client.CatalogTypeV3, _ int) string {
 			return ct.TypeName
 		}), ", "))
 	OUT("✔ Found %d catalog types, with %d that match our sync ID (%s)",
@@ -145,7 +145,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	if opt.Prune {
 		OUT("\n↻ Prune enabled (--prune), removing types that are no longer in config...")
 
-		toDestroy := []client.CatalogTypeV2{}
+		toDestroy := []client.CatalogTypeV3{}
 	nextCatalogType:
 		for _, existingCatalogType := range existingCatalogTypes {
 			logger := kitlog.With(logger,
@@ -168,7 +168,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		} else {
 			for _, catalogType := range toDestroy {
 				logger.Log("msg", "found catalog type for this sync ID that is no longer in config, removing")
-				_, err := cl.CatalogV2DestroyTypeWithResponse(ctx, catalogType.Id)
+				_, err := cl.CatalogV3DestroyTypeWithResponse(ctx, catalogType.Id)
 				if err != nil {
 					return errors.Wrap(err, "removing catalog type")
 				}
@@ -192,10 +192,10 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				}
 			}
 
-			var createdCatalogType client.CatalogTypeV2
+			var createdCatalogType client.CatalogTypeV3
 			if opt.DryRun {
 				logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
-				createdCatalogType = client.CatalogTypeV2{
+				createdCatalogType = client.CatalogTypeV3{
 					Id:            fmt.Sprintf("DRY-RUN-%s", model.TypeName),
 					Name:          model.Name,
 					Description:   model.Description,
@@ -204,11 +204,11 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				}
 			} else {
 				logger.Log("msg", "catalog type does not already exist, creating")
-				categories := lo.Map(model.Categories, func(category string, _ int) client.CreateTypeRequestBodyCategories {
-					return client.CreateTypeRequestBodyCategories(category)
+				categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogCreateTypePayloadV3Categories {
+					return client.CatalogCreateTypePayloadV3Categories(category)
 				})
 
-				result, err := cl.CatalogV2CreateTypeWithResponse(ctx, client.CreateTypeRequestBody{
+				result, err := cl.CatalogV3CreateTypeWithResponse(ctx, client.CatalogCreateTypePayloadV3{
 					Name:          model.Name,
 					Description:   model.Description,
 					Ranked:        &model.Ranked,
@@ -231,11 +231,11 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 
 	// Prepare a lookup of catalog type by the output name for subsequent pipeline steps.
-	catalogTypesByOutput := map[string]*client.CatalogTypeV2{}
+	catalogTypesByOutput := map[string]*client.CatalogTypeV3{}
 	for _, outputType := range cfg.Outputs() {
 		baseModel, enumModels := output.MarshalType(outputType)
 		for _, model := range append(enumModels, baseModel) {
-			var catalogType *client.CatalogTypeV2
+			var catalogType *client.CatalogTypeV3
 			for _, existingCatalogType := range existingCatalogTypes {
 				if model.TypeName == existingCatalogType.TypeName {
 					catalogType = &existingCatalogType
@@ -257,40 +257,40 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			for _, model := range append(enumModels, baseModel) {
 				catalogType := catalogTypesByOutput[model.TypeName]
 
-				var updatedCatalogType client.CatalogTypeV2
+				var updatedCatalogType client.CatalogTypeV3
 				if opt.DryRun {
 					logger.Log("msg", "dry-run active, which means we fake a response")
 					updatedCatalogType = *catalogType // they start the same
 
 					// Then we pretend like we've already updated the schema, which means we rebuild the
 					// attributes.
-					updatedCatalogType.Schema = client.CatalogTypeSchemaV2{
+					updatedCatalogType.Schema = client.CatalogTypeSchemaV3{
 						Version:    updatedCatalogType.Schema.Version,
-						Attributes: []client.CatalogTypeAttributeV2{},
+						Attributes: []client.CatalogTypeAttributeV3{},
 					}
 					for _, attr := range model.Attributes {
-						var path *[]client.CatalogTypeAttributePathItemV2
+						var path *[]client.CatalogTypeAttributePathItemV3
 
 						if attr.Path != nil {
 							noPtrPath := *attr.Path
-							newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV2, _ int) client.CatalogTypeAttributePathItemV2 {
-								return client.CatalogTypeAttributePathItemV2{
+							newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV3, _ int) client.CatalogTypeAttributePathItemV3 {
+								return client.CatalogTypeAttributePathItemV3{
 									AttributeId: item.AttributeId,
 								}
 							})
 							path = &newPath
 						}
 
-						updatedCatalogType.Categories = lo.Map(model.Categories, func(category string, _ int) client.CatalogTypeV2Categories {
-							return client.CatalogTypeV2Categories(category)
+						updatedCatalogType.Categories = lo.Map(model.Categories, func(category string, _ int) client.CatalogTypeV3Categories {
+							return client.CatalogTypeV3Categories(category)
 						})
 
-						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV2{
+						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV3{
 							Id:                *attr.Id,
 							Name:              attr.Name,
 							Type:              attr.Type,
 							Array:             attr.Array,
-							Mode:              client.CatalogTypeAttributeV2Mode(*attr.Mode),
+							Mode:              client.CatalogTypeAttributeV3Mode(*attr.Mode),
 							BacklinkAttribute: attr.BacklinkAttribute,
 							Path:              path,
 						})
@@ -322,12 +322,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			for _, model := range append(enumModels, baseModel) {
 				catalogType := catalogTypesByOutput[model.TypeName]
 
-				attributesWithoutNewDerived := []client.CatalogTypeAttributePayloadV2{}
+				attributesWithoutNewDerived := []client.CatalogTypeAttributePayloadV3{}
 				for _, attr := range model.Attributes {
-					isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV2ModeBacklink
-					isPath := *attr.Mode == client.CatalogTypeAttributePayloadV2ModePath
+					isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV3ModeBacklink
+					isPath := *attr.Mode == client.CatalogTypeAttributePayloadV3ModePath
 					if isBacklink || isPath {
-						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
+						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
 							return existingAttr.Id == *attr.Id
 						})
 						if inCurrentSchema {
@@ -338,12 +338,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					}
 				}
 
-				categories := lo.Map(model.Categories, func(category string, _ int) client.UpdateTypeRequestBodyCategories {
-					return client.UpdateTypeRequestBodyCategories(category)
+				categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogUpdateTypePayloadV3Categories {
+					return client.CatalogUpdateTypePayloadV3Categories(category)
 				})
 
 				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
-				result, err := cl.CatalogV2UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeJSONRequestBody{
+				result, err := cl.CatalogV3UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeJSONRequestBody{
 					Name:          model.Name,
 					Description:   model.Description,
 					Ranked:        &model.Ranked,
@@ -357,7 +357,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				version := result.JSON200.CatalogType.Schema.Version
 				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
-				schema, err := cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
+				schema, err := cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
 					Attributes: attributesWithoutNewDerived,
 				})
@@ -381,7 +381,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				hasNewDerived := false
 				for _, attr := range model.Attributes {
 					if attr.Mode != nil && (attr.BacklinkAttribute != nil || attr.Path != nil) {
-						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV2) bool {
+						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
 							return existingAttr.Id == *attr.Id
 						})
 
@@ -397,7 +397,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				version := catalogTypeVersions[catalogType.Id]
 				logger.Log("msg", "updating catalog type schema: creating derived attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
 
-				_, err = cl.CatalogV2UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV2UpdateTypeSchemaJSONRequestBody{
+				_, err = cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
 					Attributes: model.Attributes,
 				})
@@ -508,7 +508,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 						ExternalID:      value,
 						Name:            value,
 						Aliases:         []string{},
-						AttributeValues: map[string]client.EngineParamBindingPayloadV2{},
+						AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{},
 					})
 				}
 
@@ -529,20 +529,20 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 // newEntriesClient will return a client that speaks to the real API if dry-run is false,
 // or we'll create a no-op client that just outputs diffs.
-func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []client.CatalogTypeV2, dryRun bool) reconcile.EntriesClient {
+func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []client.CatalogTypeV3, dryRun bool) reconcile.EntriesClient {
 	if !dryRun {
 		return reconcile.EntriesClientFromClient(cl)
 	}
 
 	return reconcile.EntriesClient{
-		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
+		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error) {
 			// We're in dry-run and this catalog type is yet to be created. We can't ask the API
 			// for the entries of a type that doesn't exist, so we return the type we faked from
 			// the dry-run create and an empty list of entries.
 			if strings.HasPrefix(catalogTypeID, "DRY-RUN") {
 				for _, existingType := range existingCatalogTypes {
 					if existingType.Id == catalogTypeID {
-						return &existingType, []client.CatalogEntryV2{}, nil
+						return &existingType, []client.CatalogEntryV3{}, nil
 					}
 				}
 
@@ -552,22 +552,22 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 			// We're just a normal catalog type, use the real client.
 			return reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize)
 		},
-		Delete: func(ctx context.Context, entry *client.CatalogEntryV2) error {
-			DIFF("      ", *entry, client.CatalogEntryV2{})
+		Delete: func(ctx context.Context, entry *client.CatalogEntryV3) error {
+			DIFF("      ", *entry, client.CatalogEntryV3{})
 			return nil
 		},
-		Create: func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error) {
-			DIFF("      ", client.CreateEntryRequestBody{}, payload)
-			entry := &client.CatalogEntryV2{
+		Create: func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+			DIFF("      ", client.CatalogCreateEntryPayloadV3{}, payload)
+			entry := &client.CatalogEntryV3{
 				Id: fmt.Sprintf("DRY-RUN-%s", uuid.NewString()),
 			}
 
 			return entry, nil
 		},
-		Update: func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error) {
-			existingPayload := client.UpdateEntryRequestBody{
+		Update: func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+			existingPayload := client.CatalogUpdateEntryPayloadV3{
 				Aliases:         lo.ToPtr(entry.Aliases),
-				AttributeValues: map[string]client.EngineParamBindingPayloadV2{},
+				AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{},
 				ExternalId:      entry.ExternalId,
 				Name:            entry.Name,
 				Rank:            &entry.Rank,
@@ -576,16 +576,16 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 				existingPayload.Rank = nil
 			}
 			for attrID, attr := range entry.AttributeValues {
-				result := client.EngineParamBindingPayloadV2{}
+				result := client.CatalogEngineParamBindingPayloadV3{}
 				if attr.Value != nil {
-					result.Value = &client.EngineParamBindingValuePayloadV2{
+					result.Value = &client.CatalogEngineParamBindingValuePayloadV3{
 						Literal: attr.Value.Literal,
 					}
 				}
 				if attr.ArrayValue != nil {
-					arrayValue := []client.EngineParamBindingValuePayloadV2{}
+					arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
 					for _, elementValue := range *attr.ArrayValue {
-						arrayValue = append(arrayValue, client.EngineParamBindingValuePayloadV2{
+						arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
 							Literal: elementValue.Literal,
 						})
 					}
