@@ -84,6 +84,10 @@ local catalog = import 'catalog.jsonnet';
               id: 'escalation_path',
               name: 'Escalation path',
               type: 'EscalationPath',
+              // This attribute is managed via the incident.io dashboard, to
+              // avoid needing to copy data from that dashboard to this config
+              // and back.
+              schema_only: true,
             },
           ],
         },

@@ -249,6 +249,17 @@
           type: 'Custom["BackstageGroup"]',
           source: '$.spec.parent',
         },
+        // This attribute can be managed from the incident.io dashboard, and allows
+        // you to route escalations to the Group's default escalation path.
+        //
+        // Value for this attribute are not managed in code, but in the incident.io
+        // dashboard.
+        {
+          id: 'escalation-path',
+          name: 'Escalation path',
+          type: "EscalationPath",
+          schema_only: true,
+        },
       ],
     },
 
