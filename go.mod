@@ -1,8 +1,6 @@
 module github.com/incident-io/catalog-importer/v2
 
-go 1.21.0
-
-toolchain go1.23.3
+go 1.20
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
