@@ -59,6 +59,8 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 			mode = client.CatalogTypeAttributePayloadV3ModeBacklink
 		case attr.Path != nil:
 			mode = client.CatalogTypeAttributePayloadV3ModePath
+		case attr.SchemaOnly:
+			mode = client.CatalogTypeAttributePayloadV3ModeDashboard
 		default:
 			mode = client.CatalogTypeAttributePayloadV3ModeApi
 		}
