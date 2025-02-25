@@ -221,10 +221,10 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 	// Identify the attributes that are schema-only, as we want to preserve the existing
 	// value instead of setting it outselves.
-	schemaOnlyAttributes := []*output.Attribute{}
+	attributesToUpdate := []*output.Attribute{}
 	for _, attr := range outputType.Attributes {
-		if attr.SchemaOnly {
-			schemaOnlyAttributes = append(schemaOnlyAttributes, attr)
+		if !attr.SchemaOnly {
+			attributesToUpdate = append(attributesToUpdate, attr)
 		}
 	}
 
@@ -240,42 +240,13 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			// If we found the entry in the list of all entries, then we need to diff it and
 			// update as appropriate.
 			if entry != nil {
-				isSame :=
+				propsSame :=
 					entry.Name == model.Name &&
 						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank == model.Rank
 
-				currentBindings := map[string]client.CatalogEngineParamBindingPayloadV3{}
-				for attributeID, value := range entry.AttributeValues {
-					current := client.CatalogEngineParamBindingPayloadV3{}
-					// Our API behaves strangely with empty arrays, and will omit them. This patch
-					// ensures the array is present so our comparison doesn't trigger falsly.
-					if value.ArrayValue == nil && value.Value == nil {
-						value.ArrayValue = lo.ToPtr([]client.CatalogEntryEngineParamBindingValueV3{})
-					}
+				attributesSame := attributesAreSame(entry.AttributeValues, model.AttributeValues, attributesToUpdate)
 
-					if value.ArrayValue != nil {
-						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogEntryEngineParamBindingValueV3, _ int) client.CatalogEngineParamBindingValuePayloadV3 {
-							return client.CatalogEngineParamBindingValuePayloadV3{
-								Literal: binding.Literal,
-							}
-						}))
-					}
-					if value.Value != nil {
-						current.Value = &client.CatalogEngineParamBindingValuePayloadV3{
-							Literal: value.Value.Literal,
-						}
-					}
-
-					currentBindings[attributeID] = current
-				}
-
-				// For any of the schema only attributes, preserve the existing value when
-				// performing an update.
-				for _, attr := range schemaOnlyAttributes {
-					model.AttributeValues[attr.ID] = currentBindings[attr.ID]
-				}
-
-				if isSame && reflect.DeepEqual(model.AttributeValues, currentBindings) {
+				if propsSame && attributesSame {
 					logger.Log("msg", "catalog entry has not changed, not updating", "entry_id", entry.Id)
 					continue eachPayload
 				} else {
@@ -304,11 +275,12 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 				}
 
 				_, err := cl.Update(ctx, entry, client.CatalogUpdateEntryPayloadV3{
-					Name:            model.Name,
-					Rank:            &model.Rank,
-					ExternalId:      lo.ToPtr(model.ExternalID),
-					Aliases:         lo.ToPtr(model.Aliases),
-					AttributeValues: model.AttributeValues,
+					Name:             model.Name,
+					Rank:             &model.Rank,
+					ExternalId:       lo.ToPtr(model.ExternalID),
+					Aliases:          lo.ToPtr(model.Aliases),
+					AttributeValues:  model.AttributeValues,
+					UpdateAttributes: lo.ToPtr(lo.Map(attributesToUpdate, func(attr *output.Attribute, _ int) string { return attr.ID })),
 				})
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("unable to update catalog entry with id=%s, got error", entry.Id))
@@ -351,4 +323,34 @@ func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogType
 			after = lo.ToPtr(result.JSON200.CatalogEntries[count-1].Id)
 		}
 	}
+}
+
+func attributesAreSame(existing map[string]client.CatalogEntryEngineParamBindingV3, desired map[string]client.CatalogEngineParamBindingPayloadV3, attributesToCheck []*output.Attribute) bool {
+	// Loop through the attributes which we are in control of and see if any have changed.
+	for _, attr := range attributesToCheck {
+		if !reflect.DeepEqual(bindingToPayload(existing[attr.ID]), desired[attr.ID]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func bindingToPayload(binding client.CatalogEntryEngineParamBindingV3) client.CatalogEngineParamBindingPayloadV3 {
+	payload := client.CatalogEngineParamBindingPayloadV3{}
+	if binding.Value != nil {
+		payload.Value = &client.CatalogEngineParamBindingValuePayloadV3{
+			Literal: binding.Value.Literal,
+		}
+	}
+
+	if binding.ArrayValue != nil {
+		payload.ArrayValue = &[]client.CatalogEngineParamBindingValuePayloadV3{}
+		for _, value := range *binding.ArrayValue {
+			*payload.ArrayValue = append(*payload.ArrayValue, client.CatalogEngineParamBindingValuePayloadV3{
+				Literal: value.Literal,
+			})
+		}
+	}
+	return payload
 }

@@ -18616,7 +18616,10 @@
           },
           "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
           "name": "Primary On-call",
-          "rank": 3
+          "rank": 3,
+          "update_attributes": [
+            "abc123"
+          ]
         },
         "properties": {
           "aliases": {
@@ -18665,6 +18668,17 @@
             "example": 3,
             "format": "int32",
             "type": "integer"
+          },
+          "update_attributes": {
+            "description": "If set, only the specified attributes will be updated, and others left unchanged. If not set, all attributes will be updated.",
+            "example": [
+              "abc123"
+            ],
+            "items": {
+              "example": "abc123",
+              "type": "string"
+            },
+            "type": "array"
           }
         },
         "required": [
@@ -50404,7 +50418,10 @@
                 },
                 "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
                 "name": "Primary On-call",
-                "rank": 3
+                "rank": 3,
+                "update_attributes": [
+                  "abc123"
+                ]
               },
               "schema": {
                 "$ref": "#/components/schemas/CatalogUpdateEntryPayloadV3"
