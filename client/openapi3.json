@@ -18670,7 +18670,7 @@
             "type": "integer"
           },
           "update_attributes": {
-            "description": "If set, only the specified attributes will be updated, and others left unchanged. If not set, all attributes will be updated.",
+            "description": "If provided, only update these attribute_values keys. If not provided, update all attribute values.\nIf you specify an attribute key that's not in your payload, the associated attribute value will be cleared.",
             "example": [
               "abc123"
             ],
@@ -20092,6 +20092,7 @@
                   "zendesk_ticket",
                   "google_calendar_event",
                   "outlook_calendar_event",
+                  "slack_file",
                   "scrubbed",
                   "statuspage_incident"
                 ],
@@ -25664,6 +25665,7 @@
               "zendesk_ticket",
               "google_calendar_event",
               "outlook_calendar_event",
+              "slack_file",
               "scrubbed",
               "statuspage_incident"
             ],
@@ -38961,6 +38963,7 @@
                 "zendesk_ticket",
                 "google_calendar_event",
                 "outlook_calendar_event",
+                "slack_file",
                 "scrubbed",
                 "statuspage_incident"
               ],

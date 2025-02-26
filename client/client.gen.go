@@ -543,6 +543,7 @@ const (
 	CreateRequestBodyResourceResourceTypePagerDutyIncident           CreateRequestBodyResourceResourceType = "pager_duty_incident"
 	CreateRequestBodyResourceResourceTypeScrubbed                    CreateRequestBodyResourceResourceType = "scrubbed"
 	CreateRequestBodyResourceResourceTypeSentryIssue                 CreateRequestBodyResourceResourceType = "sentry_issue"
+	CreateRequestBodyResourceResourceTypeSlackFile                   CreateRequestBodyResourceResourceType = "slack_file"
 	CreateRequestBodyResourceResourceTypeStatuspageIncident          CreateRequestBodyResourceResourceType = "statuspage_incident"
 	CreateRequestBodyResourceResourceTypeZendeskTicket               CreateRequestBodyResourceResourceType = "zendesk_ticket"
 )
@@ -786,6 +787,7 @@ const (
 	ExternalResourceV1ResourceTypePagerDutyIncident           ExternalResourceV1ResourceType = "pager_duty_incident"
 	ExternalResourceV1ResourceTypeScrubbed                    ExternalResourceV1ResourceType = "scrubbed"
 	ExternalResourceV1ResourceTypeSentryIssue                 ExternalResourceV1ResourceType = "sentry_issue"
+	ExternalResourceV1ResourceTypeSlackFile                   ExternalResourceV1ResourceType = "slack_file"
 	ExternalResourceV1ResourceTypeStatuspageIncident          ExternalResourceV1ResourceType = "statuspage_incident"
 	ExternalResourceV1ResourceTypeZendeskTicket               ExternalResourceV1ResourceType = "zendesk_ticket"
 )
@@ -1142,6 +1144,7 @@ const (
 	PagerDutyIncident           IncidentAttachmentsV1ListParamsResourceType = "pager_duty_incident"
 	Scrubbed                    IncidentAttachmentsV1ListParamsResourceType = "scrubbed"
 	SentryIssue                 IncidentAttachmentsV1ListParamsResourceType = "sentry_issue"
+	SlackFile                   IncidentAttachmentsV1ListParamsResourceType = "slack_file"
 	StatuspageIncident          IncidentAttachmentsV1ListParamsResourceType = "statuspage_incident"
 	ZendeskTicket               IncidentAttachmentsV1ListParamsResourceType = "zendesk_ticket"
 )
@@ -2375,7 +2378,8 @@ type CatalogUpdateEntryPayloadV3 struct {
 	// Rank When catalog type is ranked, this is used to help order things
 	Rank *int32 `json:"rank,omitempty"`
 
-	// UpdateAttributes If set, only the specified attributes will be updated, and others left unchanged. If not set, all attributes will be updated.
+	// UpdateAttributes If provided, only update these attribute_values keys. If not provided, update all attribute values.
+	// If you specify an attribute key that's not in your payload, the associated attribute value will be cleared.
 	UpdateAttributes *[]string `json:"update_attributes,omitempty"`
 }
 
