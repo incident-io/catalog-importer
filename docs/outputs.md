@@ -155,8 +155,61 @@ The above we generate the following catalog types:
   - `Name`
   - `Backstage API`
 
-The `enable_backlink` option allows you to specify if the created enum should have an attribute pointing back to the 
+The `enable_backlink` option allows you to specify if the created enum should have an attribute pointing back to the
 attribute that created it. If disabled, the `BackstageAPIType` above will not have a `Backstage API` attribute.
 
-
 See [simple/importer.jsonnet](https://github.com/incident-io/catalog-importer/blob/bbb659c312af7c45a626a68643e1cd4e890376d5/docs/simple/importer.jsonnet#L161-L166) for a working example
+
+### Schema-only attributes
+
+By default, once a catalog type is managed from catalog-importer, it cannot be
+edited from the incident.io dashboard. This prevents ensures that your catalog
+always reflects what is defined in code.
+
+However, you may want to have some attributes on a catalog type that aren't
+managed in code; we call these "schema-only" attributes in catalog-importer, since
+the schema is managed in code but the data is managed in the dashboard.
+
+For example, you might want to have an 'escalation path' attribute on your
+BackstageGroup type, which is managed in the dashboard:
+
+```jsonnet
+{
+  sync_id: 'example-org/example-repo',
+  pipelines: [
+    // Backstage API
+    {
+      name: 'Backstage Group',
+      description: 'Groups synced from Backstage.',
+      type_name: 'Custom["BackstageGroup"]',
+      categories: ['team'],
+      source: {
+        filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "Group"',
+        name: '$.metadata.name',
+        external_id: '$.metadata.namespace + "/" + $.metadata.name',
+        aliases: [
+          '$.metadata.name',
+        ],
+      },
+      attributes: [
+        // Attributes set from Backstage:
+        {
+          id: 'parent',
+          name: 'Parent',
+          type: 'Custom["BackstageGroup"]',
+          source: '$.spec.parent',
+        },
+        ...
+
+        // Schema-only attributes:
+        {
+          id: 'escalation-path',
+          name: 'Escalation path',
+          type: "EscalationPath",
+          schema_only: true,
+        },
+      ],
+    },
+  ],
+}
+```

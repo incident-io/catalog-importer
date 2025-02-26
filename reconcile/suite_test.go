@@ -1,4 +1,4 @@
-package client_test
+package reconcile_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestSuite(t *testing.T) {
+func TestReconcile(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "config")
+	RunSpecs(t, "Reconcile Suite")
 }

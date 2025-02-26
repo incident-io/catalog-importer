@@ -15,10 +15,10 @@ import (
 )
 
 type EntriesClient struct {
-	GetEntries func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error)
-	Delete     func(ctx context.Context, entry *client.CatalogEntryV2) error
-	Create     func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error)
-	Update     func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error)
+	GetEntries func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error)
+	Delete     func(ctx context.Context, entry *client.CatalogEntryV3) error
+	Create     func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error)
+	Update     func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error)
 }
 
 // EntriesClientFromClient wraps a real client with hooks that can create, update and delete
@@ -26,19 +26,19 @@ type EntriesClient struct {
 // actually perform updates.
 func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 	return EntriesClient{
-		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV2, []client.CatalogEntryV2, error) {
+		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error) {
 			return GetEntries(ctx, cl, catalogTypeID, pageSize)
 		},
-		Delete: func(ctx context.Context, entry *client.CatalogEntryV2) error {
-			_, err := cl.CatalogV2DestroyEntryWithResponse(ctx, entry.Id)
+		Delete: func(ctx context.Context, entry *client.CatalogEntryV3) error {
+			_, err := cl.CatalogV3DestroyEntryWithResponse(ctx, entry.Id)
 			if err != nil {
 				return err
 			}
 
 			return nil
 		},
-		Create: func(ctx context.Context, payload client.CreateEntryRequestBody) (*client.CatalogEntryV2, error) {
-			result, err := cl.CatalogV2CreateEntryWithResponse(ctx, payload)
+		Create: func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+			result, err := cl.CatalogV3CreateEntryWithResponse(ctx, payload)
 			if err != nil {
 				return nil, err
 			}
@@ -54,8 +54,8 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 
 			return &result.JSON201.CatalogEntry, nil
 		},
-		Update: func(ctx context.Context, entry *client.CatalogEntryV2, payload client.UpdateEntryRequestBody) (*client.CatalogEntryV2, error) {
-			result, err := cl.CatalogV2UpdateEntryWithResponse(ctx, entry.Id, payload)
+		Update: func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+			result, err := cl.CatalogV3UpdateEntryWithResponse(ctx, entry.Id, payload)
 			if err != nil {
 				return nil, err
 			}
@@ -74,7 +74,7 @@ type EntriesProgress struct {
 	OnUpdateProgress func()
 }
 
-func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV2, entryModels []*output.CatalogEntryModel, progress *EntriesProgress, pageSize int) error {
+func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV3, entryModels []*output.CatalogEntryModel, progress *EntriesProgress, pageSize int) error {
 	logger = kitlog.With(logger,
 		"catalog_type_id", catalogType.Id,
 		"catalog_type_name", catalogType.TypeName,
@@ -111,7 +111,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	}
 
 	{
-		toDelete := []client.CatalogEntryV2{}
+		toDelete := []client.CatalogEntryV3{}
 	eachEntry: // for every entry that exists, find any that has no corresponding model
 		for _, entry := range entries {
 			if entry.ExternalId != nil {
@@ -162,7 +162,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 	// Prepare a quick lookup of entry by external ID. We'll have deleted all entries
 	// without an external ID now so can ignore those without one.
-	entriesByExternalID := map[string]*client.CatalogEntryV2{}
+	entriesByExternalID := map[string]*client.CatalogEntryV3{}
 	for _, entry := range entries {
 		if entry.ExternalId != nil {
 			entriesByExternalID[*entry.ExternalId] = lo.ToPtr(entry)
@@ -195,7 +195,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 					defer onProgress()
 				}
 
-				result, err := cl.Create(ctx, client.CreateEntryRequestBody{
+				result, err := cl.Create(ctx, client.CatalogCreateEntryPayloadV3{
 					CatalogTypeId:   catalogType.Id,
 					Name:            model.Name,
 					Rank:            &model.Rank,
@@ -221,10 +221,10 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 	// Identify the attributes that are schema-only, as we want to preserve the existing
 	// value instead of setting it outselves.
-	schemaOnlyAttributes := []*output.Attribute{}
+	attributesToUpdate := []*output.Attribute{}
 	for _, attr := range outputType.Attributes {
-		if attr.SchemaOnly {
-			schemaOnlyAttributes = append(schemaOnlyAttributes, attr)
+		if !attr.SchemaOnly {
+			attributesToUpdate = append(attributesToUpdate, attr)
 		}
 	}
 
@@ -240,42 +240,13 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			// If we found the entry in the list of all entries, then we need to diff it and
 			// update as appropriate.
 			if entry != nil {
-				isSame :=
+				propsSame :=
 					entry.Name == model.Name &&
 						reflect.DeepEqual(entry.Aliases, model.Aliases) && entry.Rank == model.Rank
 
-				currentBindings := map[string]client.EngineParamBindingPayloadV2{}
-				for attributeID, value := range entry.AttributeValues {
-					current := client.EngineParamBindingPayloadV2{}
-					// Our API behaves strangely with empty arrays, and will omit them. This patch
-					// ensures the array is present so our comparison doesn't trigger falsly.
-					if value.ArrayValue == nil && value.Value == nil {
-						value.ArrayValue = lo.ToPtr([]client.CatalogEntryEngineParamBindingValueV2{})
-					}
+				attributesSame := attributesAreSame(entry.AttributeValues, model.AttributeValues, attributesToUpdate)
 
-					if value.ArrayValue != nil {
-						current.ArrayValue = lo.ToPtr(lo.Map(*value.ArrayValue, func(binding client.CatalogEntryEngineParamBindingValueV2, _ int) client.EngineParamBindingValuePayloadV2 {
-							return client.EngineParamBindingValuePayloadV2{
-								Literal: binding.Literal,
-							}
-						}))
-					}
-					if value.Value != nil {
-						current.Value = &client.EngineParamBindingValuePayloadV2{
-							Literal: value.Value.Literal,
-						}
-					}
-
-					currentBindings[attributeID] = current
-				}
-
-				// For any of the schema only attributes, preserve the existing value when
-				// performing an update.
-				for _, attr := range schemaOnlyAttributes {
-					model.AttributeValues[attr.ID] = currentBindings[attr.ID]
-				}
-
-				if isSame && reflect.DeepEqual(model.AttributeValues, currentBindings) {
+				if propsSame && attributesSame {
 					logger.Log("msg", "catalog entry has not changed, not updating", "entry_id", entry.Id)
 					continue eachPayload
 				} else {
@@ -303,12 +274,13 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 					defer onProgress()
 				}
 
-				_, err := cl.Update(ctx, entry, client.UpdateEntryRequestBody{
-					Name:            model.Name,
-					Rank:            &model.Rank,
-					ExternalId:      lo.ToPtr(model.ExternalID),
-					Aliases:         lo.ToPtr(model.Aliases),
-					AttributeValues: model.AttributeValues,
+				_, err := cl.Update(ctx, entry, client.CatalogUpdateEntryPayloadV3{
+					Name:             model.Name,
+					Rank:             &model.Rank,
+					ExternalId:       lo.ToPtr(model.ExternalID),
+					Aliases:          lo.ToPtr(model.Aliases),
+					AttributeValues:  model.AttributeValues,
+					UpdateAttributes: lo.ToPtr(lo.Map(attributesToUpdate, func(attr *output.Attribute, _ int) string { return attr.ID })),
 				})
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("unable to update catalog entry with id=%s, got error", entry.Id))
@@ -329,15 +301,15 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 }
 
 // GetEntries paginates through all catalog entries for the given type.
-func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string, pageSize int) (catalogType *client.CatalogTypeV2, entries []client.CatalogEntryV2, err error) {
+func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string, pageSize int) (catalogType *client.CatalogTypeV3, entries []client.CatalogEntryV3, err error) {
 	var (
 		after *string
 	)
 
 	for {
-		result, err := cl.CatalogV2ListEntriesWithResponse(ctx, &client.CatalogV2ListEntriesParams{
+		result, err := cl.CatalogV3ListEntriesWithResponse(ctx, &client.CatalogV3ListEntriesParams{
 			CatalogTypeId: catalogTypeID,
-			PageSize:      lo.ToPtr(int64(pageSize)),
+			PageSize:      int64(pageSize),
 			After:         after,
 		})
 		if err != nil {
@@ -351,4 +323,34 @@ func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogType
 			after = lo.ToPtr(result.JSON200.CatalogEntries[count-1].Id)
 		}
 	}
+}
+
+func attributesAreSame(existing map[string]client.CatalogEntryEngineParamBindingV3, desired map[string]client.CatalogEngineParamBindingPayloadV3, attributesToCheck []*output.Attribute) bool {
+	// Loop through the attributes which we are in control of and see if any have changed.
+	for _, attr := range attributesToCheck {
+		if !reflect.DeepEqual(bindingToPayload(existing[attr.ID]), desired[attr.ID]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func bindingToPayload(binding client.CatalogEntryEngineParamBindingV3) client.CatalogEngineParamBindingPayloadV3 {
+	payload := client.CatalogEngineParamBindingPayloadV3{}
+	if binding.Value != nil {
+		payload.Value = &client.CatalogEngineParamBindingValuePayloadV3{
+			Literal: binding.Value.Literal,
+		}
+	}
+
+	if binding.ArrayValue != nil {
+		payload.ArrayValue = &[]client.CatalogEngineParamBindingValuePayloadV3{}
+		for _, value := range *binding.ArrayValue {
+			*payload.ArrayValue = append(*payload.ArrayValue, client.CatalogEngineParamBindingValuePayloadV3{
+				Literal: value.Literal,
+			})
+		}
+	}
+	return payload
 }

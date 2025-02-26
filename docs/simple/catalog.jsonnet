@@ -1,9 +1,4 @@
 {
-  escalationPaths: {
-    RSP_PINC_SP: '01JAAJH5RE685WFRSZ2VFDEKS9',
-    ONC: '01J5B8JGEFK7DHNW00GZX1R17V',
-  },
-
   // All product development teams are defined here.
   teams: [
     {
@@ -24,7 +19,6 @@
       linear_team: error 'linear_team is required',
       members: error 'members is required',
       auxiliary_members: error 'auxiliary_members is required',
-      escalation_path: error 'escalation_path is required',
     } + team
     for team in [
       {
@@ -57,7 +51,6 @@
           'pete',
           'ben',
         ],
-        escalation_path: $.escalationPaths.RSP_PINC_SP,
       },
       {
         external_id: 'response',
@@ -89,7 +82,6 @@
           'pete',
           'ben',
         ],
-        escalation_path: $.escalationPaths.RSP_PINC_SP,
       },
       {
         external_id: 'status-pages',
@@ -118,7 +110,6 @@
           'pete',
           'ben',
         ],
-        escalation_path: $.escalationPaths.RSP_PINC_SP,
       },
       {
         external_id: 'on-call',
@@ -146,7 +137,6 @@
         auxiliary_members: [
           'sam.willis',
         ],
-        escalation_path: $.escalationPaths.ONC,
       },
     ]
   ],

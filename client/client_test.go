@@ -1,4 +1,4 @@
-package client
+package client_test
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
+	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/samber/lo"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -31,7 +32,7 @@ var _ = Describe("New", func() {
 
 	var (
 		server     *httptest.Server
-		testClient *ClientWithResponses
+		testClient *client.ClientWithResponses
 		connCount  chan int
 	)
 
@@ -55,7 +56,7 @@ var _ = Describe("New", func() {
 
 		// Set up the client that we're testing
 		apiKey := lo.RandomString(10, lo.AlphanumericCharset)
-		c, clientErr := New(ctx, apiKey, server.URL, "1", logger)
+		c, clientErr := client.New(ctx, apiKey, server.URL, "1", logger)
 		Expect(clientErr).NotTo(HaveOccurred())
 		testClient = c
 	})
@@ -96,7 +97,7 @@ var _ = Describe("New", func() {
 					defer wg.Done()
 					defer GinkgoRecover()
 
-					_, err := testClient.CatalogV2ListTypesWithResponse(ctx)
+					_, err := testClient.CatalogV3ListTypesWithResponse(ctx)
 					Expect(err).NotTo(HaveOccurred())
 				}()
 			}

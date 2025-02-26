@@ -17,7 +17,7 @@ type CatalogTypeModel struct {
 	Description     string
 	TypeName        string
 	Ranked          bool
-	Attributes      []client.CatalogTypeAttributePayloadV2
+	Attributes      []client.CatalogTypeAttributePayloadV3
 	Categories      []string
 	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
 	SourceRepoUrl   string
@@ -28,7 +28,7 @@ type CatalogEntryModel struct {
 	Name            string
 	Aliases         []string
 	Rank            int32
-	AttributeValues map[string]client.EngineParamBindingPayloadV2
+	AttributeValues map[string]client.CatalogEngineParamBindingPayloadV3
 }
 
 // MarshalType builds the base catalog type model for the output, and any associated enum
@@ -39,7 +39,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		Description: output.Description,
 		TypeName:    output.TypeName,
 		Ranked:      output.Ranked,
-		Attributes:  []client.CatalogTypeAttributePayloadV2{},
+		Attributes:  []client.CatalogTypeAttributePayloadV3{},
 		Categories:  output.Categories,
 	}
 	for _, attr := range output.Attributes {
@@ -53,17 +53,19 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 			attrType = attr.Type.String
 		}
 
-		var mode client.CatalogTypeAttributePayloadV2Mode
+		var mode client.CatalogTypeAttributePayloadV3Mode
 		switch {
 		case attr.BacklinkAttribute.Valid:
-			mode = client.CatalogTypeAttributePayloadV2ModeBacklink
+			mode = client.CatalogTypeAttributePayloadV3ModeBacklink
 		case attr.Path != nil:
-			mode = client.CatalogTypeAttributePayloadV2ModePath
+			mode = client.CatalogTypeAttributePayloadV3ModePath
+		case attr.SchemaOnly:
+			mode = client.CatalogTypeAttributePayloadV3ModeDashboard
 		default:
-			mode = client.CatalogTypeAttributePayloadV2ModeManual
+			mode = client.CatalogTypeAttributePayloadV3ModeApi
 		}
 
-		attribute := client.CatalogTypeAttributePayloadV2{
+		attribute := client.CatalogTypeAttributePayloadV3{
 			Id:                lo.ToPtr(attr.ID),
 			Name:              attr.Name,
 			Type:              attrType,
@@ -73,8 +75,8 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		}
 
 		if attr.Path != nil {
-			attribute.Path = lo.ToPtr(lo.Map(attr.Path, func(item string, _ int) client.CatalogTypeAttributePathItemPayloadV2 {
-				return client.CatalogTypeAttributePathItemPayloadV2{
+			attribute.Path = lo.ToPtr(lo.Map(attr.Path, func(item string, _ int) client.CatalogTypeAttributePathItemPayloadV3 {
+				return client.CatalogTypeAttributePathItemPayloadV3{
 					AttributeId: item,
 				}
 			}))
@@ -85,17 +87,17 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		// The enums we generate should be returned as types too, as we'll need to sync them
 		// just as any other.
 		if attr.Enum != nil {
-			attributes := []client.CatalogTypeAttributePayloadV2{
+			attributes := []client.CatalogTypeAttributePayloadV3{
 				{
 					Id:   lo.ToPtr("description"),
 					Name: "Description",
 					Type: "String",
-					Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeManual),
+					Mode: lo.ToPtr(client.CatalogTypeAttributePayloadV3ModeApi),
 				},
 			}
 			if attr.Enum.EnableBacklink {
 				attributes = append(attributes,
-					client.CatalogTypeAttributePayloadV2{
+					client.CatalogTypeAttributePayloadV3{
 						Id:   lo.ToPtr("enum_backlink"),
 						Name: base.Name,
 						Type: base.TypeName,
@@ -103,7 +105,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 						// by definition enums are either one-to-many or many-to-many.
 						Array:             true,
 						BacklinkAttribute: lo.ToPtr(attr.ID),
-						Mode:              lo.ToPtr(client.CatalogTypeAttributePayloadV2ModeBacklink),
+						Mode:              lo.ToPtr(client.CatalogTypeAttributePayloadV3ModeBacklink),
 					})
 			}
 			enumTypes = append(enumTypes, &CatalogTypeModel{
@@ -193,10 +195,10 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 
 		// Attribute values are built best effort, as it might not be the case that upstream
 		// source entries have these fields, or have fields of the correct type.
-		attributeValues := map[string]client.EngineParamBindingPayloadV2{}
+		attributeValues := map[string]client.CatalogEngineParamBindingPayloadV3{}
 
 		for attributeID, src := range attributeSources {
-			binding := client.EngineParamBindingPayloadV2{}
+			binding := client.CatalogEngineParamBindingPayloadV3{}
 
 			if attributeByID[attributeID].Array {
 				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry)
@@ -207,14 +209,14 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					continue
 				}
 
-				arrayValue := []client.EngineParamBindingValuePayloadV2{}
+				arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
 				for _, literalAny := range valueLiterals {
 					literal, ok := literalAny.(string)
 					if !ok {
 						continue
 					}
 
-					arrayValue = append(arrayValue, client.EngineParamBindingValuePayloadV2{
+					arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
 						Literal: lo.ToPtr(literal),
 					})
 				}
@@ -229,7 +231,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					continue
 				}
 
-				binding.Value = &client.EngineParamBindingValuePayloadV2{
+				binding.Value = &client.CatalogEngineParamBindingValuePayloadV3{
 					Literal: literal,
 				}
 			}
