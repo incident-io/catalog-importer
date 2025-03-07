@@ -223,7 +223,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	// value instead of setting it outselves.
 	attributesToUpdate := []*output.Attribute{}
 	for _, attr := range outputType.Attributes {
-		if !attr.SchemaOnly {
+		if attr.IncludeInPayload() {
 			attributesToUpdate = append(attributesToUpdate, attr)
 		}
 	}
