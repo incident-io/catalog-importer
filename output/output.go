@@ -75,6 +75,23 @@ func (a Attribute) Validate() error {
 	)
 }
 
+func (a Attribute) IncludeInPayload() bool {
+	if a.SchemaOnly {
+		// These are left for the dashboard to set
+		return false
+	}
+	if a.BacklinkAttribute.Valid {
+		// Automatically set by the backlink
+		return false
+	}
+	if a.Path != nil {
+		// These are derived from other attributes
+		return false
+	}
+
+	return true
+}
+
 type AttributeEnum struct {
 	Name           string `json:"name"`
 	Description    string `json:"description"`

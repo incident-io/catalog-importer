@@ -8,6 +8,7 @@ import (
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/incident-io/catalog-importer/v2/reconcile"
 	"github.com/samber/lo"
+	"gopkg.in/guregu/null.v3"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -349,6 +350,107 @@ var _ = Describe("Entries", func() {
 			Expect(*payload.Aliases).To(Equal([]string{"new-alias"}))
 			Expect(payload.UpdateAttributes).NotTo(BeNil())
 			Expect(*payload.UpdateAttributes).To(ConsistOf("attr1")) // schema-only attribute not included
+		})
+	})
+
+	When("updating entries with different attribute types", func() {
+		BeforeEach(func() {
+			// Setup test data
+			catalogType = &client.CatalogTypeV3{
+				Id:       "type-123",
+				TypeName: "Test Type",
+			}
+
+			outputType = &output.Output{
+				Attributes: []*output.Attribute{
+					{
+						ID:         "normal_attr",
+						Name:       "Normal Attribute",
+						SchemaOnly: false,
+					},
+					{
+						ID:         "schema_only_attr",
+						Name:       "Schema Only Attribute",
+						SchemaOnly: true,
+					},
+					{
+						ID:                "backlink_attr",
+						Name:              "Backlink Attribute",
+						BacklinkAttribute: null.StringFrom("source_attr"),
+					},
+					{
+						ID:   "path_attr",
+						Name: "Path Attribute",
+						Path: []string{"step1", "step2"},
+					},
+				},
+			}
+
+			existingEntries = []client.CatalogEntryV3{
+				{
+					Id:         "entry-1",
+					ExternalId: lo.ToPtr("ext-1"),
+					Name:       "Test Entry",
+					AttributeValues: map[string]client.CatalogEntryEngineParamBindingV3{
+						"normal_attr": {
+							Value: &client.CatalogEntryEngineParamBindingValueV3{
+								Literal: lo.ToPtr("old-value"),
+							},
+						},
+						"schema_only_attr": {
+							Value: &client.CatalogEntryEngineParamBindingValueV3{
+								Literal: lo.ToPtr("dashboard-value"),
+							},
+						},
+					},
+				},
+			}
+
+			entryModels = []*output.CatalogEntryModel{
+				{
+					Name:       "Test Entry Updated",
+					ExternalID: "ext-1",
+					AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{
+						"normal_attr": {
+							Value: &client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: lo.ToPtr("new-value"),
+							},
+						},
+						"schema_only_attr": {
+							Value: &client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: lo.ToPtr("should-be-ignored"),
+							},
+						},
+						"backlink_attr": {
+							Value: &client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: lo.ToPtr("should-be-ignored"),
+							},
+						},
+						"path_attr": {
+							Value: &client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: lo.ToPtr("should-be-ignored"),
+							},
+						},
+					},
+				},
+			}
+		})
+
+		It("only includes payload-eligible attributes in UpdateAttributes", func() {
+			mustReconcile()
+			
+			// Verify that entry was updated
+			Expect(updatedEntries).To(HaveLen(1))
+			
+			// Check that only normal_attr was included in UpdateAttributes
+			payload := updatedEntries[0].payload
+			Expect(payload.UpdateAttributes).NotTo(BeNil())
+			Expect(*payload.UpdateAttributes).To(ConsistOf("normal_attr"))
+			
+			// Verify that non-included attributes are not in the UpdateAttributes list
+			Expect(*payload.UpdateAttributes).NotTo(ContainElement("schema_only_attr"))
+			Expect(*payload.UpdateAttributes).NotTo(ContainElement("backlink_attr"))
+			Expect(*payload.UpdateAttributes).NotTo(ContainElement("path_attr"))
 		})
 	})
 
