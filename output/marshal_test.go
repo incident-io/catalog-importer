@@ -14,6 +14,49 @@ import (
 	"gopkg.in/guregu/null.v3"
 )
 
+var _ = Describe("Attribute", func() {
+	Describe("IncludeInPayload", func() {
+		It("includes normal attributes", func() {
+			attr := Attribute{
+				ID:   "normal_attr",
+				Name: "Normal Attribute",
+				Type: null.StringFrom("String"),
+			}
+			Expect(attr.IncludeInPayload()).To(BeTrue())
+		})
+
+		It("excludes schema-only attributes", func() {
+			attr := Attribute{
+				ID:         "schema_only_attr",
+				Name:       "Schema Only Attribute",
+				Type:       null.StringFrom("String"),
+				SchemaOnly: true,
+			}
+			Expect(attr.IncludeInPayload()).To(BeFalse())
+		})
+
+		It("excludes backlink attributes", func() {
+			attr := Attribute{
+				ID:                "backlink_attr",
+				Name:              "Backlink Attribute",
+				Type:              null.StringFrom("OtherType"),
+				BacklinkAttribute: null.StringFrom("source_attr"),
+			}
+			Expect(attr.IncludeInPayload()).To(BeFalse())
+		})
+
+		It("excludes path attributes", func() {
+			attr := Attribute{
+				ID:   "path_attr",
+				Name: "Path Attribute",
+				Type: null.StringFrom("String"),
+				Path: []string{"step1", "step2"},
+			}
+			Expect(attr.IncludeInPayload()).To(BeFalse())
+		})
+	})
+})
+
 var _ = Describe("Marshalling data", func() {
 	var (
 		ctx               context.Context
