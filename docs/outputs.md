@@ -158,7 +158,7 @@ The above we generate the following catalog types:
 The `enable_backlink` option allows you to specify if the created enum should have an attribute pointing back to the
 attribute that created it. If disabled, the `BackstageAPIType` above will not have a `Backstage API` attribute.
 
-See [simple/importer.jsonnet](https://github.com/incident-io/catalog-importer/blob/bbb659c312af7c45a626a68643e1cd4e890376d5/docs/simple/importer.jsonnet#L161-L166) for a working example
+See [simple/importer.jsonnet](https://github.com/incident-io/catalog-importer/blob/8d0f02c57598330defe14ed2ce783427d290450c/docs/simple/importer.jsonnet#L161-L166) for a working example
 
 ### Schema-only attributes
 
