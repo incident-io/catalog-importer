@@ -11,7 +11,7 @@ require (
 	github.com/go-kit/log v0.2.0
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-github/v52 v52.0.0
 	github.com/google/go-jsonnet v0.20.0
@@ -41,9 +41,11 @@ require (
 
 require (
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/speakeasy-api/openapi-overlay v0.9.0 // indirect
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
+	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
