@@ -40,22 +40,14 @@ func (s SourceBackstage) String() string {
 }
 
 func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client *http.Client) ([]*SourceEntry, error) {
-	var token string
-	if s.Token != "" {
-		// If not provided or explicitly enabled, sign the token into a JWT and use that as
-		// the Authorization header.
-		if s.SignJWT == nil || *s.SignJWT {
-			var err error
-			token, err = s.getJWT()
-			if err != nil {
-				return nil, err
-			}
-			// Otherwise if someone has told us not to, don't sign the token and use it as-is.
-		} else {
-			token = string(s.Token)
-		}
+	token, err := s.getToken()
+	if err != nil {
+		return nil, errors.Wrap(err, "getting Backstage token")
 	}
+	return s.fetchEntries(ctx, client, token)
+}
 
+func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, token string) ([]*SourceEntry, error) {
 	var (
 		limit  = 100
 		offset = 0
@@ -117,6 +109,22 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client 
 
 		offset += len(page)
 	}
+}
+
+func (s SourceBackstage) getToken() (string, error) {
+	if s.Token == "" {
+		// it's valid to not provide a token, in which case we just return an empty string
+		return "", nil
+	}
+
+	// If not provided or explicitly enabled, sign the token into a JWT and use that as
+	// the Authorization header.
+	if s.SignJWT == nil || *s.SignJWT {
+		return s.getJWT()
+	}
+
+	// Otherwise if someone has told us not to, don't sign the token and use it as-is.
+	return string(s.Token), nil
 }
 
 // getJWT applies the rules from the Backstage docs to generate a JWT that is valid for
