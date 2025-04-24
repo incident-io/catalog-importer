@@ -33,7 +33,7 @@ var _ = Describe("SourceBackstage", func() {
 
 	BeforeEach(func() {
 		s = source.SourceBackstage{
-			Endpoint: "https://example.com/api/entities",
+			Endpoint: "https://example.com/api/catalog/entities",
 		}
 
 		client = cleanhttp.DefaultClient()
@@ -47,7 +47,7 @@ var _ = Describe("SourceBackstage", func() {
 		BeforeEach(func() {
 			mock.RegisterResponder(
 				http.MethodGet,
-				"https://example.com/api/entities",
+				"https://example.com/api/catalog/entities",
 				func(req *http.Request) (*http.Response, error) {
 					backstageRequest = req
 					resp, err := httpmock.NewJsonResponse(http.StatusOK, []map[string]any{})

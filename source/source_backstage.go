@@ -44,12 +44,32 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client 
 	if err != nil {
 		return nil, errors.Wrap(err, "getting Backstage token")
 	}
-	return s.fetchEntries(ctx, client, token)
+
+	endpointURL, err := url.Parse(s.Endpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "parsing Backstage URL")
+	}
+
+	if endpointURL.Path == "/api/catalog/entities" {
+		logger.Log(
+			"msg",
+			"Deprecated: The Backstage API endpoint '/api/catalog/entities' is deprecated. Use '/api/catalog/entities/by-query' instead.",
+		)
+		return s.fetchEntries(ctx, client, token)
+	}
+	if endpointURL.Path == "/api/catalog/entities/by-query" {
+		return s.fetchEntriesByQuery(ctx, client, token)
+	}
+
+	return nil, errors.New("Backstage endpoint must have path of '/api/catalog/entities' or '/api/catalog/entities/by-query'")
 }
 
+const defaultPageSize = 100
+
+// https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities
 func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, token string) ([]*SourceEntry, error) {
 	var (
-		limit  = 100
+		limit  = defaultPageSize
 		offset = 0
 	)
 
@@ -108,6 +128,83 @@ func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, 
 		}
 
 		offset += len(page)
+	}
+}
+
+// https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entitiesby-query
+func (s SourceBackstage) fetchEntriesByQuery(ctx context.Context, client *http.Client, token string) ([]*SourceEntry, error) {
+	var (
+		limit  = defaultPageSize
+		cursor = ""
+	)
+
+	if s.PageSize != 0 {
+		limit = s.PageSize
+	}
+
+	entries := []*SourceEntry{}
+	for {
+		query := url.Values{}
+		query.Set("limit", strconv.Itoa(limit))
+		if cursor != "" {
+			query.Set("cursor", cursor)
+		}
+
+		if s.Filter != "" {
+			query.Set("filter", s.Filter)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.Endpoint+"?"+query.Encode(), nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "building Backstage URL")
+		}
+
+		if token != "" {
+
+			header := s.Header
+
+			if header == "" {
+				header = "Authorization"
+			}
+
+			req.Header.Add(header, fmt.Sprintf("Bearer %s", token))
+		}
+
+		resp, err := client.Do(req)
+		if err == nil && resp.StatusCode != http.StatusOK {
+			err = fmt.Errorf("received error from Backstage: %s", resp.Status)
+		}
+		if err != nil {
+			return nil, errors.Wrap(err, "fetching Backstage entries")
+		}
+
+		type GetEntitiesByQueryResponse struct {
+			Items      []json.RawMessage `json:"items"`
+			TotalItems int               `json:"totalItems"`
+			PageInfo   struct {
+				NextCursor string `json:"nextCursor"`
+			} `json:"pageInfo"`
+		}
+		page := GetEntitiesByQueryResponse{}
+		if err := json.NewDecoder(resp.Body).Decode(&page); err != nil {
+			return nil, errors.Wrap(err, "parsing Backstage entries")
+		}
+
+		if len(page.Items) == 0 {
+			return entries, nil
+		}
+
+		for _, item := range page.Items {
+			entries = append(entries, &SourceEntry{
+				Origin:  s.String(),
+				Content: item,
+			})
+		}
+
+		if page.PageInfo.NextCursor == "" {
+			return entries, nil
+		}
+		cursor = page.PageInfo.NextCursor
 	}
 }
 
