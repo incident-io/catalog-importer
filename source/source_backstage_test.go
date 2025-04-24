@@ -2,6 +2,7 @@ package source_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 
@@ -30,71 +31,153 @@ var _ = Describe("SourceBackstage", func() {
 		client *http.Client
 		mock   *httpmock.MockTransport
 	)
-
-	BeforeEach(func() {
-		s = source.SourceBackstage{
-			Endpoint: "https://example.com/api/catalog/entities",
-		}
-
-		client = cleanhttp.DefaultClient()
-		mock = httpmock.NewMockTransport()
-		client.Transport = mock
-	})
-
-	Describe("Load", func() {
-		var backstageRequest *http.Request
-
+	Context("using /api/catalog/entities", func() {
 		BeforeEach(func() {
-			mock.RegisterResponder(
-				http.MethodGet,
-				"https://example.com/api/catalog/entities",
-				func(req *http.Request) (*http.Response, error) {
-					backstageRequest = req
-					resp, err := httpmock.NewJsonResponse(http.StatusOK, []map[string]any{})
-					Expect(err).To(Succeed())
-					return resp, nil
-				},
-			)
+			s = source.SourceBackstage{
+				Endpoint: "https://example.com/api/catalog/entities",
+			}
+
+			client = cleanhttp.DefaultClient()
+			mock = httpmock.NewMockTransport()
+			client.Transport = mock
 		})
 
-		JustBeforeEach(func() {
-			_, err := s.Load(ctx, logger, client)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(backstageRequest).NotTo(BeNil())
-		})
+		Describe("Load", func() {
+			var backstageRequest *http.Request
 
-		Context("page size", func() {
-			When("no page size is specified", func() {
-				It("uses the default page size", func() {
-					Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("100"))
+			BeforeEach(func() {
+				mock.RegisterResponder(
+					http.MethodGet,
+					"https://example.com/api/catalog/entities",
+					func(req *http.Request) (*http.Response, error) {
+						backstageRequest = req
+						resp, err := httpmock.NewJsonResponse(http.StatusOK, []map[string]any{})
+						Expect(err).To(Succeed())
+						return resp, nil
+					},
+				)
+			})
+
+			JustBeforeEach(func() {
+				_, err := s.Load(ctx, logger, client)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(backstageRequest).NotTo(BeNil())
+			})
+
+			Context("page size", func() {
+				When("no page size is specified", func() {
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("100"))
+					})
+				})
+
+				When("the page size is overridden", func() {
+					BeforeEach(func() {
+						s.PageSize = 30
+					})
+
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("30"))
+					})
 				})
 			})
 
-			When("the page size is overridden", func() {
-				BeforeEach(func() {
-					s.PageSize = 30
+			Context("filter", func() {
+				When("no filter is specified", func() {
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Has("filter")).To(BeFalse())
+					})
 				})
 
-				It("uses the default page size", func() {
-					Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("30"))
+				When("a filter is specified", func() {
+					BeforeEach(func() {
+						s.Filter = "kind=user,metadata.namespace=default"
+					})
+
+					It("is included in the request", func() {
+						Expect(backstageRequest.URL.Query().Get("filter")).To(Equal("kind=user,metadata.namespace=default"))
+					})
 				})
 			})
 		})
+	})
+	Context("using /api/catalog/entities/by-query", func() {
+		BeforeEach(func() {
+			s = source.SourceBackstage{
+				Endpoint: "https://example.com/api/catalog/entities/by-query",
+			}
 
-		Context("filter", func() {
-			When("no filter is specified", func() {
-				It("uses the default page size", func() {
-					Expect(backstageRequest.URL.Query().Has("filter")).To(BeFalse())
+			client = cleanhttp.DefaultClient()
+			mock = httpmock.NewMockTransport()
+			client.Transport = mock
+		})
+
+		Describe("Load", func() {
+			var backstageRequest *http.Request
+
+			BeforeEach(func() {
+				mock.RegisterResponder(
+					http.MethodGet,
+					"https://example.com/api/catalog/entities/by-query",
+					func(req *http.Request) (*http.Response, error) {
+						backstageRequest = req
+						resp, err := httpmock.NewJsonResponse(http.StatusOK, map[string]any{"items": []any{
+							json.RawMessage(`{"kind":"Component","metadata":{"name":"test"}}`),
+						}})
+						Expect(err).To(Succeed())
+						return resp, nil
+					},
+				)
+			})
+
+			var sourceEntries []*source.SourceEntry
+
+			JustBeforeEach(func() {
+				var err error
+				sourceEntries, err = s.Load(ctx, logger, client)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(backstageRequest).NotTo(BeNil())
+			})
+
+			It("returns the entries", func() {
+				Expect(sourceEntries).To(HaveLen(1))
+				Expect(sourceEntries[0].Origin).To(Equal("backstage (endpoint=https://example.com/api/catalog/entities/by-query)"))
+				Expect(sourceEntries[0].Content).To(MatchJSON(`{"kind":"Component","metadata":{"name":"test"}}`))
+			})
+
+			Context("page size", func() {
+				When("no page size is specified", func() {
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("100"))
+					})
+				})
+
+				When("the page size is overridden", func() {
+					BeforeEach(func() {
+						s.PageSize = 30
+					})
+
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Get("limit")).To(Equal("30"))
+					})
 				})
 			})
 
-			When("a filter is specified", func() {
-				BeforeEach(func() {
-					s.Filter = "kind=user,metadata.namespace=default"
+			Context("filter", func() {
+				When("no filter is specified", func() {
+					It("uses the default page size", func() {
+						Expect(backstageRequest.URL.Query().Has("filter")).To(BeFalse())
+					})
 				})
 
-				It("is included in the request", func() {
-					Expect(backstageRequest.URL.Query().Get("filter")).To(Equal("kind=user,metadata.namespace=default"))
+				When("a filter is specified", func() {
+					BeforeEach(func() {
+						s.Filter = "kind=user,metadata.namespace=default"
+					})
+
+					It("is included in the request", func() {
+						Expect(backstageRequest.URL.Query().Get("filter")).To(Equal("kind=user,metadata.namespace=default"))
+					})
 				})
 			})
 		})
