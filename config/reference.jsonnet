@@ -48,7 +48,7 @@
         // If you want to pull data directly from Backstage's API.
         {
           backstage: {
-            endpoint: 'http://localhost:6969/api/catalog/entities',
+            endpoint: 'http://localhost:6969/api/catalog/entities/by-query',
             token: '$(BACKSTAGE_TOKEN)',
           },
         },
