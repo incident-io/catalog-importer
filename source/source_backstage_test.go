@@ -181,5 +181,76 @@ var _ = Describe("SourceBackstage", func() {
 				})
 			})
 		})
+
+		Describe("Load with pagination", func() {
+			BeforeEach(func() {
+				s = source.SourceBackstage{
+					Endpoint: "https://example.com/api/catalog/entities/by-query",
+					PageSize: 1,
+				}
+
+				client = cleanhttp.DefaultClient()
+				mock = httpmock.NewMockTransport()
+				client.Transport = mock
+			})
+
+			When("the page size is 1 and the response is paginated", func() {
+				BeforeEach(func() {
+					mock.RegisterResponderWithQuery(
+						http.MethodGet,
+						"https://example.com/api/catalog/entities/by-query",
+						"limit=1",
+						func(req *http.Request) (*http.Response, error) {
+							resp, err := httpmock.NewJsonResponse(http.StatusOK, map[string]any{
+								"items": []any{
+									json.RawMessage(`{"kind":"Component","metadata":{"name":"test_a"}}`),
+								},
+								"total": 2,
+								"pageInfo": map[string]any{
+									"nextCursor": "b",
+									"prevCursor": "a",
+								},
+							})
+							Expect(err).To(Succeed())
+							return resp, nil
+						})
+					mock.RegisterResponderWithQuery(
+						http.MethodGet,
+						"https://example.com/api/catalog/entities/by-query",
+						"limit=1&cursor=b",
+						func(req *http.Request) (*http.Response, error) {
+							resp, err := httpmock.NewJsonResponse(http.StatusOK, map[string]any{
+								"items": []any{
+									json.RawMessage(`{"kind":"Component","metadata":{"name":"test_b"}}`),
+								},
+								"total": 2,
+								"pageInfo": map[string]any{
+									"nextCursor": "",
+									"prevCursor": "b",
+								},
+							})
+							Expect(err).To(Succeed())
+							return resp, nil
+						})
+				})
+
+				var sourceEntries []*source.SourceEntry
+
+				JustBeforeEach(func() {
+					var err error
+					sourceEntries, err = s.Load(ctx, logger, client)
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("returns the entries", func() {
+					Expect(sourceEntries).To(HaveLen(2))
+					Expect(sourceEntries[0].Origin).To(Equal("backstage (endpoint=https://example.com/api/catalog/entities/by-query)"))
+					Expect(sourceEntries[0].Content).To(MatchJSON(`{"kind":"Component","metadata":{"name":"test_a"}}`))
+					Expect(sourceEntries[1].Origin).To(Equal("backstage (endpoint=https://example.com/api/catalog/entities/by-query)"))
+					Expect(sourceEntries[1].Content).To(MatchJSON(`{"kind":"Component","metadata":{"name":"test_b"}}`))
+				})
+			})
+
+		})
 	})
 })
