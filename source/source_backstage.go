@@ -131,6 +131,14 @@ func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, 
 	}
 }
 
+type getEntitiesByQueryResponse struct {
+	Items      []json.RawMessage `json:"items"`
+	TotalItems int               `json:"totalItems"`
+	PageInfo   struct {
+		NextCursor string `json:"nextCursor"`
+	} `json:"pageInfo"`
+}
+
 // https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entitiesby-query
 func (s SourceBackstage) fetchEntriesByQuery(ctx context.Context, client *http.Client, token string) ([]*SourceEntry, error) {
 	var (
@@ -178,14 +186,7 @@ func (s SourceBackstage) fetchEntriesByQuery(ctx context.Context, client *http.C
 			return nil, errors.Wrap(err, "fetching Backstage entries")
 		}
 
-		type GetEntitiesByQueryResponse struct {
-			Items      []json.RawMessage `json:"items"`
-			TotalItems int               `json:"totalItems"`
-			PageInfo   struct {
-				NextCursor string `json:"nextCursor"`
-			} `json:"pageInfo"`
-		}
-		page := GetEntitiesByQueryResponse{}
+		page := getEntitiesByQueryResponse{}
 		if err := json.NewDecoder(resp.Body).Decode(&page); err != nil {
 			return nil, errors.Wrap(err, "parsing Backstage entries")
 		}
