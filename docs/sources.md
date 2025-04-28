@@ -116,7 +116,7 @@ This looks like:
   backstage: {
     // This will depend on where your Backstage is located, and if it's
     // available on the same network as the importer.
-    endpoint: 'https://backstage-internal.example.com/api/catalog/entities',
+    endpoint: 'https://backstage-internal.example.com/api/catalog/entities/by-query',
 
     // Supports environment variable substitution.
     // https://github.com/incident-io/catalog-importer/blob/master/docs/sources.md#credentials
@@ -155,7 +155,7 @@ This will pull in all catalog entries after which you may use the source
 Note: these instructions also work for Backstage hosted with [Roadie]([url](https://roadie.io)). You will need to adjust the `endpoint` to:
 
 ```
-https://api.roadie.so/api/catalog/entities
+https://api.roadie.so/api/catalog/entities/by-query
 ``` 
 
 And you should append `sign_jwt: false,` to your jsonnet, as explained above.

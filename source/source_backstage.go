@@ -18,7 +18,7 @@ import (
 )
 
 type SourceBackstage struct {
-	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities
+	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities/by-query
 	Token    Credential `json:"token"`
 	SignJWT  *bool      `json:"sign_jwt"`
 	Header   string     `json:"header"`

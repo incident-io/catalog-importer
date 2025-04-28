@@ -29,7 +29,7 @@ func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
 		Envar("INCIDENT_API_KEY").
 		StringVar(&opt.APIKey)
 	cmd.Flag("backstage-endpoint", "Endpoint of the Backstage entries API").
-		Default("http://localhost:7007/api/catalog/entities").
+		Default("http://localhost:7007/api/catalog/entities/by-query").
 		Envar("BACKSTAGE_ENDPOINT").
 		StringVar(&opt.BackstageEndpoint)
 	cmd.Flag("backstage-token", "Token of the Backstage entries API. Optional").
