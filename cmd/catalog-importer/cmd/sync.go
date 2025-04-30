@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -117,6 +118,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	OUT("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
 
 	existingCatalogTypes := []client.CatalogTypeV3{}
+	unmanagedCatalogTypes := []client.CatalogTypeV3{}
 	for _, catalogType := range result.JSON200.CatalogTypes {
 		logger := kitlog.With(logger,
 			"catalog_type_id", catalogType.Id,
@@ -125,7 +127,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 		syncID, ok := catalogType.Annotations[AnnotationSyncID]
 		if !ok {
-			level.Debug(logger).Log("msg", "ignoring catalog type as it is not managed by an importer")
+			if catalogType.SourceRepoUrl == nil && catalogType.IsEditable {
+				level.Debug(logger).Log("msg", "catalog type is editable and unmanaged",
+					"catalog_type_id", catalogType.Id)
+				unmanagedCatalogTypes = append(unmanagedCatalogTypes, catalogType)
+			} else {
+				level.Debug(logger).Log("msg", "ignoring catalog type as it managed elsewhere")
+			}
 		} else if syncID != cfg.SyncID {
 			logger.Log("msg", "ignoring catalog type as it is managed by a different importer",
 				"catalog_type_sync_id", syncID)
@@ -185,6 +193,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		baseModel, enumModels := output.MarshalType(outputType)
 	createCatalogType:
 		for _, model := range append(enumModels, baseModel) {
+			for _, unmanagedCatalogType := range unmanagedCatalogTypes {
+				if model.TypeName == unmanagedCatalogType.TypeName {
+					logger.Log("msg", "found unmanaged catalog type: skipping create")
+					continue createCatalogType
+				}
+			}
+
 			for _, existingCatalogType := range existingCatalogTypes {
 				if model.TypeName == existingCatalogType.TypeName {
 					level.Debug(logger).Log("catalog type already exists")
@@ -242,6 +257,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 					break
 				}
 			}
+			for _, unmanagedCatalogType := range unmanagedCatalogTypes {
+				if model.TypeName == unmanagedCatalogType.TypeName {
+					catalogType = &unmanagedCatalogType
+					break
+				}
+			}
+
 			if catalogType == nil {
 				return fmt.Errorf("could not find catalog type for model '%s', this is a bug in the importer", model.TypeName)
 			}
@@ -357,6 +379,8 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				version := result.JSON200.CatalogType.Schema.Version
 				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
+				schemaJSON, _ := json.Marshal(attributesWithoutNewDerived)
+				level.Debug(logger).Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "schema", schemaJSON)
 				schema, err := cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
 					Version:    version,
 					Attributes: attributesWithoutNewDerived,
