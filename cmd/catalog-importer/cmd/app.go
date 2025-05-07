@@ -14,6 +14,7 @@ import (
 	_ "embed"
 
 	"github.com/alecthomas/kingpin/v2"
+	"github.com/fatih/color"
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/go-cmp/cmp"
@@ -27,7 +28,8 @@ var (
 	app = kingpin.New("catalog-importer", "Import data into your incident.io catalog").Version(versionStanza())
 
 	// Global flags
-	debug = app.Flag("debug", "Enable debug logging").Default("false").Bool()
+	debug   = app.Flag("debug", "Enable debug logging").Default("false").Bool()
+	noColor = app.Flag("no-color", "Disable colored output").Default("false").Bool()
 
 	// Init
 	initCmd     = app.Command("init", "Initialises a new config from a template")
@@ -214,14 +216,23 @@ func DIFF[Type any](prefix string, this, that Type) {
 
 	diff := cmp.Diff(thisNormalised, thatNormalised)
 	if diff != "" {
+		// Set up colored output
+		green := color.New(color.FgGreen)
+		red := color.New(color.FgRed)
+
+		// Disable colors if --no-color flag is set
+		if *noColor {
+			color.NoColor = true
+		}
+
 		for _, line := range strings.Split(diff, "\n") {
 			// Add the prefix, such as constant whitespace.
 			buf.WriteString(prefix)
 
 			if strings.HasPrefix(line, "+") {
-				buf.WriteString("\x1b[92m" + line + "\x1b[0m" + "\n")
+				buf.WriteString(green.Sprint(line) + "\n")
 			} else if strings.HasPrefix(line, "-") {
-				buf.WriteString("\x1b[91m" + line + "\x1b[0m" + "\n")
+				buf.WriteString(red.Sprint(line) + "\n")
 			} else {
 				buf.WriteString(line + "\n")
 			}
