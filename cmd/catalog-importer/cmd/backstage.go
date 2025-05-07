@@ -18,6 +18,7 @@ type BackstageOptions struct {
 	BackstageEndpoint string
 	BackstageToken    string
 	BackstageSignJWT  bool
+	DryRun            bool
 }
 
 func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
@@ -40,6 +41,9 @@ func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
 		Default("true").
 		Envar("BACKSTAGE_SIGN_JWT").
 		BoolVar(&opt.BackstageSignJWT)
+	cmd.Flag("dry-run", "Only calculate the changes needed and print the diff, don't actually make changes").
+		Default("false").
+		BoolVar(&opt.DryRun)
 
 	return opt
 }
@@ -74,6 +78,7 @@ func (opt *BackstageOptions) Run(ctx context.Context, logger kitlog.Logger) erro
 	syncOpt.APIEndpoint = opt.APIEndpoint
 	syncOpt.APIKey = opt.APIKey
 	syncOpt.AllowDeleteAll = true
+	syncOpt.DryRun = opt.DryRun
 
 	if err := syncOpt.Run(ctx, logger, &cfg); err != nil {
 		return errors.Wrap(err, "running sync")
