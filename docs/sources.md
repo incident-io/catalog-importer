@@ -130,8 +130,8 @@ This looks like:
     // https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
     token: '$(BACKSTAGE_TOKEN)',
 
-    // By default, we send the token in the `Authorization` HTTP header. If you 
-    // want to override this, then you use this optional configuration value to 
+    // By default, we send the token in the `Authorization` HTTP header. If you
+    // want to override this, then you use this optional configuration value to
     // override the header name that is used.
     // header: 'CustomHeader'
 
@@ -152,11 +152,11 @@ be a bearer token with permissions to make this call.
 This will pull in all catalog entries after which you may use the source
 `filter`s to separate entries into different types.
 
-Note: these instructions also work for Backstage hosted with [Roadie]([url](https://roadie.io)). You will need to adjust the `endpoint` to:
+Note: these instructions also work for Backstage hosted with [Roadie](<[url](https://roadie.io)>). You will need to adjust the `endpoint` to:
 
 ```
 https://api.roadie.so/api/catalog/entities/by-query
-``` 
+```
 
 And you should append `sign_jwt: false,` to your jsonnet, as explained above.
 
@@ -164,8 +164,8 @@ And you should append `sign_jwt: false,` to your jsonnet, as explained above.
 
 You can also specify the following parameters in your source:
 
-* `page_size`: Allows you to customise how many entities we fetch from Backstage at once.
-* `filter`: Allows you to filter entities as per [the Backstage API spec](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities), for example `kind=user,metadata.namespace=default`.
+- `page_size`: Allows you to customise how many entities we fetch from Backstage at once.
+- `filter`: Allows you to filter entities as per [the Backstage API spec](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities), for example `kind=user,metadata.namespace=default`.
 
 ## `github`
 
@@ -190,6 +190,9 @@ This would look like:
     files: [
       "**/catalog-info.yaml",
     ],
+    // Optional: excludeArchived, if true, will cause the source to exclude files from
+    // repositories that have been archived. Defaults to false (archived repositories are included).
+    // excludeArchived: true,
   },
 }
 ```
@@ -410,4 +413,3 @@ std.map(function(desc) { description: desc }, [
   "will also load fine",
 ])
 ```
-

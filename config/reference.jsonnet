@@ -64,6 +64,9 @@
             files: [
               '**/catalog-info.yaml',
             ],
+            // Optional: If true, files from archived GitHub repositories are excluded.
+            // Defaults to false (archived repositories are included).
+            excludeArchived: true,
           },
         },
         // If you need to transform the catalog data, you can use the exec
@@ -154,7 +157,7 @@
           description: 'Teams in the Product Development function.',
           // This will determine the group in which this type will appear under. They can be one of the following:
           // 'customer', 'issue-tracker', 'on-call', 'product-feature', 'service', 'team', 'user'
-          categories: ['team'],    
+          categories: ['team'],
 
           // The unique type name for this catalog type. If other catalog types
           // create attributes that point at this type, they should set the

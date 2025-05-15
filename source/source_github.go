@@ -22,6 +22,9 @@ type SourceGitHub struct {
 	Repos []string   `json:"repos"`
 	Files []string   `json:"files"`
 	Token Credential `json:"token"`
+	// ExcludeArchived, if true, will cause the source to exclude files from
+	// repositories that have been archived. Defaults to false (archived repositories are included).
+	ExcludeArchived bool `json:"excludeArchived,omitempty"`
 }
 
 func (s SourceGitHub) Validate() error {
@@ -63,6 +66,12 @@ func (s SourceGitHub) Load(ctx context.Context, logger kitlog.Logger, _ *http.Cl
 	targets := []*Target{}
 	addTarget := func(logger kitlog.Logger, repo *github.Repository) {
 		synchronise(func() {
+			if repo.GetArchived() && s.ExcludeArchived {
+				logger.Log("msg", "skipping archived repo, excludeArchived is true",
+					"owner", repo.Owner.GetLogin(), "repo", repo.GetName())
+				return
+			}
+
 			target := &Target{
 				Owner: repo.Owner.GetLogin(),
 				Repo:  repo.GetName(),
@@ -233,5 +242,24 @@ func repositoryEmpty(err error) bool {
 	if err == nil {
 		return false
 	}
-	return strings.Contains(err.Error(), "409 Git Repository is empty")
+
+	// Check for existing 409 "Git Repository is empty" error.
+	// This is one way an empty or uninitialized repository might manifest.
+	if strings.Contains(err.Error(), "409 Git Repository is empty") {
+		return true
+	}
+
+	// Check for 404 Not Found from GetTree, which GitHub API returns for an empty repository.
+	// Ref: https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree
+	// "If the tree SHA is not provided, the default branch will be used.
+	//  If the repository is empty, a 404 will be returned."
+	if ghErr, ok := err.(*github.ErrorResponse); ok {
+		if ghErr.Response != nil && ghErr.Response.StatusCode == http.StatusNotFound {
+			// This indicates the tree object itself wasn't found. For a GetTree operation
+			// on a repository confirmed to exist, this is the documented behavior for an empty repository.
+			return true
+		}
+	}
+
+	return false
 }
