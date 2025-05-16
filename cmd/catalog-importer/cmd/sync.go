@@ -34,6 +34,7 @@ type SyncOptions struct {
 	AllowDeleteAll            bool
 	SourceRepoUrl             string
 	CatalogEntriesAPIPageSize int
+	NoPruneMissingEntries     bool
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -65,6 +66,8 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		Envar("CATALOG_ENTRIES_API_PAGE_SIZE").
 		Default("250").
 		IntVar(&opt.CatalogEntriesAPIPageSize)
+	cmd.Flag("no-prune-missing-entries", "Do not remove entries that are present in catalog but missing from source").
+		BoolVar(&opt.NoPruneMissingEntries)
 
 	return opt
 }
@@ -502,7 +505,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
 				catalogType := catalogTypesByOutput[outputType.TypeName]
 
-				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
+				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize, opt.NoPruneMissingEntries)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
 				}
@@ -538,7 +541,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
 				catalogType := catalogTypesByOutput[enumModel.TypeName]
-				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
+				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize, opt.NoPruneMissingEntries)
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",

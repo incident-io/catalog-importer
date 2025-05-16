@@ -115,11 +115,11 @@ var _ = Describe("Entries", func() {
 		outputType  *output.Output
 		entryModels []*output.CatalogEntryModel
 	)
-	reconcile := func() error {
-		return reconcile.Entries(ctx, logger, mockClient, outputType, catalogType, entryModels, nil, 100)
+	runReconcile := func() error {
+		return reconcile.Entries(ctx, logger, mockClient, outputType, catalogType, entryModels, nil, 100, false)
 	}
 	mustReconcile := func() {
-		err := reconcile()
+		err := runReconcile()
 		Expect(err).NotTo(HaveOccurred())
 	}
 
@@ -172,6 +172,9 @@ var _ = Describe("Entries", func() {
 		})
 
 		It("creates all entries", func() {
+			// Reset the createdEntries slice before the test
+			createdEntries = []client.CatalogCreateEntryPayloadV3{}
+			
 			mustReconcile()
 
 			// Verify that all entries were created
@@ -246,6 +249,172 @@ var _ = Describe("Entries", func() {
 
 			// Should delete the entry with external ID that's not in models and the one without external ID
 			Expect(deletedEntries).To(ConsistOf("entry-2", "entry-3"))
+		})
+	})
+
+	When("entries need to be deleted but noPruneMissingEntries is true", func() {
+		BeforeEach(func() {
+			// Setup test data
+			catalogType = &client.CatalogTypeV3{
+				Id:       "type-123",
+				TypeName: "Test Type",
+			}
+
+			outputType = &output.Output{
+				Attributes: []*output.Attribute{
+					{
+						ID:   "attr1",
+						Name: "Attribute 1",
+					},
+				},
+			}
+
+			existingEntries = []client.CatalogEntryV3{
+				{
+					Id:         "entry-1",
+					ExternalId: lo.ToPtr("ext-1"),
+					Name:       "Entry 1",
+					Rank:       100,
+				},
+				{
+					Id:         "entry-2",
+					ExternalId: lo.ToPtr("ext-to-keep"),
+					Name:       "Entry 2",
+					Rank:       200,
+				},
+				{
+					Id:         "entry-3",
+					ExternalId: lo.ToPtr("ext-to-keep-2"),
+					Name:       "Entry 3",
+					Rank:       300,
+				},
+			}
+
+			entryModels = []*output.CatalogEntryModel{
+				{
+					Name:       "Entry 1",
+					ExternalID: "ext-1",
+					Rank:       100,
+				},
+				// two are missing from models but should not be deleted
+			}
+		})
+
+		It("preserves entries that are not in source when noPruneMissingEntries is true", func() {
+			// Call the reconcile function with noPruneMissingEntries=true
+			err := reconcile.Entries(ctx, logger, mockClient, outputType, catalogType, entryModels, nil, 100, true)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Verify that no entries were deleted
+			Expect(deletedEntries).To(HaveLen(0))
+		})
+	})
+
+	When("entries need to be deleted and created with noPruneMissingEntries", func() {
+		BeforeEach(func() {
+			// Reset the test state
+			deletedEntries = []string{}
+			createdEntries = []client.CatalogCreateEntryPayloadV3{}
+			updatedEntries = []updatedEntry{}
+
+			// Setup test data
+			catalogType = &client.CatalogTypeV3{
+				Id:       "type-123",
+				TypeName: "Test Type",
+			}
+
+			outputType = &output.Output{
+				Attributes: []*output.Attribute{
+					{
+						ID:   "attr1",
+						Name: "Attribute 1",
+					},
+				},
+			}
+
+			// Existing entries with "old" external IDs
+			existingEntries = []client.CatalogEntryV3{
+				{
+					Id:         "entry-old-1",
+					ExternalId: lo.ToPtr("ext-old-1"),
+					Name:       "Product A (old)",
+					Rank:       100,
+				},
+				{
+					Id:         "entry-old-2",
+					ExternalId: lo.ToPtr("ext-old-2"),
+					Name:       "Product B (old)",
+					Rank:       200,
+				},
+				{
+					Id:         "entry-to-update",
+					ExternalId: lo.ToPtr("ext-to-update"),
+					Name:       "Product C (to update)",
+					Rank:       300,
+				},
+			}
+
+			// New models with "new" external IDs for the same logical entries
+			entryModels = []*output.CatalogEntryModel{
+				{
+					Name:       "Product A (new)",
+					ExternalID: "ext-new-1", // New external ID
+					Rank:       100,
+				},
+				{
+					Name:       "Product B (new)",
+					ExternalID: "ext-new-2", // New external ID
+					Rank:       200,
+				},
+				{
+					Name:       "Product C (updated)",
+					ExternalID: "ext-to-update", // Same external ID but updated name
+					Rank:       300,
+				},
+			}
+		})
+
+		It("creates new entries but preserves old ones when noPruneMissingEntries is true", func() {
+			// Call the reconcile function with noPruneMissingEntries=true
+			err := reconcile.Entries(ctx, logger, mockClient, outputType, catalogType, entryModels, nil, 100, true)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Verify that no entries were deleted
+			Expect(deletedEntries).To(HaveLen(0))
+
+			// Verify that new entries were created
+			Expect(createdEntries).To(HaveLen(2))
+			Expect(createdEntries[0].Name).To(Equal("Product A (new)"))
+			Expect(*createdEntries[0].ExternalId).To(Equal("ext-new-1"))
+			Expect(createdEntries[1].Name).To(Equal("Product B (new)"))
+			Expect(*createdEntries[1].ExternalId).To(Equal("ext-new-2"))
+
+			// Verify that the entry with unchanged external ID but updated content was updated
+			Expect(updatedEntries).To(HaveLen(1))
+			Expect(updatedEntries[0].id).To(Equal("entry-to-update"))
+			Expect(updatedEntries[0].payload.Name).To(Equal("Product C (updated)"))
+		})
+
+		It("deletes old entries when noPruneMissingEntries is false (default behavior)", func() {
+			// Call the reconcile function with noPruneMissingEntries=false (default)
+			err := reconcile.Entries(ctx, logger, mockClient, outputType, catalogType, entryModels, nil, 100, false)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Verify that old entries were deleted
+			Expect(deletedEntries).To(HaveLen(2))
+			Expect(deletedEntries).To(ConsistOf("entry-old-1", "entry-old-2"))
+
+			// Verify that new entries were created
+			Expect(createdEntries).To(HaveLen(2))
+			Expect(createdEntries[0].Name).To(Equal("Product A (new)"))
+			Expect(*createdEntries[0].ExternalId).To(Equal("ext-new-1"))
+			Expect(createdEntries[1].Name).To(Equal("Product B (new)"))
+			Expect(*createdEntries[1].ExternalId).To(Equal("ext-new-2"))
+
+			// Verify that the entry with unchanged external ID but updated content was updated
+			Expect(updatedEntries).To(HaveLen(1))
+			Expect(updatedEntries[0].id).To(Equal("entry-to-update"))
+			Expect(updatedEntries[0].payload.Name).To(Equal("Product C (updated)"))
 		})
 	})
 
