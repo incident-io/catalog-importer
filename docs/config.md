@@ -65,7 +65,7 @@ View more details in [Outputs](outputs.md).
 Our config examples use [Jsonnet](https://jsonnet.org/), a tool which makes working with more
 complex JSON files easier. The `catalog-importer` tool includes Jsonnet support,
 but installing language support to your editor will make the process a lot
-smoother (e.g. [VSCode extension](https://github.com/grafana/vscode-jsonnet).
+smoother (e.g. [VSCode extension](https://github.com/grafana/vscode-jsonnet)).
 
 If you don't want to use Jsonnet, switch to whichever you prefer of JSON or
 YAML: both will work fine.
