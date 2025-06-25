@@ -41,7 +41,7 @@ Understanding these concepts will make everything else much clearer:
 Every import run has a **sync ID** (like `my-org/my-repo`). This tells incident.io which entries belong to your importer, enabling safe updates and deletions.
 
 ### External ID  
-Each catalog entry can have an **external ID** - a stable identifier from your source system. This ensures that if you rename an entry, incident.io knows it's the same entity.
+Each catalog entry can must have an **external ID** - a stable identifier from your source system. This means that you can rename an entry, and incident.io will know it's still the same entity. External IDs have to be unique within the type they belong to.
 
 ### Sources and Outputs
 - **Sources** define where your data comes from (GitHub, files, APIs)
