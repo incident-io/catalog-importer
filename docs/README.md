@@ -1,4 +1,4 @@
-# Catalog Importer Documentation
+# Catalog Importer documentation
 
 Welcome to the complete guide for the incident.io catalog importer. This documentation will help you understand, configure, and deploy the catalog importer for your organization.
 
