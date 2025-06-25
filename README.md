@@ -1,27 +1,75 @@
-# Catalog importer
+# Catalog Importer
 
-This is the official catalog importer for the [incident.io](https://incident.io/)
-catalog. It can be used to sync catalog data from sources like local files or
-GitHub and push them into the incident.io catalog.
+**Sync your service catalog data into incident.io from any source**
+
+The catalog importer is the official CLI tool for syncing catalog data into [incident.io](https://incident.io/). It connects your existing catalog sources (GitHub repos, Backstage, local files, APIs) to incident.io's catalog, keeping your service information automatically up-to-date.
 
 ![Catalog dashboard](dashboard.png)
 
-## Getting started
+## Why use the catalog importer?
 
-macOS users can install the catalog using brew:
+- **Single source of truth**: Keep your catalog data in your existing tools and workflows
+- **Automatic synchronization**: Run in CI/CD to keep incident.io's catalog always current
+- **Flexible data sources**: Support for GitHub, Backstage, local files, APIs, and more
+- **Rich data transformation**: Filter, transform, and enrich your catalog data during import
+- **Team ownership**: Maintain catalog data alongside your code where teams can easily update it
 
+## Quick start
+
+### 1. Install the importer
+
+**macOS (recommended):**
 ```console
 brew tap incident-io/homebrew-taps
 brew install catalog-importer
 ```
 
-Otherwise, ensure that the go runtime is installed and then:
-
+**Other platforms:**
 ```console
 go install -v github.com/incident-io/catalog-importer/v2/cmd/catalog-importer@latest
 ```
 
-Once installed, see [documentation](docs) for example catalogs and CI config.
+### 2. Choose your starting template
+
+Get a working configuration in seconds:
+
+```console
+catalog-importer init
+```
+
+Choose from:
+- **Simple**: Start from scratch with inline data (perfect for learning)
+- **Backstage**: Import existing Backstage catalog-info.yaml files
+
+### 3. Set up your API key
+
+Create an API key at [app.incident.io/settings/api-keys](https://app.incident.io/settings/api-keys) with these permissions:
+- View catalog types and entries
+- Manage catalog types and edit catalog data
+
+```console
+export INCIDENT_API_KEY="your-api-key-here"
+```
+
+### 4. Test your setup
+
+```console
+catalog-importer validate --config=importer.jsonnet
+catalog-importer sync --config=importer.jsonnet --dry-run
+```
+
+### 5. Go live
+
+```console
+catalog-importer sync --config=importer.jsonnet
+```
+
+## What's next?
+
+- **[Complete documentation](docs)** - Comprehensive guides and examples
+- **[Configuration reference](config/reference.jsonnet)** - All available options
+- **[CI/CD setup](docs/deploying.md)** - Run automatically in your pipelines
+- **[Data sources](docs/sources.md)** - Connect to GitHub, Backstage, APIs, and more
 
 ## Using Docker
 

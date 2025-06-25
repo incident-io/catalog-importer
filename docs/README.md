@@ -1,21 +1,54 @@
-# Catalog importer
+# Catalog Importer Documentation
 
-Jump to [Getting started](#getting-started) if you want to begin from an example
-configuration or just want to experiment.
+Welcome to the complete guide for the incident.io catalog importer. This documentation will help you understand, configure, and deploy the catalog importer for your organization.
 
-Otherwise check-out the rest of our documentation for details on how the
-importer works:
+## New to the catalog importer?
 
-- [Understanding importer configuration](config.md)
-- [Sources for catalog data such as files, GitHub, Backstage and more](sources.md)
-- [Outputs that produce catalog types and entries](outputs.md)
-- [Using JS expressions to filter and adjust source data](expressions.md)
-- [Run the importer from CI tools like CircleCI or GitHub Actions](deploying.md)
+Start here to understand the basics and get your first import working:
 
-[open-issue]: https://github.com/incident-io/catalog-importer/issues/new
+1. **[Understanding the catalog importer](#understanding-the-catalog-importer)** - What it does and why you need it
+2. **[Key concepts](#key-concepts)** - Essential concepts you need to know
+3. **[Getting started](#getting-started)** - Your first successful import
+4. **[Choose your path](#choose-your-path)** - Pick the right approach for your data
 
-If you can't find an answer to your question, please [open an issue][open-issue]
-with your request and we'll be happy to help out.
+## Understanding the catalog importer
+
+The catalog importer is a bridge between your existing catalog data and incident.io. It:
+
+- **Pulls data** from your sources (GitHub repos, Backstage, files, APIs)
+- **Transforms data** using filters and expressions to match your needs  
+- **Syncs data** into incident.io's catalog, creating types and entries
+- **Maintains consistency** by updating, creating, and removing entries as needed
+
+### How it works
+
+```
+Your Data Sources → Catalog Importer → incident.io Catalog
+     ↓                     ↓                  ↓
+GitHub repos         Filters & maps      Service types
+Backstage API        source data        Team entries  
+Local files                            Feature catalog
+APIs & databases                       Custom types
+```
+
+The importer uses **pipelines** - each pipeline connects specific sources to specific catalog types in incident.io.
+
+## Key concepts
+
+Understanding these concepts will make everything else much clearer:
+
+### Sync ID
+Every import run has a **sync ID** (like `my-org/my-repo`). This tells incident.io which entries belong to your importer, enabling safe updates and deletions.
+
+### External ID  
+Each catalog entry can have an **external ID** - a stable identifier from your source system. This ensures that if you rename an entry, incident.io knows it's the same entity.
+
+### Sources and Outputs
+- **Sources** define where your data comes from (GitHub, files, APIs)
+- **Outputs** define what catalog types to create and how to populate them
+
+### Expressions
+JavaScript expressions (like `$.metadata.name`) that extract and transform data from your sources into catalog entries.
 
 ## Getting started
 
@@ -23,103 +56,85 @@ with your request and we'll be happy to help out.
 [jsonnet]: https://jsonnet.org/
 [vscode]: https://marketplace.visualstudio.com/items?itemName=Grafana.vscode-jsonnet
 
-The easiest way to get started is to copy one of the examples and tweak it to
-match your needs, which will depend on whether you already use a catalog and the
-type of catalog data you have available.
+The fastest way to get started is using our interactive setup:
 
-You can run `catalog-importer init`, which will give you a fresh copy of one of
-the templates in a local directory.
-
-Choose from:
-
-- [Simple](simple), for anyone starting from scratch and wanting to load catalog
-  data into incident.io directly from importer config.
-- [Backstage](backstage), for those already using Backstage as a service catalog
-  and want to import existing `catalog-info.yaml` files.
-
-Once you've created a `importer.jsonnet`, visit your [incident dashboard][api-keys]
-to create an API key with permission to:
-
-- View catalog types and entries
-- Manage catalog types and edit catalog data
-
-Then set that token as your `INCIDENT_API_KEY` environment variable.
-
-You can check your config is valid by running:
-
-```
-$ catalog-importer validate --config=importer.jsonnet
-```
-
-Then you can run a sync with:
+### 1. Create your first configuration
 
 ```console
-$ catalog-importer sync --config=importer.jsonnet
-
-✔ Loaded config (3 pipelines, 3 sources, 3 outputs)
-✔ Connected to incident.io API (https://api.incident.io)
-✔ Found 16 catalog types, with 3 that match our sync ID (incident-io/catalog)
+catalog-importer init
 ```
 
-<details>
-  <summary>
-    Where this will be followed by progress output as entries are synced into
-    the catalog:
-  </summary>
+This creates a working configuration based on a template. Choose:
+- **Simple** - Perfect for learning, uses inline data
+- **Backstage** - Import existing catalog-info.yaml files
 
-```
-↻ Creating catalog types that don't yet exist...
-  ✔ Custom["Feature"] (id=01GYZMPSJPBE1ZFDF1ESEWFYZF)
-  ✔ Custom["Integration"] (id=01GYZMPSV08SYE4RF49C3JZT76)
-  ✔ Custom["Team"] (id=01GYZMPT7C692DXCEVHFHVKZAQ)
+### 2. Set up authentication
 
-↻ Syncing catalog type schemas...
-  ✔ Custom["Feature"] (id=01GYZMPSJPBE1ZFDF1ESEWFYZF)
-  ✔ Custom["Integration"] (id=01GYZMPSV08SYE4RF49C3JZT76)
-  ✔ Custom["Team"] (id=01GYZMPT7C692DXCEVHFHVKZAQ)
+Visit [app.incident.io/settings/api-keys](https://app.incident.io/settings/api-keys) and create an API key with these permissions:
+- View catalog types and entries  
+- Manage catalog types and edit catalog data
 
-↻ Syncing pipeline... (Custom["Feature"])
-
-  ↻ Loading data from sources...
-    ✔ inline (found 30 entries)
-
-  ↻ Syncing entries...
-
-    ↻ Custom["Feature"]
-      ✔ Building entries... (found 30 entries matching filters)
-      ✔ No entries to delete
-      ✔ Creating new entries in catalog... (30 entries to create)
-      ✔ No existing entries to update
-
-↻ Syncing pipeline... (Custom["Integration"])
-
-  ↻ Loading data from sources...
-    ✔ inline (found 21 entries)
-
-  ↻ Syncing entries...
-
-    ↻ Custom["Integration"]
-      ✔ Building entries... (found 21 entries matching filters)
-      ✔ No entries to delete
-      ✔ Creating new entries in catalog... (21 entries to create)
-      ✔ No existing entries to update
-
-↻ Syncing pipeline... (Custom["Team"])
-
-  ↻ Loading data from sources...
-    ✔ inline (found 3 entries)
-
-  ↻ Syncing entries...
-
-    ↻ Custom["Team"]
-      ✔ Building entries... (found 3 entries matching filters)
-      ✔ No entries to delete
-      ✔ Creating new entries in catalog... (3 entries to create)
-      ✔ No existing entries to update
+```console
+export INCIDENT_API_KEY="your-api-key-here"
 ```
 
-</details>
+### 3. Test and deploy
 
-And that's it! Your data will now be loaded into your catalog.
+```console
+# Check your configuration is valid
+catalog-importer validate --config=importer.jsonnet
 
-Note that we only support up to 50,000 entries for each catalog type. Please contact us if you'd like to explore options for larger lists.
+# Preview what will be synced (safe)
+catalog-importer sync --config=importer.jsonnet --dry-run
+
+# Sync your data (creates/updates catalog)
+catalog-importer sync --config=importer.jsonnet
+```
+
+**Success!** Your data is now synced to incident.io's catalog.
+
+## Choose your path
+
+Now that you have the basics working, choose the path that matches your data:
+
+### 📁 I have catalog files in my repositories
+- **[GitHub source](sources.md#github)** - Pull catalog-info.yaml files from across your GitHub org
+- **[Local files](sources.md#local)** - Load files from your filesystem
+- **[CI/CD integration](deploying.md)** - Automate syncing from your pipelines
+
+### 🏗️ I use Backstage already  
+- **[Backstage source](sources.md#backstage)** - Import directly from your Backstage API
+- **[Backstage example](backstage/)** - Complete working configuration for Backstage users
+
+### 🔌 I have data in APIs or databases
+- **[GraphQL source](sources.md#graphql)** - Query GraphQL APIs with pagination
+- **[Exec source](sources.md#exec)** - Run scripts to fetch data from any system
+- **[Expression guide](expressions.md)** - Transform and filter your data
+
+### 🛠️ I want to understand how it works
+- **[Configuration guide](config.md)** - Deep dive into pipelines, sources, and outputs
+- **[Reference config](../config/reference.jsonnet)** - All available options documented
+- **[External IDs and aliases](aliases-and-external-ids.md)** - Advanced identity management
+
+## Complete documentation
+
+**Core concepts:**
+- [Configuration structure](config.md) - How pipelines, sources and outputs work
+- [Data sources](sources.md) - GitHub, Backstage, files, APIs, and more  
+- [Catalog outputs](outputs.md) - Creating types, attributes, and relationships
+- [Data transformation](expressions.md) - JavaScript expressions for filtering and mapping
+
+**Deployment and automation:**
+- [CI/CD integration](deploying.md) - GitHub Actions, CircleCI, GitLab CI examples
+- [Advanced features](aliases-and-external-ids.md) - External IDs, aliases, and data relationships
+- [Troubleshooting](troubleshooting.md) - Common issues and how to solve them
+
+**Examples and templates:**
+- [Simple example](simple/) - Basic inline data configuration  
+- [Backstage example](backstage/) - Complete Backstage integration
+
+## Need help?
+
+Can't find what you're looking for? [Open an issue](https://github.com/incident-io/catalog-importer/issues/new) and we'll help you out!
+
+**Note:** The catalog importer supports up to 50,000 entries per catalog type. Contact us if you need support for larger catalogs.
