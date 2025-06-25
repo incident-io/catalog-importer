@@ -18,7 +18,11 @@ The catalog importer is the official CLI tool for syncing catalog data into [inc
 
 ### 1. Install the importer
 
-**macOS (recommended):**
+
+To get started, we'd recommend running `catalog-importer` locally, so you can easily iterate on your configuration and test it, and become comfortable with the tool.
+
+**macOS**
+
 ```console
 brew tap incident-io/homebrew-taps
 brew install catalog-importer
