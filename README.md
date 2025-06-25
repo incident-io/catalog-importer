@@ -28,7 +28,10 @@ brew tap incident-io/homebrew-taps
 brew install catalog-importer
 ```
 
-**Other platforms:**
+**Other platforms**
+
+You can find binaries on our [releases](https://github.com/incident-io/catalog-importer/releases) page, or if you have `go` installed, you can run:
+
 ```console
 go install -v github.com/incident-io/catalog-importer/v2/cmd/catalog-importer@latest
 ```
