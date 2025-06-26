@@ -39,6 +39,7 @@
       backstage: {
         endpoint: 'https://backstage-internal.example.com/api/catalog/entities/by-query',
         token: '$(BACKSTAGE_TOKEN)',  // from environment variable
+        sign_jwt: false,
       },
     },
     */
