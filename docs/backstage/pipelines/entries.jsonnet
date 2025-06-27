@@ -39,7 +39,7 @@
       backstage: {
         endpoint: 'https://backstage-internal.example.com/api/catalog/entities/by-query',
         token: '$(BACKSTAGE_TOKEN)',  // from environment variable
-        sign_jwt: false,
+        sign_jwt: false, // only pass this if your instance prefers unsigned tokens
       },
     },
     */
