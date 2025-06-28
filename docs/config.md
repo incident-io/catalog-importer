@@ -1,77 +1,210 @@
-# Config (importer.jsonnet)
+# Configuration Guide
 
-The importer is powered by a configuration file which defines the pipelines that
-you use to get data into the catalog. Each pipeline consists of sources and
-outputs.
+This guide explains how to configure the catalog importer to sync your data into incident.io. Understanding configuration is key to getting the most out of the importer.
 
-This file is given to the importer via the `--config` flag:
+## Configuration basics
+
+The importer uses a **configuration file** (usually `importer.jsonnet`) that tells it:
+- Where to find your data (**sources**)
+- What catalog types to create (**outputs**)  
+- How to transform your data to fit incident.io's catalog
 
 ```console
-$ catalog-importer validate --config=importer.jsonnet
+catalog-importer sync --config=importer.jsonnet
 ```
 
-We explain how the configuration works below, but if you're already familiar or
-want to just try things out, be sure to check the reference.jsonnet that
-documents all possible configuration options:
+## The mental model
 
-- https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
+Think of configuration as defining **pipelines**. Each pipeline is a data flow:
 
-Note that the config can be JSON, YAML or Jsonnet: see [File format](#file-format).
+```
+Source Data → Pipeline → incident.io Catalog Type
+    ↓            ↓              ↓
+GitHub files → Transform → Service catalog
+Team list   → Filter    → Team entries
+API data    → Map       → Custom type
+```
 
-## What is config?
+Each pipeline has:
+- **Sources**: Where to get data (GitHub, files, APIs)
+- **Outputs**: What catalog types to create and how to populate them
 
-The configuration file defines a number of pipelines, where a pipeline
-specifies:
+## Configuration structure
 
-- **Sources** define where your data comes from. This might be inline data, local
-  files, files from GitHub, or the output of a command.
+Here's the basic structure every configuration file needs:
 
-- **Outputs** define the resulting catalog types and entries, including the
-  attributes that the type should have, and how their values should be populated
-  from the source data.
+```jsonnet
+{
+  // Unique identifier for this importer (usually repo name)
+  sync_id: 'my-org/my-repo',
+  
+  // List of pipelines - each creates one or more catalog types
+  pipelines: [
+    {
+      // Where to get data from
+      sources: [ /* source configs */ ],
+      
+      // What catalog types to create  
+      outputs: [ /* output configs */ ]
+    }
+  ]
+}
+```
 
-Sources define where the importer will find the data it will try loading into
-the catalog, while the outputs are about the catalog types you want to push data
-into.
+### Sync ID
+The **sync ID** is crucial - it tells incident.io which catalog entries belong to your importer. Use your repository name (like `my-org/catalog-repo`) so it's unique across your organization.
 
-## Sources
+**Why it matters:** incident.io uses this to safely update and delete entries. Entries created by one sync ID won't be modified by another importer.
 
-We support several sources, catering for all the ways people normally store
-their catalog data.
+## A complete example
 
-These are, with details in the links:
+Let's look at a simple but complete configuration:
 
-- [`inline`](sources.md#inline) for defining inside the importer config
-- [`local`](sources.md#local) from local files
-- [`backstage`](sources.md#backstage) for catalog data pulled from the Backstage API
-- [`github`](sources.md#github) to load from files in GitHub repositories
-- [`exec`](sources.md#local) from the output of a command
+```jsonnet
+{
+  sync_id: 'my-org/services',
+  pipelines: [
+    {
+      sources: [
+        {
+          // Load data from GitHub repositories
+          github: {
+            token: '$(GITHUB_TOKEN)',
+            repos: ['my-org/*'],
+            files: ['service-info.yaml']
+          }
+        }
+      ],
+      outputs: [
+        {
+          // Create a "Service" catalog type
+          name: 'Service',
+          type_name: 'Custom["Service"]',
+          source: {
+            name: '$.metadata.name',
+            external_id: '$.metadata.name'
+          },
+          attributes: [
+            {
+              id: 'description', 
+              name: 'Description',
+              type: 'Text',
+              source: '$.spec.description'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
-View more details in [Sources](sources.md).
+This configuration:
+1. Loads `service-info.yaml` files from all repositories in your GitHub org
+2. Creates a "Service" catalog type in incident.io
+3. Maps the `metadata.name` field to the service name
+4. Creates a description attribute from `spec.description`
 
-## Outputs
+## Sources - where your data comes from
 
-Having defined sources for your data, you now need to specify the outputs.
+Sources tell the importer where to find your catalog data:
 
-Each output maps to a catalog type, and will 'own' all entries it syncs into
-that type. This means the importer will remove any entries it finds in that
-catalog type that are not present in the source, and the importer will refuse to
-sync catalog type that were created from an importer with a different `sync_id`.
+- **[`inline`](sources.md#inline)** - Data defined directly in the config (good for testing)
+- **[`local`](sources.md#local)** - Files on your local filesystem  
+- **[`github`](sources.md#github)** - Files across GitHub repositories
+- **[`backstage`](sources.md#backstage)** - Pull from Backstage API
+- **[`exec`](sources.md#exec)** - Run commands to generate data
+- **[`graphql`](sources.md#graphql)** - Query GraphQL APIs with pagination
 
-View more details in [Outputs](outputs.md).
+**→ [Full sources documentation](sources.md)**
 
-## File format
+## Outputs - your incident.io catalog types
 
-Our config examples use [Jsonnet](https://jsonnet.org/), a tool which makes working with more
-complex JSON files easier. The `catalog-importer` tool includes Jsonnet support,
-but installing language support to your editor will make the process a lot
-smoother (e.g. [VSCode extension](https://github.com/grafana/vscode-jsonnet)).
+Outputs define what catalog types to create in incident.io and how to populate them from your source data.
 
-If you don't want to use Jsonnet, switch to whichever you prefer of JSON or
-YAML: both will work fine.
+Key concepts:
+- Each output creates one catalog type (like "Service" or "Team")
+- The importer "owns" entries it creates - it can update and delete them
+- Use **expressions** to map source data to catalog attributes
+- Support for relationships between catalog types
 
-```console
-$ catalog-importer validate --config=config.json    # also works
-$ catalog-importer validate --config=config.yaml    # ...as does this
-$ catalog-importer validate --config=importer.jsonnet # ...and this
+**→ [Full outputs documentation](outputs.md)**
+
+## File formats
+
+You can write your configuration in multiple formats:
+
+**Jsonnet (recommended):**
+```jsonnet
+// importer.jsonnet - supports comments and imports
+local teams = import 'teams.jsonnet';
+{ sync_id: 'my-org/repo', pipelines: [...] }
+```
+
+**JSON:**
+```json
+{
+  "sync_id": "my-org/repo",
+  "pipelines": [...]
+}
+```
+
+**YAML:**
+```yaml
+sync_id: my-org/repo
+pipelines: [...]
+```
+
+**Why Jsonnet?** It supports comments, imports, and functions, making complex configurations much easier to manage. Install the [VSCode extension](https://marketplace.visualstudio.com/items?itemName=Grafana.vscode-jsonnet) for the best experience.
+
+## Next steps
+
+- **[Sources guide](sources.md)** - Detailed guide to all data sources
+- **[Outputs guide](outputs.md)** - How to create catalog types and attributes
+- **[Expressions guide](expressions.md)** - Transform and filter your data
+- **[Complete reference](../config/reference.jsonnet)** - All configuration options
+
+## Common patterns
+
+### Multiple pipelines
+You can have multiple pipelines in one configuration to create different catalog types:
+
+```jsonnet
+{
+  sync_id: 'my-org/catalog',
+  pipelines: [
+    {
+      // Services pipeline
+      sources: [/* service sources */],
+      outputs: [/* service output */]
+    },
+    {
+      // Teams pipeline  
+      sources: [/* team sources */],
+      outputs: [/* team output */]
+    }
+  ]
+}
+```
+
+### Filtering data
+Use expressions to filter which source entries go to which outputs:
+
+```jsonnet
+source: {
+  filter: '$.kind == "Service"',  // Only process Service entries
+  name: '$.metadata.name'
+}
+```
+
+### Environment-specific config
+Use environment variables for sensitive data:
+
+```jsonnet
+{
+  github: {
+    token: '$(GITHUB_TOKEN)',  // Reads from environment
+    repos: ['my-org/*']
+  }
+}
 ```
