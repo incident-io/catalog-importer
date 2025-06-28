@@ -1,6 +1,6 @@
 // Configuration - customize these variables as needed
 local objectType = 'Component';
-local aqlQuery = 'objectType = Component';
+local aqlQuery = 'objectType = ' + objectType;
 
 {
   sync_id: "jsm-assets-sync",
