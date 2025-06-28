@@ -74,7 +74,7 @@ type EntriesProgress struct {
 	OnUpdateProgress func()
 }
 
-func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV3, entryModels []*output.CatalogEntryModel, progress *EntriesProgress, pageSize int) error {
+func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, outputType *output.Output, catalogType *client.CatalogTypeV3, entryModels []*output.CatalogEntryModel, progress *EntriesProgress, pageSize int, noPruneMissingEntries bool) error {
 	logger = kitlog.With(logger,
 		"catalog_type_id", catalogType.Id,
 		"catalog_type_name", catalogType.TypeName,
@@ -122,41 +122,47 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			}
 
 			// We can't find this entry in our model, or it never had an external ID, which
-			// means we want to delete it.
-			toDelete = append(toDelete, entry)
+			// means we want to delete it, unless noPruneMissingEntries is true
+			if !noPruneMissingEntries {
+				toDelete = append(toDelete, entry)
+			}
 		}
 
-		logger.Log("msg", fmt.Sprintf("found %d entries in the catalog, deleting %d of them", len(entries), len(toDelete)))
+		if noPruneMissingEntries {
+			logger.Log("msg", fmt.Sprintf("found %d entries in the catalog, not deleting any because --no-prune-missing-entries is set", len(entries)))
+		} else {
+			logger.Log("msg", fmt.Sprintf("found %d entries in the catalog, deleting %d of them", len(entries), len(toDelete)))
 
-		// Use a pool of workers to avoid hitting API limits but multiple other
-		// routines doing a smash and grab on the rate we do have available.
-		if onStart := progress.OnDeleteStart; onStart != nil {
-			onStart(len(toDelete))
-		}
+			// Use a pool of workers to avoid hitting API limits but multiple other
+			// routines doing a smash and grab on the rate we do have available.
+			if onStart := progress.OnDeleteStart; onStart != nil {
+				onStart(len(toDelete))
+			}
 
-		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
-		for _, entry := range toDelete {
-			var (
-				entry = entry // avoid shadow loop variable
-			)
-			p.Go(func(ctx context.Context) error {
-				if onProgress := progress.OnDeleteProgress; onProgress != nil {
-					defer onProgress()
-				}
+			p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
+			for _, entry := range toDelete {
+				var (
+					entry = entry // avoid shadow loop variable
+				)
+				p.Go(func(ctx context.Context) error {
+					if onProgress := progress.OnDeleteProgress; onProgress != nil {
+						defer onProgress()
+					}
 
-				err := cl.Delete(ctx, &entry)
-				if err != nil {
-					return errors.Wrap(err, "unable to destroy catalog entry, got error")
-				}
+					err := cl.Delete(ctx, &entry)
+					if err != nil {
+						return errors.Wrap(err, "unable to destroy catalog entry, got error")
+					}
 
-				logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
-				return nil
-			})
-		}
+					logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
+					return nil
+				})
+			}
 
-		err := p.Wait()
-		if err != nil {
-			return errors.Wrap(err, "destroying catalog entries")
+			err := p.Wait()
+			if err != nil {
+				return errors.Wrap(err, "destroying catalog entries")
+			}
 		}
 	}
 
