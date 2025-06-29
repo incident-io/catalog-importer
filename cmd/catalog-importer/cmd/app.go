@@ -30,6 +30,7 @@ var (
 	// Global flags
 	debug   = app.Flag("debug", "Enable debug logging").Default("false").Bool()
 	noColor = app.Flag("no-color", "Disable colored output").Default("false").Bool()
+	logJson = app.Flag("log-json", "Enable JSON logs").Default("false").Bool()
 
 	// Init
 	initCmd     = app.Command("init", "Initialises a new config from a template")
@@ -67,7 +68,12 @@ var (
 func Run(ctx context.Context) (err error) {
 	command := kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	writer := kitlog.NewSyncWriter(os.Stderr)
+	if *logJson {
+		logger = kitlog.NewJSONLogger(writer)
+	} else {
+		logger = kitlog.NewLogfmtLogger(writer)
+	}
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
 	} else {
