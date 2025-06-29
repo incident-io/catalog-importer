@@ -21,7 +21,11 @@ type SourceEntry struct {
 }
 
 func (e SourceEntry) Parse() ([]Entry, error) {
-	entries := Parse(e.Filename, e.Content)
+	entries, err := Parse(e.Filename, e.Content)
+	if err != nil {
+		return entries, err
+	}
+
 	if len(entries) == 0 {
 		return entries, fmt.Errorf("failed to parse any entries")
 	}

@@ -11,10 +11,11 @@ var _ = Describe("Parse", func() {
 	var (
 		input   string
 		entries []source.Entry
+		err     error
 	)
 
 	JustBeforeEach(func() {
-		entries = source.Parse("file.thing", []byte(input))
+		entries, err = source.Parse("file.thing", []byte(input))
 	})
 
 	When("Jsonnet", func() {
@@ -84,6 +85,25 @@ var _ = Describe("Parse", func() {
 						"another_key": "another_value",
 					},
 				}))
+			})
+		})
+
+		When("runtime error", func() {
+			BeforeEach(func() {
+				input = `
+[
+	{
+		cpu: error 'must override',
+	}
+]
+`
+			})
+
+			It("returns an error", func() {
+				Expect(entries).To(BeEmpty())
+
+				Expect(err).Should(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("RUNTIME ERROR"))
 			})
 		})
 	})
