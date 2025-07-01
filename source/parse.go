@@ -19,10 +19,13 @@ type Entry map[string]any
 // It also supports multidoc YAML, and will either return the root object itself if that
 // root is a map[string]any, or if the root is an array, will try returning the contents
 // of said array that are map[string]any's.
-func Parse(filename string, data []byte) []Entry {
+func Parse(filename string, data []byte) ([]Entry, error) {
 	// Try Jsonnet first, which will also cover JSON.
-	jsonString, err := jsonnet.MakeVM().EvaluateSnippet(filename, string(data))
-	if err == nil {
+	if jsonString, err := jsonnet.MakeVM().EvaluateSnippet(filename, string(data)); err != nil {
+		if strings.HasPrefix(err.Error(), "RUNTIME ERROR") {
+			return []Entry{}, err
+		}
+	} else {
 		data = []byte(jsonString)
 	}
 
@@ -57,13 +60,13 @@ func Parse(filename string, data []byte) []Entry {
 	if len(entries) == 0 {
 		records, err := csv.NewReader(bytes.NewReader(data)).ReadAll()
 		if err != nil {
-			return entries
+			return entries, nil
 		}
 
 		// We can only use CSVs that provide a header row. And if there only exists headers,
 		// we should return no entries.
 		if len(records) <= 1 {
-			return entries
+			return entries, nil
 		}
 
 		headers, rows := records[0], records[1:]
@@ -86,5 +89,5 @@ func Parse(filename string, data []byte) []Entry {
 		}
 	}
 
-	return entries
+	return entries, nil
 }
