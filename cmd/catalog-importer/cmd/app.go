@@ -159,11 +159,7 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
 }`)
 
 		OUT(`
-Run the docs command to see a reference config file:
-
-$ catalog-importer docs
-
-Or view it in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
+View reference config file in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
 `)
 	}()
 
