@@ -1,11 +1,13 @@
 module github.com/incident-io/catalog-importer/v2
 
-go 1.23
+go 1.23.0
+
+toolchain go1.24.5
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/bmatcuk/doublestar/v4 v4.6.0
-	github.com/fatih/color v1.12.0
+	github.com/fatih/color v1.16.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.0
@@ -17,7 +19,7 @@ require (
 	github.com/google/go-jsonnet v0.20.0
 	github.com/google/uuid v1.5.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
-	github.com/hashicorp/go-retryablehttp v0.7.2
+	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/machinebox/graphql v0.2.2
 	github.com/manifoldco/promptui v0.9.0
@@ -34,7 +36,7 @@ require (
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
 	golang.org/x/oauth2 v0.8.0
-	golang.org/x/sync v0.8.0
+	golang.org/x/sync v0.12.0
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -42,6 +44,8 @@ require (
 require (
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
+	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/speakeasy-api/openapi-overlay v0.9.0 // indirect
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
@@ -57,8 +61,8 @@ require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
-	github.com/cloudflare/circl v1.3.7 // indirect
-	github.com/getkin/kin-openapi v0.127.0 // indirect
+	github.com/cloudflare/circl v1.6.1 // indirect
+	github.com/getkin/kin-openapi v0.131.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
@@ -79,16 +83,16 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/robertkrimen/otto v0.3.0
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb // indirect
 	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/term v0.20.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/term v0.30.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
