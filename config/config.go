@@ -61,6 +61,16 @@ func (c Config) Filter(typeNames []string) *Config {
 	return &clone
 }
 
+func (c Config) AllOutputTypes() []*output.CatalogTypeModel {
+	types := []*output.CatalogTypeModel{}
+	for _, outputType := range c.Outputs() {
+		baseType, enumTypes := output.MarshalType(outputType)
+		types = append(types, baseType)
+		types = append(types, enumTypes...)
+	}
+	return types
+}
+
 func (c Config) Outputs() []*output.Output {
 	outputs := []*output.Output{}
 	for _, pipeline := range c.Pipelines {
