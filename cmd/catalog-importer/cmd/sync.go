@@ -161,8 +161,8 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				"catalog_type_id", existingCatalogType.Id,
 			)
 
-			for _, output := range cfg.Outputs() {
-				if output.TypeName == existingCatalogType.TypeName {
+			for _, confType := range cfg.AllOutputTypes() {
+				if confType.TypeName == existingCatalogType.TypeName {
 					level.Debug(logger).Log("catalog type already exists")
 					continue nextCatalogType
 				}
@@ -187,250 +187,233 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 	// Create missing catalog types
 	OUT("\n↻ Creating catalog types that don't yet exist...")
-	for _, outputType := range cfg.Outputs() {
-		logger := kitlog.With(logger, "type_name", outputType.TypeName)
+createCatalogType:
+	for _, model := range cfg.AllOutputTypes() {
+		logger := kitlog.With(logger, "type_name", model.TypeName)
 
-		baseModel, enumModels := output.MarshalType(outputType)
-	createCatalogType:
-		for _, model := range append(enumModels, baseModel) {
-			for _, unmanagedCatalogType := range unmanagedCatalogTypes {
-				if model.TypeName == unmanagedCatalogType.TypeName {
-					logger.Log("msg", "found unmanaged catalog type: skipping create")
-					continue createCatalogType
-				}
+		for _, unmanagedCatalogType := range unmanagedCatalogTypes {
+			if model.TypeName == unmanagedCatalogType.TypeName {
+				logger.Log("msg", "found unmanaged catalog type: skipping create")
+				continue createCatalogType
 			}
-
-			for _, existingCatalogType := range existingCatalogTypes {
-				if model.TypeName == existingCatalogType.TypeName {
-					level.Debug(logger).Log("catalog type already exists")
-					continue createCatalogType
-				}
-			}
-
-			var createdCatalogType client.CatalogTypeV3
-			if opt.DryRun {
-				logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
-				createdCatalogType = client.CatalogTypeV3{
-					Id:            fmt.Sprintf("DRY-RUN-%s", model.TypeName),
-					Name:          model.Name,
-					Description:   model.Description,
-					TypeName:      model.TypeName,
-					SourceRepoUrl: &opt.SourceRepoUrl,
-				}
-			} else {
-				logger.Log("msg", "catalog type does not already exist, creating")
-				categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogCreateTypePayloadV3Categories {
-					return client.CatalogCreateTypePayloadV3Categories(category)
-				})
-
-				result, err := cl.CatalogV3CreateTypeWithResponse(ctx, client.CatalogCreateTypePayloadV3{
-					Name:          model.Name,
-					Description:   model.Description,
-					Ranked:        &model.Ranked,
-					TypeName:      lo.ToPtr(model.TypeName),
-					Categories:    lo.ToPtr(categories),
-					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
-					SourceRepoUrl: &opt.SourceRepoUrl,
-				})
-				if err != nil {
-					return errors.Wrap(err, fmt.Sprintf("creating catalog type with name %s", model.TypeName))
-				}
-
-				createdCatalogType = result.JSON201.CatalogType
-				logger.Log("msg", "created catalog type", "catalog_type_id", createdCatalogType.Id)
-			}
-
-			existingCatalogTypes = append(existingCatalogTypes, createdCatalogType)
-			OUT("  ✔ %s (id=%s)", model.TypeName, createdCatalogType.Id)
 		}
+
+		for _, existingCatalogType := range existingCatalogTypes {
+			if model.TypeName == existingCatalogType.TypeName {
+				level.Debug(logger).Log("catalog type already exists")
+				continue createCatalogType
+			}
+		}
+
+		var createdCatalogType client.CatalogTypeV3
+		if opt.DryRun {
+			logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
+			createdCatalogType = client.CatalogTypeV3{
+				Id:            fmt.Sprintf("DRY-RUN-%s", model.TypeName),
+				Name:          model.Name,
+				Description:   model.Description,
+				TypeName:      model.TypeName,
+				SourceRepoUrl: &opt.SourceRepoUrl,
+			}
+		} else {
+			logger.Log("msg", "catalog type does not already exist, creating")
+			categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogCreateTypePayloadV3Categories {
+				return client.CatalogCreateTypePayloadV3Categories(category)
+			})
+
+			result, err := cl.CatalogV3CreateTypeWithResponse(ctx, client.CatalogCreateTypePayloadV3{
+				Name:          model.Name,
+				Description:   model.Description,
+				Ranked:        &model.Ranked,
+				TypeName:      lo.ToPtr(model.TypeName),
+				Categories:    lo.ToPtr(categories),
+				Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
+				SourceRepoUrl: &opt.SourceRepoUrl,
+			})
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("creating catalog type with name %s", model.TypeName))
+			}
+
+			createdCatalogType = result.JSON201.CatalogType
+			logger.Log("msg", "created catalog type", "catalog_type_id", createdCatalogType.Id)
+		}
+
+		existingCatalogTypes = append(existingCatalogTypes, createdCatalogType)
+		OUT("  ✔ %s (id=%s)", model.TypeName, createdCatalogType.Id)
 	}
 
 	// Prepare a lookup of catalog type by the output name for subsequent pipeline steps.
 	catalogTypesByOutput := map[string]*client.CatalogTypeV3{}
-	for _, outputType := range cfg.Outputs() {
-		baseModel, enumModels := output.MarshalType(outputType)
-		for _, model := range append(enumModels, baseModel) {
-			var catalogType *client.CatalogTypeV3
-			for _, existingCatalogType := range existingCatalogTypes {
-				if model.TypeName == existingCatalogType.TypeName {
-					catalogType = &existingCatalogType
-					break
-				}
+	for _, model := range cfg.AllOutputTypes() {
+		var catalogType *client.CatalogTypeV3
+		for _, existingCatalogType := range existingCatalogTypes {
+			if model.TypeName == existingCatalogType.TypeName {
+				catalogType = &existingCatalogType
+				break
 			}
-			for _, unmanagedCatalogType := range unmanagedCatalogTypes {
-				if model.TypeName == unmanagedCatalogType.TypeName {
-					catalogType = &unmanagedCatalogType
-					break
-				}
-			}
-
-			if catalogType == nil {
-				return fmt.Errorf("could not find catalog type for model '%s', this is a bug in the importer", model.TypeName)
-			}
-
-			catalogTypesByOutput[model.TypeName] = catalogType
 		}
+		for _, unmanagedCatalogType := range unmanagedCatalogTypes {
+			if model.TypeName == unmanagedCatalogType.TypeName {
+				catalogType = &unmanagedCatalogType
+				break
+			}
+		}
+
+		if catalogType == nil {
+			return fmt.Errorf("could not find catalog type for model '%s', this is a bug in the importer", model.TypeName)
+		}
+
+		catalogTypesByOutput[model.TypeName] = catalogType
 	}
 
 	OUT("\n↻ Syncing catalog type schemas...")
 	if opt.DryRun {
-		for _, outputType := range cfg.Outputs() {
-			baseModel, enumModels := output.MarshalType(outputType)
-			for _, model := range append(enumModels, baseModel) {
-				catalogType := catalogTypesByOutput[model.TypeName]
+		for _, model := range cfg.AllOutputTypes() {
+			catalogType := catalogTypesByOutput[model.TypeName]
 
-				var updatedCatalogType client.CatalogTypeV3
-				if opt.DryRun {
-					logger.Log("msg", "dry-run active, which means we fake a response")
-					updatedCatalogType = *catalogType // they start the same
+			var updatedCatalogType client.CatalogTypeV3
+			logger.Log("msg", "dry-run active, which means we fake a response")
+			updatedCatalogType = *catalogType // they start the same
 
-					// Then we pretend like we've already updated the schema, which means we rebuild the
-					// attributes.
-					updatedCatalogType.Schema = client.CatalogTypeSchemaV3{
-						Version:    updatedCatalogType.Schema.Version,
-						Attributes: []client.CatalogTypeAttributeV3{},
-					}
-					for _, attr := range model.Attributes {
-						var path *[]client.CatalogTypeAttributePathItemV3
-
-						if attr.Path != nil {
-							noPtrPath := *attr.Path
-							newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV3, _ int) client.CatalogTypeAttributePathItemV3 {
-								return client.CatalogTypeAttributePathItemV3{
-									AttributeId: item.AttributeId,
-								}
-							})
-							path = &newPath
-						}
-
-						updatedCatalogType.Categories = lo.Map(model.Categories, func(category string, _ int) client.CatalogTypeV3Categories {
-							return client.CatalogTypeV3Categories(category)
-						})
-
-						updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV3{
-							Id:                *attr.Id,
-							Name:              attr.Name,
-							Type:              attr.Type,
-							Array:             attr.Array,
-							Mode:              client.CatalogTypeAttributeV3Mode(*attr.Mode),
-							BacklinkAttribute: attr.BacklinkAttribute,
-							Path:              path,
-						})
-					}
-				}
-				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
-
-				// We only have attribute names in the response for a path attribute, not the
-				// request. To avoid erroneous diffs, we strip the attribute names from any
-				// path attributes.
-				catalogTypeToCompare := *catalogType
-				for _, attr := range catalogType.Schema.Attributes {
-					if attr.Path != nil {
-						for i := range *attr.Path {
-							(*attr.Path)[i].AttributeName = ""
-						}
-					}
-				}
-
-				DIFF("  ", catalogTypeToCompare, updatedCatalogType)
+			// Then we pretend like we've already updated the schema, which means we rebuild the
+			// attributes.
+			updatedCatalogType.Schema = client.CatalogTypeSchemaV3{
+				Version:    updatedCatalogType.Schema.Version,
+				Attributes: []client.CatalogTypeAttributeV3{},
 			}
+			for _, attr := range model.Attributes {
+				var path *[]client.CatalogTypeAttributePathItemV3
+
+				if attr.Path != nil {
+					noPtrPath := *attr.Path
+					newPath := lo.Map(noPtrPath, func(item client.CatalogTypeAttributePathItemPayloadV3, _ int) client.CatalogTypeAttributePathItemV3 {
+						return client.CatalogTypeAttributePathItemV3{
+							AttributeId: item.AttributeId,
+						}
+					})
+					path = &newPath
+				}
+
+				updatedCatalogType.Categories = lo.Map(model.Categories, func(category string, _ int) client.CatalogTypeV3Categories {
+					return client.CatalogTypeV3Categories(category)
+				})
+
+				updatedCatalogType.Schema.Attributes = append(updatedCatalogType.Schema.Attributes, client.CatalogTypeAttributeV3{
+					Id:                *attr.Id,
+					Name:              attr.Name,
+					Type:              attr.Type,
+					Array:             attr.Array,
+					Mode:              client.CatalogTypeAttributeV3Mode(*attr.Mode),
+					BacklinkAttribute: attr.BacklinkAttribute,
+					Path:              path,
+				})
+			}
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+
+			// We only have attribute names in the response for a path attribute, not the
+			// request. To avoid erroneous diffs, we strip the attribute names from any
+			// path attributes.
+			catalogTypeToCompare := *catalogType
+			for _, attr := range catalogType.Schema.Attributes {
+				if attr.Path != nil {
+					for i := range *attr.Path {
+						(*attr.Path)[i].AttributeName = ""
+					}
+				}
+			}
+
+			DIFF("  ", catalogTypeToCompare, updatedCatalogType)
 		}
 	} else {
 		// Update all the type schemas except for new derived attributes, which could reference
 		// attributes that don't exist yet.
 		catalogTypeVersions := map[string]int64{}
-		for _, outputType := range cfg.Outputs() {
-			baseModel, enumModels := output.MarshalType(outputType)
-			for _, model := range append(enumModels, baseModel) {
-				catalogType := catalogTypesByOutput[model.TypeName]
+		for _, model := range cfg.AllOutputTypes() {
+			catalogType := catalogTypesByOutput[model.TypeName]
 
-				attributesWithoutNewDerived := []client.CatalogTypeAttributePayloadV3{}
-				for _, attr := range model.Attributes {
-					isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV3ModeBacklink
-					isPath := *attr.Mode == client.CatalogTypeAttributePayloadV3ModePath
-					if isBacklink || isPath {
-						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
-							return existingAttr.Id == *attr.Id
-						})
-						if inCurrentSchema {
-							attributesWithoutNewDerived = append(attributesWithoutNewDerived, attr)
-						}
-					} else {
+			attributesWithoutNewDerived := []client.CatalogTypeAttributePayloadV3{}
+			for _, attr := range model.Attributes {
+				isBacklink := *attr.Mode == client.CatalogTypeAttributePayloadV3ModeBacklink
+				isPath := *attr.Mode == client.CatalogTypeAttributePayloadV3ModePath
+				if isBacklink || isPath {
+					_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
+						return existingAttr.Id == *attr.Id
+					})
+					if inCurrentSchema {
 						attributesWithoutNewDerived = append(attributesWithoutNewDerived, attr)
 					}
+				} else {
+					attributesWithoutNewDerived = append(attributesWithoutNewDerived, attr)
 				}
-
-				categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogUpdateTypePayloadV3Categories {
-					return client.CatalogUpdateTypePayloadV3Categories(category)
-				})
-
-				logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
-				result, err := cl.CatalogV3UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeJSONRequestBody{
-					Name:          model.Name,
-					Description:   model.Description,
-					Ranked:        &model.Ranked,
-					Categories:    lo.ToPtr(categories),
-					Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
-					SourceRepoUrl: &opt.SourceRepoUrl,
-				})
-				if err != nil {
-					return errors.Wrap(err, fmt.Sprintf("updating catalog type with name %s", model.TypeName))
-				}
-
-				version := result.JSON200.CatalogType.Schema.Version
-				logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
-				schemaJSON, _ := json.Marshal(attributesWithoutNewDerived)
-				level.Debug(logger).Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "schema", schemaJSON)
-				schema, err := cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
-					Version:    version,
-					Attributes: attributesWithoutNewDerived,
-				})
-				if err != nil {
-					return errors.Wrap(err, "updating catalog type schema")
-				}
-
-				catalogTypeVersions[catalogType.Id] = schema.JSON200.CatalogType.Schema.Version
-
-				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 			}
+
+			categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogUpdateTypePayloadV3Categories {
+				return client.CatalogUpdateTypePayloadV3Categories(category)
+			})
+
+			logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
+			result, err := cl.CatalogV3UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeJSONRequestBody{
+				Name:          model.Name,
+				Description:   model.Description,
+				Ranked:        &model.Ranked,
+				Categories:    lo.ToPtr(categories),
+				Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
+				SourceRepoUrl: &opt.SourceRepoUrl,
+			})
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("updating catalog type with name %s", model.TypeName))
+			}
+
+			version := result.JSON200.CatalogType.Schema.Version
+			logger.Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "version", version)
+			schemaJSON, _ := json.Marshal(attributesWithoutNewDerived)
+			level.Debug(logger).Log("msg", "updating catalog type schema", "catalog_type_id", catalogType.Id, "schema", schemaJSON)
+			schema, err := cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
+				Version:    version,
+				Attributes: attributesWithoutNewDerived,
+			})
+			if err != nil {
+				return errors.Wrap(err, "updating catalog type schema")
+			}
+
+			catalogTypeVersions[catalogType.Id] = schema.JSON200.CatalogType.Schema.Version
+
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 		}
 
 		// Then go through again and create any types that do have new derived attributes (backlinks or path)
 		OUT("\n↻ Syncing derived attributes...")
-		for _, outputType := range cfg.Outputs() {
-			baseModel, enumModels := output.MarshalType(outputType)
-			for _, model := range append(enumModels, baseModel) {
-				catalogType := catalogTypesByOutput[model.TypeName]
+		for _, model := range cfg.AllOutputTypes() {
+			catalogType := catalogTypesByOutput[model.TypeName]
 
-				hasNewDerived := false
-				for _, attr := range model.Attributes {
-					if attr.Mode != nil && (attr.BacklinkAttribute != nil || attr.Path != nil) {
-						_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
-							return existingAttr.Id == *attr.Id
-						})
+			hasNewDerived := false
+			for _, attr := range model.Attributes {
+				if attr.Mode != nil && (attr.BacklinkAttribute != nil || attr.Path != nil) {
+					_, inCurrentSchema := lo.Find(catalogType.Schema.Attributes, func(existingAttr client.CatalogTypeAttributeV3) bool {
+						return existingAttr.Id == *attr.Id
+					})
 
-						if !inCurrentSchema {
-							hasNewDerived = true
-						}
+					if !inCurrentSchema {
+						hasNewDerived = true
 					}
 				}
-
-				if !hasNewDerived {
-					continue
-				}
-				version := catalogTypeVersions[catalogType.Id]
-				logger.Log("msg", "updating catalog type schema: creating derived attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
-
-				_, err = cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
-					Version:    version,
-					Attributes: model.Attributes,
-				})
-				if err != nil {
-					return errors.Wrap(err, "updating catalog type schema")
-				}
-
-				OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 			}
+
+			if !hasNewDerived {
+				continue
+			}
+			version := catalogTypeVersions[catalogType.Id]
+			logger.Log("msg", "updating catalog type schema: creating derived attribute(s)", "catalog_type_id", catalogType.Id, "version", version)
+
+			_, err = cl.CatalogV3UpdateTypeSchemaWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeSchemaJSONRequestBody{
+				Version:    version,
+				Attributes: model.Attributes,
+			})
+			if err != nil {
+				return errors.Wrap(err, "updating catalog type schema")
+			}
+
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 		}
 	}
 
