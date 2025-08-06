@@ -5,3 +5,4 @@ data/
 __debug_bin
 .idea/
 *.DS_Store
+.claude/settings.local.json
