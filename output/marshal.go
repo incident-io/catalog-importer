@@ -221,7 +221,10 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					})
 				}
 
-				binding.ArrayValue = &arrayValue
+				// Only set ArrayValue if there are actual items
+				if len(arrayValue) > 0 {
+					binding.ArrayValue = &arrayValue
+				}
 			} else {
 				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger)
 				if err != nil {
