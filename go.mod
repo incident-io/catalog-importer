@@ -35,7 +35,7 @@ require (
 	github.com/stretchr/objx v0.5.0
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
-	golang.org/x/oauth2 v0.8.0
+	golang.org/x/oauth2 v0.27.0
 	golang.org/x/sync v0.12.0
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -43,13 +43,11 @@ require (
 
 require (
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/speakeasy-api/openapi-overlay v0.9.0 // indirect
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
-	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
@@ -68,10 +66,8 @@ require (
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38 // indirect
-	github.com/invopop/yaml v0.3.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matryer/is v1.4.1 // indirect
@@ -91,7 +87,6 @@ require (
 	golang.org/x/term v0.30.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
