@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -14,33 +16,64 @@ import (
 	"github.com/pkg/errors"
 )
 
-const maxRetries = 10
+const (
+	maxRetries          = 20 // Increased for better rate limit handling
+	rateLimitMaxRetries = 25 // Extra retries specifically for 429s
+)
 
 func attentiveBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	// Retry for rate limits and server errors.
 	if resp != nil && resp.StatusCode == http.StatusTooManyRequests {
-		// Check for a 'Retry-After' header.
+		// Always calculate our aggressive backoff first
+		backoffDuration := rateLimitBackoff(attemptNum)
+
+		// Check for a 'Retry-After' header and use the maximum of that and our backoff
 		retryAfter := resp.Header.Get("Retry-After")
 		if retryAfter != "" {
 			retryAfterDate, err := time.Parse(time.RFC1123, retryAfter)
 			if err != nil {
-				// If we can't parse the Retry-After, lets just wait for 10 seconds
-				return 10 * time.Second
+				// If we can't parse the Retry-After, use our backoff
+				jitter := time.Duration(float64(backoffDuration) * 0.25 * (rand.Float64()*2 - 1))
+				return backoffDuration + jitter
 			}
 
 			timeToWait := time.Until(retryAfterDate)
 
-			if timeToWait < 1*time.Second {
-				// by default lets back off at least 1 second
-				return 1 * time.Second
+			// Use the maximum of server's Retry-After and our aggressive backoff
+			if timeToWait > backoffDuration {
+				return timeToWait
 			}
-
-			return timeToWait
 		}
 
+		// Use our aggressive exponential backoff (either no header or backoff is longer)
+		// Since this typically runs on daily cron, we can afford longer waits
+		jitter := time.Duration(float64(backoffDuration) * 0.25 * (rand.Float64()*2 - 1))
+		return backoffDuration + jitter
 	}
 	// otherwise use the default backoff
 	return retryablehttp.DefaultBackoff(min, max, attemptNum, resp)
+}
+
+// rateLimitBackoff implements aggressive exponential backoff for rate limits
+// Starts at 5s and doubles each time, capped at 10 minutes
+func rateLimitBackoff(attemptNum int) time.Duration {
+	const (
+		baseDelay = 5 * time.Second
+		maxDelay  = 10 * time.Minute
+	)
+
+	delay := time.Duration(float64(baseDelay) * math.Pow(2, float64(attemptNum)))
+	if delay > maxDelay {
+		delay = maxDelay
+	}
+	return delay
+}
+
+// checkRetry determines if a request should be retried
+func checkRetry(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	// Always use default retry logic - we'll handle 429s with longer backoff
+	// The increased maxRetries will give us more attempts overall
+	return retryablehttp.DefaultRetryPolicy(ctx, resp, err)
 }
 
 var _ retryablehttp.Logger = &retryableHttpLogger{}
@@ -62,6 +95,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	retryClient := retryablehttp.NewClient()
 	retryClient.Logger = &retryableHttpLogger{logger}
 	retryClient.RetryMax = maxRetries
+	retryClient.CheckRetry = checkRetry
 	retryClient.Backoff = attentiveBackoff
 	retryClient.HTTPClient.Transport = &http.Transport{
 		MaxConnsPerHost: 10,
