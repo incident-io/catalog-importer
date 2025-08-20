@@ -29,7 +29,7 @@ require (
 	github.com/onsi/gomega v1.27.8
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.1.0
-	github.com/samber/lo v1.38.1
+	github.com/samber/lo v1.51.0
 	github.com/schollz/progressbar/v3 v3.13.1
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/objx v0.5.2
@@ -80,7 +80,6 @@ require (
 	github.com/robertkrimen/otto v0.3.0
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
