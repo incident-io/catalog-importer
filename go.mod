@@ -28,7 +28,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
 	github.com/pkg/errors v0.9.1
-	github.com/rodaine/table v1.1.0
+	github.com/rodaine/table v1.3.0
 	github.com/samber/lo v1.51.0
 	github.com/schollz/progressbar/v3 v3.13.1
 	github.com/sourcegraph/conc v0.3.0
@@ -73,7 +73,7 @@ require (
 	github.com/matryer/is v1.4.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
