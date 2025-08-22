@@ -34,6 +34,7 @@ type SyncOptions struct {
 	AllowDeleteAll            bool
 	SourceRepoUrl             string
 	CatalogEntriesAPIPageSize int
+	NoProgress                bool
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -65,6 +66,8 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		Envar("CATALOG_ENTRIES_API_PAGE_SIZE").
 		Default("250").
 		IntVar(&opt.CatalogEntriesAPIPageSize)
+	cmd.Flag("no-progress", "Disable progress bars (useful for cron jobs and output redirection)").
+		BoolVar(&opt.NoProgress)
 
 	return opt
 }
@@ -75,6 +78,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 	if opt.Prune && len(opt.Targets) > 0 {
 		return errors.New("cannot use --targets with --prune")
+	}
+
+	// If you're dry-running, and you have set --quiet, you're going to have a bad
+	// time because the whole point of a dry run is to produce output!
+	if *quiet && opt.DryRun {
+		*quiet = false
+		OUT("WARNING: --quiet has been ignored because --dry-run is set")
 	}
 
 	// Load config if it hasn't been provided.
@@ -485,7 +495,8 @@ createCatalogType:
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
 				catalogType := catalogTypesByOutput[outputType.TypeName]
 
-				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
+				showProgress := !opt.DryRun && !opt.NoProgress
+				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
 				}
@@ -521,7 +532,8 @@ createCatalogType:
 
 				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
 				catalogType := catalogTypesByOutput[enumModel.TypeName]
-				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(!opt.DryRun), opt.CatalogEntriesAPIPageSize)
+				showProgress := !opt.DryRun && !opt.NoProgress
+				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
@@ -612,6 +624,11 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 // newEntriesProgress creates hooks to render progress into the terminal while reconciling
 // catalog entries.
 func newEntriesProgress(showBars bool) *reconcile.EntriesProgress {
+	// `--quiet` suppresses all progress bars.
+	if lo.FromPtr(quiet) {
+		showBars = false
+	}
+
 	var (
 		deleteBar *progressbar.ProgressBar
 		createBar *progressbar.ProgressBar

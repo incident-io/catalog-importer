@@ -136,8 +136,8 @@ func (opt *InitOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 		return err
 	}
 
-	OUT("\nYour template has been installed at:\n  %s\n", path.Join(chosenDest, chosenTemplate.Name))
-	OUT("View the README.md for instructions on how to use it.")
+	ALWAYS_OUT("\nYour template has been installed at:\n  %s\n", path.Join(chosenDest, chosenTemplate.Name))
+	ALWAYS_OUT("View the README.md for instructions on how to use it.")
 
 	return nil
 }

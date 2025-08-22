@@ -20,6 +20,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/incident-io/catalog-importer/v2/config"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 var logger kitlog.Logger
@@ -29,6 +30,7 @@ var (
 
 	// Global flags
 	debug   = app.Flag("debug", "Enable debug logging").Default("false").Bool()
+	quiet   = app.Flag("quiet", "Suppress all non-error output").Default("false").Bool()
 	noColor = app.Flag("no-color", "Disable colored output").Default("false").Bool()
 
 	// Init
@@ -140,12 +142,12 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
 			return
 		}
 		if configFile == "" {
-			OUT("No config file (--config) was provided, but is required.\n")
+			ALWAYS_OUT("No config file (--config) was provided, but is required.\n")
 		} else {
-			OUT("Failed to load config file! It's either in an unexpected format, or we can't find it using that path.\n")
+			ALWAYS_OUT("Failed to load config file! It's either in an unexpected format, or we can't find it using that path.\n")
 		}
 
-		OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
+		ALWAYS_OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
 `)
 		config.PrettyPrint(`// e.g. importer.jsonnet
 {
@@ -158,7 +160,7 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
   ],
 }`)
 
-		OUT(`
+		ALWAYS_OUT(`
 View reference config file in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
 `)
 	}()
@@ -181,8 +183,17 @@ View reference config file in GitHub: https://github.com/incident-io/catalog-imp
 	return cfg, nil
 }
 
-// OUT prints progress output to stderr.
+// OUT prints progress output to stderr, unless `--quiet` is set.
 func OUT(msg string, args ...any) {
+	if lo.FromPtr(quiet) {
+		return
+	}
+
+	fmt.Fprintf(os.Stderr, msg+"\n", args...)
+}
+
+// ALWAYS_OUT prints output to stderr, even if --quiet is set.
+func ALWAYS_OUT(msg string, args ...any) {
 	fmt.Fprintf(os.Stderr, msg+"\n", args...)
 }
 
@@ -196,7 +207,7 @@ func BANNER(msg string, args ...any) {
 		"\n",
 	)
 
-	OUT(msg, args...)
+	ALWAYS_OUT(msg, args...)
 }
 
 func DIFF[Type any](prefix string, this, that Type) {

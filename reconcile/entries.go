@@ -344,7 +344,7 @@ func bindingToPayload(binding client.CatalogEntryEngineParamBindingV3) client.Ca
 		}
 	}
 
-	if binding.ArrayValue != nil {
+	if binding.ArrayValue != nil && len(*binding.ArrayValue) > 0 {
 		payload.ArrayValue = &[]client.CatalogEngineParamBindingValuePayloadV3{}
 		for _, value := range *binding.ArrayValue {
 			*payload.ArrayValue = append(*payload.ArrayValue, client.CatalogEngineParamBindingValuePayloadV3{
