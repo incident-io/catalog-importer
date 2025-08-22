@@ -34,7 +34,6 @@ type SyncOptions struct {
 	AllowDeleteAll            bool
 	SourceRepoUrl             string
 	CatalogEntriesAPIPageSize int
-	Quiet                     bool
 	NoProgress                bool
 }
 
@@ -67,8 +66,6 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		Envar("CATALOG_ENTRIES_API_PAGE_SIZE").
 		Default("250").
 		IntVar(&opt.CatalogEntriesAPIPageSize)
-	cmd.Flag("quiet", "Suppress all non-error output").
-		BoolVar(&opt.Quiet)
 	cmd.Flag("no-progress", "Disable progress bars (useful for cron jobs and output redirection)").
 		BoolVar(&opt.NoProgress)
 
@@ -76,17 +73,18 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 }
 
 func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *config.Config) error {
-	// Helper function to output messages unless --quiet is set
-	out := func(msg string, args ...any) {
-		if !opt.Quiet {
-			OUT(msg, args...)
-		}
-	}
 	if opt.Prune && opt.DryRun {
 		return errors.New("cannot use --dry-run with --prune")
 	}
 	if opt.Prune && len(opt.Targets) > 0 {
 		return errors.New("cannot use --targets with --prune")
+	}
+
+	// If you're dry-running, and you have set --quiet, you're going to have a bad
+	// time because the whole point of a dry run is to produce output!
+	if *quiet && opt.DryRun {
+		*quiet = false
+		OUT("WARNING: --quiet has been ignored because --dry-run is set")
 	}
 
 	// Load config if it hasn't been provided.
@@ -99,7 +97,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	}
 	{
 		if len(opt.Targets) > 0 {
-			out("⊕ Filtering config to targets (%s)", strings.Join(opt.Targets, ", "))
+			OUT("⊕ Filtering config to targets (%s)", strings.Join(opt.Targets, ", "))
 			cfg = cfg.Filter(opt.Targets)
 		}
 		var outputs, sources int
@@ -107,12 +105,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 			outputs += len(pipeline.Outputs)
 			sources += len(pipeline.Sources)
 		}
-		out("✔ Loaded config (%d pipelines, %d sources, %d outputs)", len(cfg.Pipelines), outputs, sources)
+		OUT("✔ Loaded config (%d pipelines, %d sources, %d outputs)", len(cfg.Pipelines), outputs, sources)
 	}
 
 	clientOptions := []client.ClientOption{}
 	if opt.DryRun {
-		out("⛨ --dry-run is set, building a read-only client")
+		OUT("⛨ --dry-run is set, building a read-only client")
 		clientOptions = append(clientOptions, client.WithReadOnly())
 	}
 
@@ -127,7 +125,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	if err != nil {
 		return errors.Wrap(err, "listing catalog types")
 	}
-	out("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
+	OUT("✔ Connected to incident.io API (%s)", opt.APIEndpoint)
 
 	existingCatalogTypes := []client.CatalogTypeV3{}
 	unmanagedCatalogTypes := []client.CatalogTypeV3{}
@@ -158,12 +156,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		"catalog_types", strings.Join(lo.Map(existingCatalogTypes, func(ct client.CatalogTypeV3, _ int) string {
 			return ct.TypeName
 		}), ", "))
-	out("✔ Found %d catalog types, with %d that match our sync ID (%s)",
+	OUT("✔ Found %d catalog types, with %d that match our sync ID (%s)",
 		len(result.JSON200.CatalogTypes), len(existingCatalogTypes), cfg.SyncID)
 
 	// Remove unmanaged types
 	if opt.Prune {
-		out("\n↻ Prune enabled (--prune), removing types that are no longer in config...")
+		OUT("\n↻ Prune enabled (--prune), removing types that are no longer in config...")
 
 		toDestroy := []client.CatalogTypeV3{}
 	nextCatalogType:
@@ -184,7 +182,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		}
 
 		if len(toDestroy) == 0 {
-			out("  ✔ Nothing to remove!")
+			OUT("  ✔ Nothing to remove!")
 		} else {
 			for _, catalogType := range toDestroy {
 				logger.Log("msg", "found catalog type for this sync ID that is no longer in config, removing")
@@ -192,13 +190,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 				if err != nil {
 					return errors.Wrap(err, "removing catalog type")
 				}
-				out("  ⌫ %s", catalogType.TypeName)
+				OUT("  ⌫ %s", catalogType.TypeName)
 			}
 		}
 	}
 
 	// Create missing catalog types
-	out("\n↻ Creating catalog types that don't yet exist...")
+	OUT("\n↻ Creating catalog types that don't yet exist...")
 createCatalogType:
 	for _, model := range cfg.AllOutputTypes() {
 		logger := kitlog.With(logger, "type_name", model.TypeName)
@@ -251,7 +249,7 @@ createCatalogType:
 		}
 
 		existingCatalogTypes = append(existingCatalogTypes, createdCatalogType)
-		out("  ✔ %s (id=%s)", model.TypeName, createdCatalogType.Id)
+		OUT("  ✔ %s (id=%s)", model.TypeName, createdCatalogType.Id)
 	}
 
 	// Prepare a lookup of catalog type by the output name for subsequent pipeline steps.
@@ -278,7 +276,7 @@ createCatalogType:
 		catalogTypesByOutput[model.TypeName] = catalogType
 	}
 
-	out("\n↻ Syncing catalog type schemas...")
+	OUT("\n↻ Syncing catalog type schemas...")
 	if opt.DryRun {
 		for _, model := range cfg.AllOutputTypes() {
 			catalogType := catalogTypesByOutput[model.TypeName]
@@ -320,7 +318,7 @@ createCatalogType:
 					Path:              path,
 				})
 			}
-			out("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 
 			// We only have attribute names in the response for a path attribute, not the
 			// request. To avoid erroneous diffs, we strip the attribute names from any
@@ -390,11 +388,11 @@ createCatalogType:
 
 			catalogTypeVersions[catalogType.Id] = schema.JSON200.CatalogType.Schema.Version
 
-			out("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 		}
 
 		// Then go through again and create any types that do have new derived attributes (backlinks or path)
-		out("\n↻ Syncing derived attributes...")
+		OUT("\n↻ Syncing derived attributes...")
 		for _, model := range cfg.AllOutputTypes() {
 			catalogType := catalogTypesByOutput[model.TypeName]
 
@@ -425,19 +423,19 @@ createCatalogType:
 				return errors.Wrap(err, "updating catalog type schema")
 			}
 
-			out("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
+			OUT("  ✔ %s (id=%s)", model.TypeName, catalogType.Id)
 		}
 	}
 
 	for _, pipeline := range cfg.Pipelines {
-		out("\n↻ Syncing pipeline... (%s)", strings.Join(lo.Map(pipeline.Outputs, func(op *output.Output, _ int) string {
+		OUT("\n↻ Syncing pipeline... (%s)", strings.Join(lo.Map(pipeline.Outputs, func(op *output.Output, _ int) string {
 			return op.TypeName
 		}), ", "))
 
 		// Load entries from source
 		sourcedEntries := []source.Entry{}
 		{
-			out("\n  ↻ Loading data from sources...")
+			OUT("\n  ↻ Loading data from sources...")
 			for _, source := range pipeline.Sources {
 				sourceLabel := lo.Must(source.Backend()).String()
 
@@ -463,20 +461,20 @@ createCatalogType:
 					sourcedEntries = append(sourcedEntries, parsedEntries...)
 				}
 
-				out("    ✔ %s (found %d entries)", sourceLabel, len(sourcedEntries))
+				OUT("    ✔ %s (found %d entries)", sourceLabel, len(sourcedEntries))
 			}
 		}
 
-		out("\n  ↻ Syncing entries...")
+		OUT("\n  ↻ Syncing entries...")
 		for idx, outputType := range pipeline.Outputs {
-			out("\n    ↻ %s", outputType.TypeName)
+			OUT("\n    ↻ %s", outputType.TypeName)
 
 			// Filter source for each of the output types
 			entries, err := output.Collect(ctx, logger, outputType, sourcedEntries)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}
-			out("      ✔ Building entries... (found %d entries matching filters)", len(entries))
+			OUT("      ✔ Building entries... (found %d entries matching filters)", len(entries))
 
 			// Marshal entries using the JS expressions.
 			entryModels, err := output.MarshalEntries(ctx, logger, outputType, entries)
@@ -497,8 +495,8 @@ createCatalogType:
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
 				catalogType := catalogTypesByOutput[outputType.TypeName]
 
-				showProgress := !opt.DryRun && !opt.NoProgress && !opt.Quiet
-				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(showProgress, opt.Quiet), opt.CatalogEntriesAPIPageSize)
+				showProgress := !opt.DryRun && !opt.NoProgress
+				err = reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, entryModels, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("outputs (type_name = '%s'): reconciling catalog entries", outputType.TypeName))
 				}
@@ -532,10 +530,10 @@ createCatalogType:
 					})
 				}
 
-				out("\n    ↻ %s (enum)", enumModel.TypeName)
+				OUT("\n    ↻ %s (enum)", enumModel.TypeName)
 				catalogType := catalogTypesByOutput[enumModel.TypeName]
-				showProgress := !opt.DryRun && !opt.NoProgress && !opt.Quiet
-				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(showProgress, opt.Quiet), opt.CatalogEntriesAPIPageSize)
+				showProgress := !opt.DryRun && !opt.NoProgress
+				err := reconcile.Entries(ctx, logger, entriesClient, outputType, catalogType, enumModels, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
 				if err != nil {
 					return errors.Wrap(err,
 						fmt.Sprintf("outputs (type_name = '%s'): enum for attribute (id = '%s'): %s: reconciling catalog entries",
@@ -625,14 +623,12 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 
 // newEntriesProgress creates hooks to render progress into the terminal while reconciling
 // catalog entries.
-func newEntriesProgress(showBars bool, quiet bool) *reconcile.EntriesProgress {
-	// Helper function to output messages unless --quiet is set
-	out := func(msg string, args ...any) {
-		if !quiet {
-			OUT(msg, args...)
-		}
+func newEntriesProgress(showBars bool) *reconcile.EntriesProgress {
+	// `--quiet` suppresses all progress bars.
+	if lo.FromPtr(quiet) {
+		showBars = false
 	}
-	
+
 	var (
 		deleteBar *progressbar.ProgressBar
 		createBar *progressbar.ProgressBar
@@ -641,9 +637,9 @@ func newEntriesProgress(showBars bool, quiet bool) *reconcile.EntriesProgress {
 	return &reconcile.EntriesProgress{
 		OnDeleteStart: func(total int) {
 			if total == 0 {
-				out("      ✔ No entries to delete")
+				OUT("      ✔ No entries to delete")
 			} else {
-				out("      ✔ Deleting unmanaged entries... (found %d entries in catalog not in source)", total)
+				OUT("      ✔ Deleting unmanaged entries... (found %d entries in catalog not in source)", total)
 				if showBars {
 					deleteBar = newProgressBar(int64(total),
 						progressbar.OptionSetDescription(`        `),
@@ -658,9 +654,9 @@ func newEntriesProgress(showBars bool, quiet bool) *reconcile.EntriesProgress {
 		},
 		OnCreateStart: func(total int) {
 			if total == 0 {
-				out("      ✔ No new entries to create")
+				OUT("      ✔ No new entries to create")
 			} else {
-				out("      ✔ Creating new entries in catalog... (%d entries to create)", total)
+				OUT("      ✔ Creating new entries in catalog... (%d entries to create)", total)
 				if showBars {
 					createBar = newProgressBar(int64(total),
 						progressbar.OptionSetDescription(`        `),
@@ -675,9 +671,9 @@ func newEntriesProgress(showBars bool, quiet bool) *reconcile.EntriesProgress {
 		},
 		OnUpdateStart: func(total int) {
 			if total == 0 {
-				out("      ✔ No existing entries to update")
+				OUT("      ✔ No existing entries to update")
 			} else {
-				out("      ✔ Updating existing entries in catalog... (%d entries to update)", total)
+				OUT("      ✔ Updating existing entries in catalog... (%d entries to update)", total)
 				if showBars {
 					updateBar = newProgressBar(int64(total),
 						progressbar.OptionSetDescription(`        `),
