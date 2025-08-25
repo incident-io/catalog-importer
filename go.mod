@@ -1,13 +1,13 @@
 module github.com/incident-io/catalog-importer/v2
 
-go 1.23.0
+go 1.23.7
 
 toolchain go1.24.5
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/bmatcuk/doublestar/v4 v4.9.1
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.18.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-kit/kit v0.13.0
 	github.com/go-kit/log v0.2.1
@@ -16,7 +16,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-github/v52 v52.0.0
-	github.com/google/go-jsonnet v0.20.0
+	github.com/google/go-jsonnet v0.21.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/hashicorp/go-retryablehttp v0.7.7
@@ -88,5 +88,5 @@ require (
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	sigs.k8s.io/yaml v1.1.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
