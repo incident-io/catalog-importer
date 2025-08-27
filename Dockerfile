@@ -1,9 +1,9 @@
-FROM alpine:latest AS runtime
+FROM alpine:3.22.1 AS runtime
 
-# Update package index and add certificates with latest versions
-RUN apk update && apk add --no-cache ca-certificates
+# Add certificates so we can make HTTPS requests.
+RUN apk add --no-cache ca-certificates
 
-# Copy the catalog-importer binary (you'll need to extract this from the original image)
+# goreleaser supplies this for us.
 COPY catalog-importer /usr/local/bin
 
 ENTRYPOINT ["/usr/local/bin/catalog-importer"]
