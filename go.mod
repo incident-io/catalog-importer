@@ -32,7 +32,7 @@ require (
 	github.com/samber/lo v1.52.0
 	github.com/schollz/progressbar/v3 v3.18.0
 	github.com/sourcegraph/conc v0.3.0
-	github.com/stretchr/objx v0.5.2
+	github.com/stretchr/objx v0.5.3
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
 	golang.org/x/oauth2 v0.32.0
