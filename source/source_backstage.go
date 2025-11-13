@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -50,14 +51,15 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client 
 		return nil, errors.Wrap(err, "parsing Backstage URL")
 	}
 
-	if endpointURL.Path == "/api/catalog/entities" {
+	if strings.HasSuffix(endpointURL.Path, "/api/catalog/entities") {
 		logger.Log(
 			"msg",
 			"Deprecated: The Backstage API endpoint '/api/catalog/entities' is deprecated. Use '/api/catalog/entities/by-query' instead.",
 		)
 		return s.fetchEntries(ctx, client, token)
 	}
-	if endpointURL.Path == "/api/catalog/entities/by-query" {
+
+	if strings.HasSuffix(endpointURL.Path, "/api/catalog/entities/by-query") {
 		return s.fetchEntriesByQuery(ctx, client, token)
 	}
 
