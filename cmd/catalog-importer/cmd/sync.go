@@ -437,6 +437,7 @@ createCatalogType:
 		{
 			OUT("\n  ↻ Loading data from sources...")
 			for _, source := range pipeline.Sources {
+
 				sourceLabel := lo.Must(source.Backend()).String()
 
 				sourceEntries, err := source.Load(ctx, logger)
