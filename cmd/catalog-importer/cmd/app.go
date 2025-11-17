@@ -173,6 +173,7 @@ View reference config file in GitHub: https://github.com/incident-io/catalog-imp
 	if err != nil {
 		return nil, errors.Wrap(err, "loading config")
 	}
+
 	if err := cfg.Validate(); err != nil {
 		data, _ := json.MarshalIndent(err, "", "  ")
 

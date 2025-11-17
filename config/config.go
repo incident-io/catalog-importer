@@ -34,7 +34,8 @@ func (c Config) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.SyncID, validation.Required.
 			Error("must provide a sync_id to track which resources are managed by this config, and to support clean-up when an output is removed")),
-		validation.Field(&c.Pipelines),
+		validation.Field(&c.Pipelines, validation.Required, validation.Length(1, 0).
+			Error("must specify at least one pipeline")),
 	)
 }
 
@@ -91,5 +92,10 @@ type Pipeline struct {
 }
 
 func (p Pipeline) Validate() error {
-	return validation.ValidateStruct(&p)
+	return validation.ValidateStruct(&p,
+		validation.Field(&p.Sources, validation.Required, validation.Length(1, 0).
+			Error("must specify at least one source")),
+		validation.Field(&p.Outputs, validation.Required, validation.Length(1, 0).
+			Error("must specify at least one output")),
+	)
 }
