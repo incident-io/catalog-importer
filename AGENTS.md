@@ -193,3 +193,13 @@ catalog-importer/
 3. Run `goimports -w <files>` if imports changed
 4. Run `ginkgo` in the relevant package to test
 5. Run `make` to verify it compiles
+
+**Performance considerations**:
+- The codebase uses bulk operations where possible (e.g., `BulkUpdateEntries` for updating up to 100 catalog entries per API call)
+- Use `lo.Chunk(items, 100)` to batch items when calling bulk endpoints
+- Process batches **sequentially** (not in parallel) as bulk endpoints are heavily rate-limited
+- The HTTP client in `client/client.go` automatically handles 429 rate limit responses with exponential backoff:
+  - Starts at 5s, doubles each attempt, caps at 10 minutes
+  - Respects `Retry-After` headers from the API
+  - Up to 25 retries for rate-limited requests
+  - Regular requests get up to 20 retries

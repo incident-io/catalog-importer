@@ -18,7 +18,7 @@ type EntriesClient struct {
 	GetEntries func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error)
 	Delete     func(ctx context.Context, entry *client.CatalogEntryV3) error
 	Create     func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error)
-	Update     func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error)
+	BulkUpdate func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error
 }
 
 // EntriesClientFromClient wraps a real client with hooks that can create, update and delete
@@ -54,13 +54,13 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 
 			return &result.JSON201.CatalogEntry, nil
 		},
-		Update: func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error) {
-			result, err := cl.CatalogV3UpdateEntryWithResponse(ctx, entry.Id, payload)
-			if err != nil {
-				return nil, err
-			}
-
-			return &result.JSON200.CatalogEntry, err
+		BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
+			_, err := cl.CatalogV3BulkUpdateEntriesWithResponse(ctx, client.CatalogBulkUpdateEntriesPayloadV3{
+				CatalogTypeId:    catalogTypeID,
+				Entries:          entries,
+				UpdateAttributes: updateAttributes,
+			})
+			return err
 		},
 	}
 }
@@ -229,7 +229,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	}
 
 	{
-		toUpdate := []*output.CatalogEntryModel{}
+		toUpdate := []client.PartialEntryPayloadV3{}
 	eachPayload:
 		for _, model := range entryModels {
 			entry, ok := entriesByExternalID[model.ExternalID]
@@ -251,49 +251,50 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 					continue eachPayload
 				} else {
 					logger.Log("msg", "catalog entry has changed, scheduling for update", "entry_id", entry.Id)
-					toUpdate = append(toUpdate, model)
+
+					// Build PartialEntryPayloadV3
+					toUpdate = append(toUpdate, client.PartialEntryPayloadV3{
+						EntryId:         entry.Id,
+						Name:            &model.Name,
+						Rank:            &model.Rank,
+						ExternalId:      lo.ToPtr(model.ExternalID),
+						Aliases:         lo.ToPtr(model.Aliases),
+						AttributeValues: model.AttributeValues,
+					})
 				}
 			}
 		}
 
 		logger.Log("msg", fmt.Sprintf("found %d entries that need updating", len(toUpdate)))
 
-		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
 		if onStart := progress.OnUpdateStart; onStart != nil {
 			onStart(len(toUpdate))
 		}
 
-		for _, model := range toUpdate {
-			var (
-				model = model                                 // capture loop variable
-				entry = entriesByExternalID[model.ExternalID] // for ID
-			)
+		// Chunk into batches of 100
+		batches := lo.Chunk(toUpdate, 100)
 
-			p.Go(func(ctx context.Context) error {
-				if onProgress := progress.OnUpdateProgress; onProgress != nil {
-					defer onProgress()
+		// Compute updateAttributes once (same for all batches)
+		updateAttributes := lo.ToPtr(lo.Map(attributesToUpdate, func(attr *output.Attribute, _ int) string { return attr.ID }))
+
+		// Process batches SEQUENTIALLY (no pool) to respect rate limits
+		// The client's retry logic will handle 429s automatically
+		for _, batch := range batches {
+			logger.Log("msg", fmt.Sprintf("bulk updating %d catalog entries", len(batch)))
+
+			err := cl.BulkUpdate(ctx, catalogType.Id, batch, updateAttributes)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("unable to bulk update %d catalog entries", len(batch)))
+			}
+
+			logger.Log("msg", "bulk updated catalog entries", "count", len(batch))
+
+			// Call progress callback for each entry in the batch
+			if onProgress := progress.OnUpdateProgress; onProgress != nil {
+				for range batch {
+					onProgress()
 				}
-
-				_, err := cl.Update(ctx, entry, client.CatalogUpdateEntryPayloadV3{
-					Name:             model.Name,
-					Rank:             &model.Rank,
-					ExternalId:       lo.ToPtr(model.ExternalID),
-					Aliases:          lo.ToPtr(model.Aliases),
-					AttributeValues:  model.AttributeValues,
-					UpdateAttributes: lo.ToPtr(lo.Map(attributesToUpdate, func(attr *output.Attribute, _ int) string { return attr.ID })),
-				})
-				if err != nil {
-					return errors.Wrap(err, fmt.Sprintf("unable to update catalog entry with id=%s, got error", entry.Id))
-				}
-
-				logger.Log("msg", "updated catalog entry", "entry_id", entry.Id)
-				return nil
-			})
-		}
-
-		err := p.Wait()
-		if err != nil {
-			return errors.Wrap(err, "destroying catalog entries")
+			}
 		}
 	}
 
