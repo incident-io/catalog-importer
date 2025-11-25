@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/kingpin/v2"
+	"github.com/fatih/color"
 	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"
@@ -554,6 +555,9 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 		return reconcile.EntriesClientFromClient(cl)
 	}
 
+	// Cache entries by ID for bulk update diff generation
+	entriesByID := make(map[string]*client.CatalogEntryV3)
+
 	return reconcile.EntriesClient{
 		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error) {
 			// We're in dry-run and this catalog type is yet to be created. We can't ask the API
@@ -570,7 +574,17 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 			}
 
 			// We're just a normal catalog type, use the real client.
-			return reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize)
+			catalogType, entries, err := reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// Cache entries for bulk update diff generation
+			for i := range entries {
+				entriesByID[entries[i].Id] = &entries[i]
+			}
+
+			return catalogType, entries, nil
 		},
 		Delete: func(ctx context.Context, entry *client.CatalogEntryV3) error {
 			DIFF("      ", *entry, client.CatalogEntryV3{})
@@ -584,40 +598,60 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 
 			return entry, nil
 		},
-		Update: func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error) {
-			existingPayload := client.CatalogUpdateEntryPayloadV3{
-				Aliases:         lo.ToPtr(entry.Aliases),
-				AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{},
-				ExternalId:      entry.ExternalId,
-				Name:            entry.Name,
-				Rank:            &entry.Rank,
-			}
-			if payload.Rank == nil && entry.Rank == 0 {
-				existingPayload.Rank = nil
-			}
-			for attrID, attr := range entry.AttributeValues {
-				result := client.CatalogEngineParamBindingPayloadV3{}
-				if attr.Value != nil {
-					result.Value = &client.CatalogEngineParamBindingValuePayloadV3{
-						Literal: attr.Value.Literal,
-					}
-				}
-				if attr.ArrayValue != nil {
-					arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
-					for _, elementValue := range *attr.ArrayValue {
-						arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
-							Literal: elementValue.Literal,
-						})
-					}
+		BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
+			for _, partialEntry := range entries {
+				fmt.Println(color.New(color.FgYellow).Sprintf("    UPDATE: entry_id=%s", partialEntry.EntryId))
 
-					result.ArrayValue = &arrayValue
+				// Find existing entry for comparison
+				existingEntry, ok := entriesByID[partialEntry.EntryId]
+				if !ok {
+					fmt.Println(color.New(color.FgRed).Sprintf("      ERROR: could not find entry for diff"))
+					continue
 				}
 
-				existingPayload.AttributeValues[attrID] = result
-			}
+				// Convert PartialEntryPayloadV3 to UpdatePayloadV3 for diff display
+				payload := client.CatalogUpdateEntryPayloadV3{
+					Name:             lo.FromPtrOr(partialEntry.Name, ""),
+					Rank:             partialEntry.Rank,
+					ExternalId:       partialEntry.ExternalId,
+					Aliases:          partialEntry.Aliases,
+					AttributeValues:  partialEntry.AttributeValues,
+					UpdateAttributes: updateAttributes,
+				}
 
-			DIFF("      ", existingPayload, payload)
-			return entry, nil
+				// Build existing payload for comparison
+				existingPayload := client.CatalogUpdateEntryPayloadV3{
+					Aliases:         lo.ToPtr(existingEntry.Aliases),
+					AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{},
+					ExternalId:      existingEntry.ExternalId,
+					Name:            existingEntry.Name,
+					Rank:            &existingEntry.Rank,
+				}
+				if payload.Rank == nil && existingEntry.Rank == 0 {
+					existingPayload.Rank = nil
+				}
+				for attrID, attr := range existingEntry.AttributeValues {
+					result := client.CatalogEngineParamBindingPayloadV3{}
+					if attr.Value != nil {
+						result.Value = &client.CatalogEngineParamBindingValuePayloadV3{
+							Literal: attr.Value.Literal,
+						}
+					}
+					if attr.ArrayValue != nil {
+						arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
+						for _, elementValue := range *attr.ArrayValue {
+							arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: elementValue.Literal,
+							})
+						}
+						result.ArrayValue = &arrayValue
+					}
+					existingPayload.AttributeValues[attrID] = result
+				}
+
+				DIFF("      ", existingPayload, payload)
+			}
+			return nil
 		},
 	}
 }

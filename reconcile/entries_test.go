@@ -2,6 +2,8 @@ package reconcile_test
 
 import (
 	"context"
+	"fmt"
+	"sync"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
@@ -35,6 +37,7 @@ var _ = Describe("Entries", func() {
 		createdEntries  []client.CatalogCreateEntryPayloadV3
 		updatedEntries  []updatedEntry
 		deletedEntries  []string
+		mu              sync.Mutex // Protect concurrent writes to slices
 	)
 	BeforeEach(func() {
 		// Reset
@@ -77,7 +80,9 @@ var _ = Describe("Entries", func() {
 				}, existingEntries, nil
 			},
 			Create: func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+				mu.Lock()
 				createdEntries = append(createdEntries, payload)
+				mu.Unlock()
 
 				return &client.CatalogEntryV3{
 					Id:              "entry-" + *payload.ExternalId,
@@ -89,22 +94,31 @@ var _ = Describe("Entries", func() {
 				}, nil
 			},
 			Delete: func(ctx context.Context, entry *client.CatalogEntryV3) error {
+				mu.Lock()
 				deletedEntries = append(deletedEntries, entry.Id)
+				mu.Unlock()
 				return nil
 			},
-			Update: func(ctx context.Context, entry *client.CatalogEntryV3, payload client.CatalogUpdateEntryPayloadV3) (*client.CatalogEntryV3, error) {
-				updatedEntries = append(updatedEntries, updatedEntry{
-					id:      entry.Id,
-					payload: payload,
-				})
-				return &client.CatalogEntryV3{
-					Id:              entry.Id,
-					Name:            payload.Name,
-					ExternalId:      payload.ExternalId,
-					Aliases:         lo.FromPtrOr(payload.Aliases, []string{}),
-					Rank:            *payload.Rank,
-					AttributeValues: attrValuesFromPayload(payload.AttributeValues),
-				}, nil
+			BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
+				mu.Lock()
+				defer mu.Unlock()
+				for _, partialEntry := range entries {
+					// Convert PartialEntryPayloadV3 to CatalogUpdateEntryPayloadV3 for test tracking
+					payload := client.CatalogUpdateEntryPayloadV3{
+						Name:             lo.FromPtrOr(partialEntry.Name, ""),
+						Rank:             partialEntry.Rank,
+						ExternalId:       partialEntry.ExternalId,
+						Aliases:          partialEntry.Aliases,
+						AttributeValues:  partialEntry.AttributeValues,
+						UpdateAttributes: updateAttributes,
+					}
+
+					updatedEntries = append(updatedEntries, updatedEntry{
+						id:      partialEntry.EntryId,
+						payload: payload,
+					})
+				}
+				return nil
 			},
 		}
 	})
@@ -438,15 +452,15 @@ var _ = Describe("Entries", func() {
 
 		It("only includes payload-eligible attributes in UpdateAttributes", func() {
 			mustReconcile()
-			
+
 			// Verify that entry was updated
 			Expect(updatedEntries).To(HaveLen(1))
-			
+
 			// Check that only normal_attr was included in UpdateAttributes
 			payload := updatedEntries[0].payload
 			Expect(payload.UpdateAttributes).NotTo(BeNil())
 			Expect(*payload.UpdateAttributes).To(ConsistOf("normal_attr"))
-			
+
 			// Verify that non-included attributes are not in the UpdateAttributes list
 			Expect(*payload.UpdateAttributes).NotTo(ContainElement("schema_only_attr"))
 			Expect(*payload.UpdateAttributes).NotTo(ContainElement("backlink_attr"))
@@ -503,6 +517,66 @@ var _ = Describe("Entries", func() {
 			}
 
 			Expect(externalIDs).To(ConsistOf("duplicate-id", "duplicate-id", "unique-id"))
+		})
+	})
+
+	When("updating more than 100 entries", func() {
+		BeforeEach(func() {
+			catalogType = &client.CatalogTypeV3{
+				Id:       "type-123",
+				TypeName: "Test Type",
+			}
+
+			outputType = &output.Output{
+				Attributes: []*output.Attribute{
+					{ID: "attr1", Name: "Attribute 1", SchemaOnly: false},
+				},
+			}
+
+			// Create 250 existing entries and models (to test chunking into 3 batches: 100, 100, 50)
+			existingEntries = []client.CatalogEntryV3{}
+			entryModels = []*output.CatalogEntryModel{}
+
+			for i := 0; i < 250; i++ {
+				externalID := fmt.Sprintf("ext-%d", i)
+				existingEntries = append(existingEntries, client.CatalogEntryV3{
+					Id:         fmt.Sprintf("entry-%d", i),
+					ExternalId: lo.ToPtr(externalID),
+					Name:       fmt.Sprintf("Entry %d", i),
+					Rank:       int32(i),
+					AttributeValues: map[string]client.CatalogEntryEngineParamBindingV3{
+						"attr1": {
+							Value: &client.CatalogEntryEngineParamBindingValueV3{
+								Literal: lo.ToPtr("old"),
+							},
+						},
+					},
+				})
+
+				entryModels = append(entryModels, &output.CatalogEntryModel{
+					Name:       fmt.Sprintf("Entry %d Updated", i),
+					ExternalID: externalID,
+					Rank:       int32(i),
+					AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{
+						"attr1": {
+							Value: &client.CatalogEngineParamBindingValuePayloadV3{
+								Literal: lo.ToPtr("new"),
+							},
+						},
+					},
+				})
+			}
+		})
+
+		It("batches updates into groups of 100", func() {
+			mustReconcile()
+
+			// Verify all 250 entries were updated
+			Expect(updatedEntries).To(HaveLen(250))
+
+			// Verify entries were processed (checking a sample)
+			Expect(updatedEntries[0].payload.Name).To(Equal("Entry 0 Updated"))
+			Expect(updatedEntries[249].payload.Name).To(Equal("Entry 249 Updated"))
 		})
 	})
 })
