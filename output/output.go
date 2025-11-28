@@ -26,7 +26,6 @@ func (o Output) Validate() error {
 		validation.Field(&o.Description, validation.Required),
 		validation.Field(&o.TypeName, validation.Required, validation.Match(regexp.MustCompile(`^Custom\["[A-Z][a-zA-Z]*"\]$`))),
 		validation.Field(&o.Source, validation.Required),
-		validation.Field(&o.Attributes, validation.Required),
 	)
 }
 
