@@ -13,14 +13,15 @@ import (
 )
 
 type CatalogTypeModel struct {
-	Name            string
-	Description     string
-	TypeName        string
-	Ranked          bool
-	Attributes      []client.CatalogTypeAttributePayloadV3
-	Categories      []string
-	SourceAttribute *Attribute // tracks the origin attribute, if an enum model
-	SourceRepoUrl   string
+	Name                string
+	Description         string
+	TypeName            string
+	Ranked              bool
+	UseNameAsIdentifier bool
+	Attributes          []client.CatalogTypeAttributePayloadV3
+	Categories          []string
+	SourceAttribute     *Attribute // tracks the origin attribute, if an enum model
+	SourceRepoUrl       string
 }
 
 type CatalogEntryModel struct {
@@ -35,12 +36,13 @@ type CatalogEntryModel struct {
 // types for its attributes.
 func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTypeModel) {
 	base = &CatalogTypeModel{
-		Name:        output.Name,
-		Description: output.Description,
-		TypeName:    output.TypeName,
-		Ranked:      output.Ranked,
-		Attributes:  []client.CatalogTypeAttributePayloadV3{},
-		Categories:  output.Categories,
+		Name:                output.Name,
+		Description:         output.Description,
+		TypeName:            output.TypeName,
+		Ranked:              output.Ranked,
+		UseNameAsIdentifier: output.UseNameAsIdentifier,
+		Attributes:          []client.CatalogTypeAttributePayloadV3{},
+		Categories:          output.Categories,
 	}
 	for _, attr := range output.Attributes {
 		var attrType string

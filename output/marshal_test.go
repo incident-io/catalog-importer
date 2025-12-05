@@ -160,12 +160,13 @@ var _ = Describe("MarshalType", func() {
 
 	BeforeEach(func() {
 		output = &Output{
-			Name:        "Test Type",
-			Description: "Test description",
-			TypeName:    "test_type",
-			Ranked:      true,
-			Categories:  []string{"Category1", "Category2"},
-			Attributes:  []*Attribute{},
+			Name:                "Test Type",
+			Description:         "Test description",
+			TypeName:            "test_type",
+			Ranked:              true,
+			UseNameAsIdentifier: true,
+			Categories:          []string{"Category1", "Category2"},
+			Attributes:          []*Attribute{},
 		}
 	})
 
@@ -177,6 +178,7 @@ var _ = Describe("MarshalType", func() {
 		Expect(base.Description).To(Equal("Test description"))
 		Expect(base.TypeName).To(Equal("test_type"))
 		Expect(base.Ranked).To(BeTrue())
+		Expect(base.UseNameAsIdentifier).To(BeTrue())
 		Expect(base.Categories).To(Equal([]string{"Category1", "Category2"}))
 		Expect(base.Attributes).To(HaveLen(0))
 		Expect(enumTypes).To(HaveLen(0))
