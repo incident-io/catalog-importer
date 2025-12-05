@@ -15,6 +15,8 @@ type Output struct {
 	Description         string       `json:"description"`
 	TypeName            string       `json:"type_name"`
 	Ranked              bool         `json:"ranked"`
+	Color               null.String  `json:"color"`
+	Icon                null.String  `json:"icon"`
 	UseNameAsIdentifier bool         `json:"use_name_as_identifier"`
 	Source              SourceConfig `json:"source"`
 	Attributes          []*Attribute `json:"attributes"`

@@ -17,6 +17,8 @@ type CatalogTypeModel struct {
 	Description         string
 	TypeName            string
 	Ranked              bool
+	Color               *string
+	Icon                *string
 	UseNameAsIdentifier bool
 	Attributes          []client.CatalogTypeAttributePayloadV3
 	Categories          []string
@@ -40,6 +42,8 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		Description:         output.Description,
 		TypeName:            output.TypeName,
 		Ranked:              output.Ranked,
+		Color:               lo.Ternary(output.Color.Valid, lo.ToPtr(output.Color.String), nil),
+		Icon:                lo.Ternary(output.Icon.Valid, lo.ToPtr(output.Icon.String), nil),
 		UseNameAsIdentifier: output.UseNameAsIdentifier,
 		Attributes:          []client.CatalogTypeAttributePayloadV3{},
 		Categories:          output.Categories,
