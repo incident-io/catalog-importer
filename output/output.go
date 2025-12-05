@@ -11,13 +11,16 @@ import (
 // config for the resulting catalog type, along with catalog type attributes and how to
 // build the values of said attributes from the sourced entries.
 type Output struct {
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	TypeName    string       `json:"type_name"`
-	Ranked      bool         `json:"ranked"`
-	Source      SourceConfig `json:"source"`
-	Attributes  []*Attribute `json:"attributes"`
-	Categories  []string     `json:"categories"`
+	Name                string       `json:"name"`
+	Description         string       `json:"description"`
+	TypeName            string       `json:"type_name"`
+	Ranked              bool         `json:"ranked"`
+	Color               null.String  `json:"color"`
+	Icon                null.String  `json:"icon"`
+	UseNameAsIdentifier bool         `json:"use_name_as_identifier"`
+	Source              SourceConfig `json:"source"`
+	Attributes          []*Attribute `json:"attributes"`
+	Categories          []string     `json:"categories"`
 }
 
 func (o Output) Validate() error {
