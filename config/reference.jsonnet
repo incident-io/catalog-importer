@@ -168,6 +168,14 @@
           // prefix (e.g. GitHubRepository) and this avoids collisions.
           type_name: 'Custom["Team"]',
 
+          // Optional visual settings for this type in the dashboard.
+          color: 'blue',
+          icon: 'users',
+
+          // If true, allows referring to entries by their name as well as external_id and
+          // aliases. Defaults to false.
+          use_name_as_identifier: false,
+
           // Control how we filter and map source entries into this output.
           source: {
             // Optionally filter entries provided by this pipeline's source

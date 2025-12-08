@@ -219,27 +219,53 @@ createCatalogType:
 		var createdCatalogType client.CatalogTypeV3
 		if opt.DryRun {
 			logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
+
+			color := client.CatalogTypeV3Color("")
+			if model.Color != nil {
+				color = client.CatalogTypeV3Color(*model.Color)
+			}
+			icon := client.CatalogTypeV3Icon("")
+			if model.Icon != nil {
+				icon = client.CatalogTypeV3Icon(*model.Icon)
+			}
+
 			createdCatalogType = client.CatalogTypeV3{
-				Id:            fmt.Sprintf("DRY-RUN-%s", model.TypeName),
-				Name:          model.Name,
-				Description:   model.Description,
-				TypeName:      model.TypeName,
-				SourceRepoUrl: &opt.SourceRepoUrl,
+				Id:                  fmt.Sprintf("DRY-RUN-%s", model.TypeName),
+				Name:                model.Name,
+				Description:         model.Description,
+				TypeName:            model.TypeName,
+				Color:               color,
+				Icon:                icon,
+				UseNameAsIdentifier: model.UseNameAsIdentifier,
+				SourceRepoUrl:       &opt.SourceRepoUrl,
 			}
 		} else {
 			logger.Log("msg", "catalog type does not already exist, creating")
 			categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogCreateTypePayloadV3Categories {
 				return client.CatalogCreateTypePayloadV3Categories(category)
 			})
+			var color *client.CatalogCreateTypePayloadV3Color
+			if model.Color != nil {
+				val := client.CatalogCreateTypePayloadV3Color(*model.Color)
+				color = &val
+			}
+			var icon *client.CatalogCreateTypePayloadV3Icon
+			if model.Icon != nil {
+				val := client.CatalogCreateTypePayloadV3Icon(*model.Icon)
+				icon = &val
+			}
 
 			result, err := cl.CatalogV3CreateTypeWithResponse(ctx, client.CatalogCreateTypePayloadV3{
-				Name:          model.Name,
-				Description:   model.Description,
-				Ranked:        &model.Ranked,
-				TypeName:      lo.ToPtr(model.TypeName),
-				Categories:    lo.ToPtr(categories),
-				Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
-				SourceRepoUrl: &opt.SourceRepoUrl,
+				Name:                model.Name,
+				Description:         model.Description,
+				Ranked:              &model.Ranked,
+				TypeName:            lo.ToPtr(model.TypeName),
+				Categories:          lo.ToPtr(categories),
+				Annotations:         lo.ToPtr(getAnnotations(cfg.SyncID)),
+				Color:               color,
+				Icon:                icon,
+				UseNameAsIdentifier: lo.ToPtr(model.UseNameAsIdentifier),
+				SourceRepoUrl:       &opt.SourceRepoUrl,
 			})
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("creating catalog type with name %s", model.TypeName))
@@ -285,6 +311,13 @@ createCatalogType:
 			var updatedCatalogType client.CatalogTypeV3
 			logger.Log("msg", "dry-run active, which means we fake a response")
 			updatedCatalogType = *catalogType // they start the same
+			updatedCatalogType.UseNameAsIdentifier = model.UseNameAsIdentifier
+			if model.Color != nil {
+				updatedCatalogType.Color = client.CatalogTypeV3Color(*model.Color)
+			}
+			if model.Icon != nil {
+				updatedCatalogType.Icon = client.CatalogTypeV3Icon(*model.Icon)
+			}
 
 			// Then we pretend like we've already updated the schema, which means we rebuild the
 			// attributes.
@@ -361,15 +394,28 @@ createCatalogType:
 			categories := lo.Map(model.Categories, func(category string, _ int) client.CatalogUpdateTypePayloadV3Categories {
 				return client.CatalogUpdateTypePayloadV3Categories(category)
 			})
+			var color *client.CatalogUpdateTypePayloadV3Color
+			if model.Color != nil {
+				val := client.CatalogUpdateTypePayloadV3Color(*model.Color)
+				color = &val
+			}
+			var icon *client.CatalogUpdateTypePayloadV3Icon
+			if model.Icon != nil {
+				val := client.CatalogUpdateTypePayloadV3Icon(*model.Icon)
+				icon = &val
+			}
 
 			logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
 			result, err := cl.CatalogV3UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeJSONRequestBody{
-				Name:          model.Name,
-				Description:   model.Description,
-				Ranked:        &model.Ranked,
-				Categories:    lo.ToPtr(categories),
-				Annotations:   lo.ToPtr(getAnnotations(cfg.SyncID)),
-				SourceRepoUrl: &opt.SourceRepoUrl,
+				Name:                model.Name,
+				Description:         model.Description,
+				Ranked:              &model.Ranked,
+				Categories:          lo.ToPtr(categories),
+				Annotations:         lo.ToPtr(getAnnotations(cfg.SyncID)),
+				Color:               color,
+				Icon:                icon,
+				UseNameAsIdentifier: lo.ToPtr(model.UseNameAsIdentifier),
+				SourceRepoUrl:       &opt.SourceRepoUrl,
 			})
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("updating catalog type with name %s", model.TypeName))
