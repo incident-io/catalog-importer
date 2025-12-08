@@ -24,7 +24,7 @@ func (o Output) Validate() error {
 	return validation.ValidateStruct(&o,
 		validation.Field(&o.Name, validation.Required),
 		validation.Field(&o.Description, validation.Required),
-		validation.Field(&o.TypeName, validation.Required, validation.Match(regexp.MustCompile(`^Custom\["[A-Z][a-zA-Z]*"\]$`))),
+		validation.Field(&o.TypeName, validation.Required, validation.Match(regexp.MustCompile(`^Custom\["[a-zA-Z0-9]+"\]$`))),
 		validation.Field(&o.Source, validation.Required),
 	)
 }
