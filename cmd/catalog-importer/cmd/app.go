@@ -29,9 +29,10 @@ var (
 	app = kingpin.New("catalog-importer", "Import data into your incident.io catalog").Version(versionStanza())
 
 	// Global flags
-	debug   = app.Flag("debug", "Enable debug logging").Default("false").Bool()
-	quiet   = app.Flag("quiet", "Suppress all non-error output").Default("false").Bool()
-	noColor = app.Flag("no-color", "Disable colored output").Default("false").Bool()
+	debug     = app.Flag("debug", "Enable debug logging").Default("false").Bool()
+	quiet     = app.Flag("quiet", "Suppress all non-error output").Default("false").Bool()
+	noColor   = app.Flag("no-color", "Disable colored output").Default("false").Bool()
+	logFormat = app.Flag("log-format", "Format in which to emit logs (either json or logfmt)").Default("logfmt").String()
 
 	// Init
 	initCmd     = app.Command("init", "Initialises a new config from a template")
@@ -69,7 +70,14 @@ var (
 func Run(ctx context.Context) (err error) {
 	command := kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	switch *logFormat {
+	case "json":
+		logger = kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr))
+	case "logfmt":
+		logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
+	default:
+		return fmt.Errorf("invalid log format %q: must be 'json' or 'logfmt'", *logFormat)
+	}
 	if *debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
 	} else {
