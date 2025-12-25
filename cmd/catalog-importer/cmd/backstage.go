@@ -65,7 +65,7 @@ func (opt *BackstageOptions) Run(ctx context.Context, logger kitlog.Logger) erro
 			pipeline.Sources = []*source.Source{
 				{
 					Backstage: &source.SourceBackstage{
-						Endpoint: opt.BackstageEndpoint,
+						Endpoint: source.Credential(opt.BackstageEndpoint),
 						Token:    source.Credential(opt.BackstageToken),
 						SignJWT:  &opt.BackstageSignJWT,
 					},
