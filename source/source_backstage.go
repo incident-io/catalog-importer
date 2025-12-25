@@ -19,7 +19,7 @@ import (
 )
 
 type SourceBackstage struct {
-	Endpoint string     `json:"endpoint"` // https://backstage.company.io/api/catalog/entities/by-query
+	Endpoint Credential `json:"endpoint"` // https://backstage.company.io/api/catalog/entities/by-query
 	Token    Credential `json:"token"`
 	SignJWT  *bool      `json:"sign_jwt"`
 	Header   string     `json:"header"`
@@ -46,7 +46,7 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client 
 		return nil, errors.Wrap(err, "getting Backstage token")
 	}
 
-	endpointURL, err := url.Parse(s.Endpoint)
+	endpointURL, err := url.Parse(string(s.Endpoint))
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing Backstage URL")
 	}
@@ -89,7 +89,7 @@ func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, 
 			query.Set("filter", s.Filter)
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.Endpoint+"?"+query.Encode(), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(s.Endpoint)+"?"+query.Encode(), nil)
 		if err != nil {
 			return nil, errors.Wrap(err, "building Backstage URL")
 		}
@@ -164,7 +164,7 @@ func (s SourceBackstage) fetchEntriesByQuery(ctx context.Context, client *http.C
 			query.Set("filter", s.Filter)
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.Endpoint+"?"+query.Encode(), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(s.Endpoint)+"?"+query.Encode(), nil)
 		if err != nil {
 			return nil, errors.Wrap(err, "building Backstage URL")
 		}
