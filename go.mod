@@ -30,7 +30,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.3.0
 	github.com/samber/lo v1.52.0
-	github.com/schollz/progressbar/v3 v3.18.0
+	github.com/schollz/progressbar/v3 v3.19.0
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/objx v0.5.3
 	github.com/yargevad/filepathx v1.0.0
