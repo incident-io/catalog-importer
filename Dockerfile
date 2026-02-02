@@ -1,4 +1,4 @@
-FROM alpine:3.23.2 AS runtime
+FROM alpine:3.23.3 AS runtime
 
 # Add certificates so we can make HTTPS requests.
 RUN apk add --no-cache ca-certificates
