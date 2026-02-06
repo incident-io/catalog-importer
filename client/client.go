@@ -99,6 +99,7 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	retryClient.Backoff = attentiveBackoff
 	retryClient.HTTPClient.Transport = &http.Transport{
 		MaxConnsPerHost: 10,
+		Proxy:           http.ProxyFromEnvironment,
 	}
 
 	base := retryClient.StandardClient()
