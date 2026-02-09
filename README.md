@@ -45,8 +45,9 @@ catalog-importer init
 ```
 
 Choose from:
-- **Simple**: Start from scratch with inline data (perfect for learning)
 - **Backstage**: Import existing Backstage catalog-info.yaml files
+- **JSM Assets Integration**: Import objects from Jira Service Management (JSM) Assets
+- **Files**: Start from scratch with inline data (perfect for learning)
 
 ### 3. Set up your API key
 
