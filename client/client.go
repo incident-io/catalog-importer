@@ -97,8 +97,12 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	retryClient.RetryMax = maxRetries
 	retryClient.CheckRetry = checkRetry
 	retryClient.Backoff = attentiveBackoff
+
+	// Add a maximum number of connections and allow people to set proxy environment
+	// variables.
 	retryClient.HTTPClient.Transport = &http.Transport{
 		MaxConnsPerHost: 10,
+		Proxy:           http.ProxyFromEnvironment,
 	}
 
 	base := retryClient.StandardClient()
