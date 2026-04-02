@@ -27,7 +27,7 @@ require (
 	github.com/onsi/gomega v1.39.1
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.3.1
-	github.com/samber/lo v1.52.0
+	github.com/samber/lo v1.53.0
 	github.com/schollz/progressbar/v3 v3.19.0
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/objx v0.5.3
