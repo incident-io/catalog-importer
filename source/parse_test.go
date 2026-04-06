@@ -240,5 +240,25 @@ P125,My name is,Slim Shady
 				}))
 			})
 		})
+		
+		When("only headers, no data rows", func() {
+			BeforeEach(func() {
+				input = "id,name,description\n"
+			})
+
+			It("returns no entries", func() {
+				Expect(entries).To(BeEmpty())
+			})
+		})
+
+		When("malformed CSV", func() {
+			BeforeEach(func() {
+				input = "id,name\na,\"b\"c\n"
+			})
+
+			It("returns no entries", func() {
+				Expect(entries).To(BeEmpty())
+			})
+		})
 	})
 })
