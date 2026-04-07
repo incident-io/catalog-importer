@@ -579,4 +579,45 @@ var _ = Describe("Entries", func() {
 			Expect(updatedEntries[249].payload.Name).To(Equal("Entry 249 Updated"))
 		})
 	})
+
+	When("an existing entry has an empty array attribute and source has no value", func() {
+		BeforeEach(func() {
+			catalogType = &client.CatalogTypeV3{
+				Id:       "type-123",
+				TypeName: "Test Type",
+			}
+
+			outputType = &output.Output{
+				Attributes: []*output.Attribute{
+					{ID: "tags", Name: "Tags", SchemaOnly: false},
+				},
+			}
+
+			existingEntries = []client.CatalogEntryV3{
+				{
+					Id:         "entry-1",
+					ExternalId: lo.ToPtr("ext-1"),
+					Name:       "Entry 1",
+					AttributeValues: map[string]client.CatalogEntryEngineParamBindingV3{
+						"tags": {
+							ArrayValue: &[]client.CatalogEntryEngineParamBindingValueV3{},
+						},
+					},
+				},
+			}
+
+			entryModels = []*output.CatalogEntryModel{
+				{
+					Name:            "Entry 1",
+					ExternalID:      "ext-1",
+					AttributeValues: map[string]client.CatalogEngineParamBindingPayloadV3{},
+				},
+			}
+		})
+
+		It("does not trigger an update", func() {
+			mustReconcile()
+			Expect(updatedEntries).To(HaveLen(0))
+		})
+	})
 })

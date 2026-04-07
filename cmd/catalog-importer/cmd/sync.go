@@ -657,12 +657,11 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 
 				// Convert PartialEntryPayloadV3 to UpdatePayloadV3 for diff display
 				payload := client.CatalogUpdateEntryPayloadV3{
-					Name:             lo.FromPtrOr(partialEntry.Name, ""),
-					Rank:             partialEntry.Rank,
-					ExternalId:       partialEntry.ExternalId,
-					Aliases:          partialEntry.Aliases,
-					AttributeValues:  partialEntry.AttributeValues,
-					UpdateAttributes: updateAttributes,
+					Name:            lo.FromPtrOr(partialEntry.Name, ""),
+					Rank:            partialEntry.Rank,
+					ExternalId:      partialEntry.ExternalId,
+					Aliases:         partialEntry.Aliases,
+					AttributeValues: partialEntry.AttributeValues,
 				}
 
 				// Build existing payload for comparison
@@ -683,7 +682,7 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 							Literal: attr.Value.Literal,
 						}
 					}
-					if attr.ArrayValue != nil {
+					if attr.ArrayValue != nil && len(*attr.ArrayValue) > 0 {
 						arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
 						for _, elementValue := range *attr.ArrayValue {
 							arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
@@ -693,6 +692,24 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 						result.ArrayValue = &arrayValue
 					}
 					existingPayload.AttributeValues[attrID] = result
+				}
+
+				// Filter payloads to only show updated attributes
+				if updateAttributes != nil {
+					allowed := lo.SliceToMap(*updateAttributes, func(id string) (string, bool) {
+						return id, true
+					})
+
+					filterAttrs := func(attrs map[string]client.CatalogEngineParamBindingPayloadV3) {
+						for attrID := range attrs {
+							if !allowed[attrID] {
+								delete(attrs, attrID)
+							}
+						}
+					}
+
+					filterAttrs(payload.AttributeValues)
+					filterAttrs(existingPayload.AttributeValues)
 				}
 
 				DIFF("      ", existingPayload, payload)
