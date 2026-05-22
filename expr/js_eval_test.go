@@ -3,6 +3,7 @@ package expr
 import (
 	"context"
 	"os"
+	"time"
 
 	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/source"
@@ -138,6 +139,39 @@ var _ = Describe("Javascript evaluation", func() {
 			Expect(err).NotTo(HaveOccurred())
 			// Expecting an array with an empty string here, as that is the empty state for this function
 			Expect(evaluatedResult).To(BeNil())
+		})
+	})
+
+	Describe("JSTimeout override", func() {
+		var originalTimeout time.Duration
+
+		BeforeEach(func() {
+			originalTimeout = JSTimeout
+		})
+
+		AfterEach(func() {
+			JSTimeout = originalTimeout
+		})
+
+		It("interrupts expressions that exceed the configured timeout", func() {
+			JSTimeout = 5 * time.Millisecond
+
+			// A busy loop won't return within 5ms and the interrupt handler will fire.
+			// Today that propagates as a panic; this test exists to confirm the override
+			// is honoured (i.e. the timeout fires) rather than to pin down the exact
+			// failure shape.
+			busy := "var i = 0; while (true) { i++; } i"
+			Expect(func() {
+				_, _ = EvaluateSingleValue[int](ctx, logger, busy, sourceEntry)
+			}).To(PanicWith("timed out executing Javascript"))
+		})
+
+		It("allows expressions that complete within an increased timeout", func() {
+			JSTimeout = 5 * time.Second
+
+			result, err := EvaluateSingleValue[string](ctx, logger, "$.name", sourceEntry)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(*result).To(Equal(sourceEntry["name"]))
 		})
 	})
 

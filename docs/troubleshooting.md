@@ -75,6 +75,27 @@ curl -H "Authorization: Bearer $INCIDENT_API_KEY" https://api.incident.io/v1/cat
   - Trying to access array elements that don't exist
 - Debug expressions by adding temporary `console.log()` statements
 
+**Error:** `panic: timed out executing Javascript`
+
+Each source-filter or attribute expression has a per-evaluation timeout (250ms by default). On very large catalogs, or with expressions that do non-trivial computation, individual evaluations can exceed this even when the overall sync is comfortably fast enough.
+
+**Solutions:**
+- Raise the per-evaluation timeout via the `--js-timeout` flag on `sync` (accepts any Go duration, e.g. `500ms`, `2s`):
+
+  ```console
+  catalog-importer sync --config=importer.jsonnet --js-timeout=2s
+  ```
+
+- Or set the equivalent environment variable, which is convenient in CI:
+
+  ```console
+  export CATALOG_IMPORTER_JS_TIMEOUT=2s
+  catalog-importer sync --config=importer.jsonnet
+  ```
+
+- The timeout is _per evaluation_, not per sync, so raising it does not change the total runtime ceiling. Start with a small bump (e.g. `500ms`); a very large value can mask genuine bugs (infinite loops, accidental quadratic work) in your expressions.
+- If you find yourself raising this a lot, look for ways to simplify the expression: wrap heavy work in an IIFE so it does not pollute the shared interpreter state between evaluations, or move filtering out of the source filter and into an upstream step.
+
 ### Sync issues
 
 **Error:** `Sync ID mismatch` or `Cannot sync catalog type`

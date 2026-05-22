@@ -19,6 +19,7 @@ import (
 
 	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/incident-io/catalog-importer/v2/config"
+	"github.com/incident-io/catalog-importer/v2/expr"
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/incident-io/catalog-importer/v2/reconcile"
 	"github.com/incident-io/catalog-importer/v2/source"
@@ -36,6 +37,7 @@ type SyncOptions struct {
 	SourceRepoUrl             string
 	CatalogEntriesAPIPageSize int
 	NoProgress                bool
+	JSTimeout                 time.Duration
 }
 
 func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
@@ -69,6 +71,10 @@ func (opt *SyncOptions) Bind(cmd *kingpin.CmdClause) *SyncOptions {
 		IntVar(&opt.CatalogEntriesAPIPageSize)
 	cmd.Flag("no-progress", "Disable progress bars (useful for cron jobs and output redirection)").
 		BoolVar(&opt.NoProgress)
+	cmd.Flag("js-timeout", "Per-evaluation timeout for JavaScript source expressions (e.g. 500ms, 2s). Increase for large catalogs whose expressions need longer to evaluate.").
+		Envar("CATALOG_IMPORTER_JS_TIMEOUT").
+		Default("250ms").
+		DurationVar(&opt.JSTimeout)
 
 	return opt
 }
@@ -80,6 +86,12 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	if opt.Prune && len(opt.Targets) > 0 {
 		return errors.New("cannot use --targets with --prune")
 	}
+	if opt.JSTimeout <= 0 {
+		return errors.New("--js-timeout must be greater than zero")
+	}
+
+	expr.JSTimeout = opt.JSTimeout
+	level.Debug(logger).Log("msg", "configured JavaScript evaluation timeout", "timeout", opt.JSTimeout)
 
 	// If you're dry-running, and you have set --quiet, you're going to have a bad
 	// time because the whole point of a dry run is to produce output!

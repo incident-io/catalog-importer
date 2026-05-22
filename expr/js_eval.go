@@ -16,6 +16,12 @@ import (
 
 var vm *otto.Otto
 
+// JSTimeout is the per-evaluation timeout for JavaScript source expressions. It defaults
+// to 250ms and can be overridden by command-line callers (see the --js-timeout flag on
+// the sync command) or by setting the CATALOG_IMPORTER_JS_TIMEOUT environment variable
+// for catalogs whose expressions legitimately need longer to evaluate.
+var JSTimeout = 250 * time.Millisecond
+
 func init() {
 
 	underscore.Enable()
@@ -25,6 +31,19 @@ func init() {
 	// comes with all normal warnings.
 	vm = otto.New()
 	vm.Interrupt = make(chan func(), 1)
+
+	// Allow the per-evaluation timeout to be overridden via env var. We honour this here
+	// (rather than only on the sync flag) so library consumers and any future commands
+	// pick the value up automatically.
+	if raw := os.Getenv("CATALOG_IMPORTER_JS_TIMEOUT"); raw != "" {
+		if d, err := time.ParseDuration(raw); err == nil && d > 0 {
+			JSTimeout = d
+		} else {
+			fmt.Fprintf(os.Stderr,
+				"warning: ignoring invalid CATALOG_IMPORTER_JS_TIMEOUT=%q (expected Go duration, e.g. 500ms or 2s)\n",
+				raw)
+		}
+	}
 
 }
 
@@ -53,7 +72,7 @@ func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string
 	// If we haven't finished execution after our timeout, we trigger the interrupt handler.
 	SafelyGo(func() {
 		select {
-		case <-time.After(250 * time.Millisecond):
+		case <-time.After(JSTimeout):
 			vm.Interrupt <- func() {
 				panic("timed out executing Javascript")
 			}
