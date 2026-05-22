@@ -3,6 +3,7 @@ package output
 import (
 	"context"
 	"fmt"
+	"time"
 
 	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
@@ -132,8 +133,8 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 // entries have already been filtered.
 //
 // The majority of the work comes from compiling and evaluating the JS expressions that
-// marshal the catalog entries from source.
-func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry) ([]*CatalogEntryModel, error) {
+// marshal the catalog entries from source. jsTimeout bounds each individual evaluation.
+func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry, jsTimeout time.Duration) ([]*CatalogEntryModel, error) {
 	nameSource := output.Source.Name
 	externalIDSource := output.Source.ExternalID
 	aliasesSource := output.Source.Aliases
@@ -154,12 +155,12 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 
 	catalogEntryModels := []*CatalogEntryModel{}
 	for _, entry := range entries {
-		name, err := expr.EvaluateSingleValue[string](ctx, logger, nameSource, entry)
+		name, err := expr.EvaluateSingleValue[string](ctx, logger, nameSource, entry, jsTimeout)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry name")
 		}
 
-		externalID, err := expr.EvaluateSingleValue[string](ctx, logger, externalIDSource, entry)
+		externalID, err := expr.EvaluateSingleValue[string](ctx, logger, externalIDSource, entry, jsTimeout)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating entry external ID")
 		}
@@ -167,7 +168,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 		var rank *int
 		if rankSource := output.Source.Rank; rankSource.Valid && rankSource.String != "" {
 			var err error
-			rank, err = expr.EvaluateSingleValue[int](ctx, logger, rankSource.String, entry)
+			rank, err = expr.EvaluateSingleValue[int](ctx, logger, rankSource.String, entry, jsTimeout)
 			if err != nil {
 				return nil, errors.Wrap(err, "evaluating entry rank")
 			}
@@ -178,12 +179,12 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 		aliases := []string{}
 		for idx, aliasSource := range aliasesSource {
 			toAdd := []string{}
-			alias, err := expr.EvaluateSingleValue[string](ctx, logger, aliasSource, entry)
+			alias, err := expr.EvaluateSingleValue[string](ctx, logger, aliasSource, entry, jsTimeout)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 			}
 			if alias == nil {
-				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, logger, aliasSource, entry)
+				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, logger, aliasSource, entry, jsTimeout)
 				if arrayErr != nil {
 					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
 				}
@@ -207,7 +208,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 			binding := client.CatalogEngineParamBindingPayloadV3{}
 
 			if attributeByID[attributeID].Array {
-				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry)
+				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry, jsTimeout)
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
@@ -232,7 +233,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 					binding.ArrayValue = &arrayValue
 				}
 			} else {
-				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger)
+				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger, jsTimeout)
 				if err != nil {
 					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
 				}
@@ -267,7 +268,7 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 	return catalogEntryModels, nil
 }
 
-func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger) (*string, error) {
+func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger, jsTimeout time.Duration) (*string, error) {
 	var literal *string
 
 	// If we have an attribute type of type Bool or Number, we can try to evaluate the program against the scope
@@ -277,17 +278,17 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 	if attribute != nil && attribute.Type.Valid {
 		switch attribute.Type.String {
 		case "Bool":
-			literal, _ = evaluateEntryWithType[bool](ctx, src, entry, logger)
+			literal, _ = evaluateEntryWithType[bool](ctx, src, entry, logger, jsTimeout)
 			if literal != nil {
 				return literal, nil
 			}
 		case "Number":
 			// Number accepts float or int, so we'll try to evaluate as a float first.
-			literal, _ = evaluateEntryWithType[float64](ctx, src, entry, logger)
+			literal, _ = evaluateEntryWithType[float64](ctx, src, entry, logger, jsTimeout)
 			if literal != nil {
 				return literal, nil
 			}
-			literal, _ = evaluateEntryWithType[int64](ctx, src, entry, logger)
+			literal, _ = evaluateEntryWithType[int64](ctx, src, entry, logger, jsTimeout)
 			if literal != nil {
 				return literal, nil
 			}
@@ -296,11 +297,11 @@ func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[s
 
 	// If we have an attribute type of type String, or we failed to evaluate the program against the scope
 	// with the appropriate type, we'll try to evaluate as a string literal.
-	return evaluateEntryWithType[string](ctx, src, entry, logger)
+	return evaluateEntryWithType[string](ctx, src, entry, logger, jsTimeout)
 }
 
-func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger) (*string, error) {
-	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, logger, src, entry)
+func evaluateEntryWithType[ReturnType any](ctx context.Context, src string, entry map[string]any, logger kitlog.Logger, jsTimeout time.Duration) (*string, error) {
+	literal, err := expr.EvaluateSingleValue[ReturnType](ctx, logger, src, entry, jsTimeout)
 	if err != nil {
 		return nil, err
 	}

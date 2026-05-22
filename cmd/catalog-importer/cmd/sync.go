@@ -19,7 +19,6 @@ import (
 
 	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/incident-io/catalog-importer/v2/config"
-	"github.com/incident-io/catalog-importer/v2/expr"
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/incident-io/catalog-importer/v2/reconcile"
 	"github.com/incident-io/catalog-importer/v2/source"
@@ -89,9 +88,6 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 	if opt.JSTimeout <= 0 {
 		return errors.New("--js-timeout must be greater than zero")
 	}
-
-	expr.JSTimeout = opt.JSTimeout
-	level.Debug(logger).Log("msg", "configured JavaScript evaluation timeout", "timeout", opt.JSTimeout)
 
 	// If you're dry-running, and you have set --quiet, you're going to have a bad
 	// time because the whole point of a dry run is to produce output!
@@ -530,14 +526,14 @@ createCatalogType:
 			OUT("\n    ↻ %s", outputType.TypeName)
 
 			// Filter source for each of the output types
-			entries, err := output.Collect(ctx, logger, outputType, sourcedEntries)
+			entries, err := output.Collect(ctx, logger, outputType, sourcedEntries, opt.JSTimeout)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}
 			OUT("      ✔ Building entries... (found %d entries matching filters)", len(entries))
 
 			// Marshal entries using the JS expressions.
-			entryModels, err := output.MarshalEntries(ctx, logger, outputType, entries)
+			entryModels, err := output.MarshalEntries(ctx, logger, outputType, entries, opt.JSTimeout)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("outputs.%d (type_name='%s')", idx, outputType.TypeName))
 			}

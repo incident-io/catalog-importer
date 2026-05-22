@@ -2,6 +2,7 @@ package output
 
 import (
 	"context"
+	"time"
 
 	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/expr"
@@ -10,8 +11,8 @@ import (
 )
 
 // Collect filters the list of entries against the source filter on the output, returning
-// a list of all entries which pass the filter.
-func Collect(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry) ([]source.Entry, error) {
+// a list of all entries which pass the filter. jsTimeout bounds each filter evaluation.
+func Collect(ctx context.Context, logger kitlog.Logger, output *Output, entries []source.Entry, jsTimeout time.Duration) ([]source.Entry, error) {
 	if !output.Source.Filter.Valid {
 		return entries, nil // no-op, the filter is blank
 	}
@@ -20,7 +21,7 @@ func Collect(ctx context.Context, logger kitlog.Logger, output *Output, entries 
 
 	filteredEntries := []source.Entry{}
 	for _, entry := range entries {
-		result, err := expr.EvaluateSingleValue[bool](ctx, logger, src, entry)
+		result, err := expr.EvaluateSingleValue[bool](ctx, logger, src, entry, jsTimeout)
 		if err != nil {
 			return nil, errors.Wrap(err, "evaluating filter for entry")
 		}

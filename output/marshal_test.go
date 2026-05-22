@@ -6,6 +6,7 @@ import (
 
 	kitlog "github.com/go-kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
+	"github.com/incident-io/catalog-importer/v2/expr"
 	"github.com/incident-io/catalog-importer/v2/source"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -96,7 +97,7 @@ var _ = Describe("Marshalling data", func() {
 
 				entries := []source.Entry{sourceEntry}
 
-				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries, expr.DefaultJSTimeout)
 
 				expectedAliasResult := []string{"aliasInAnArray", "anotherAliasInAnArray"}
 				Expect(err).NotTo(HaveOccurred())
@@ -114,7 +115,7 @@ var _ = Describe("Marshalling data", func() {
 					"aliases":     "singleAlias",
 				}
 				entries := []source.Entry{sourceEntry}
-				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries, expr.DefaultJSTimeout)
 				expectedAliasResult := []string{"singleAlias"}
 				Expect(err).NotTo(HaveOccurred())
 				Expect(res[0].Aliases).To(Equal(expectedAliasResult))
@@ -145,7 +146,7 @@ var _ = Describe("Marshalling data", func() {
 					"description": "A super important component. A structurally integral component tbh.",
 				}
 				entries := []source.Entry{sourceEntry}
-				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries)
+				res, err := MarshalEntries(ctx, logger, catalogTypeOutput, entries, expr.DefaultJSTimeout)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(res[0].AttributeValues).To(BeEmpty())
 			})

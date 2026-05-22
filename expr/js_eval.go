@@ -16,11 +16,9 @@ import (
 
 var vm *otto.Otto
 
-// JSTimeout is the per-evaluation timeout for JavaScript source expressions. It defaults
-// to 250ms and can be overridden by command-line callers (see the --js-timeout flag on
-// the sync command) or by setting the CATALOG_IMPORTER_JS_TIMEOUT environment variable
-// for catalogs whose expressions legitimately need longer to evaluate.
-var JSTimeout = 250 * time.Millisecond
+// DefaultJSTimeout is the default per-evaluation timeout applied when callers don't
+// specify their own. Exposed as a constant so the CLI and tests can share the value.
+const DefaultJSTimeout = 250 * time.Millisecond
 
 func init() {
 
@@ -32,24 +30,12 @@ func init() {
 	vm = otto.New()
 	vm.Interrupt = make(chan func(), 1)
 
-	// Allow the per-evaluation timeout to be overridden via env var. We honour this here
-	// (rather than only on the sync flag) so library consumers and any future commands
-	// pick the value up automatically.
-	if raw := os.Getenv("CATALOG_IMPORTER_JS_TIMEOUT"); raw != "" {
-		if d, err := time.ParseDuration(raw); err == nil && d > 0 {
-			JSTimeout = d
-		} else {
-			fmt.Fprintf(os.Stderr,
-				"warning: ignoring invalid CATALOG_IMPORTER_JS_TIMEOUT=%q (expected Go duration, e.g. 500ms or 2s)\n",
-				raw)
-		}
-	}
-
 }
 
 // EvaluateJavascript can evaluate a source Javascript program having set the given
-// subject into the `$` variable.
-func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string, subject any) (result otto.Value, err error) {
+// subject into the `$` variable. Evaluation is bounded by timeout; if it elapses, the
+// underlying Otto VM is interrupted and the call surfaces as a panic.
+func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string, subject any, timeout time.Duration) (result otto.Value, err error) {
 	var halted bool
 	defer func() {
 		if caught := recover(); caught != nil {
@@ -72,7 +58,7 @@ func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string
 	// If we haven't finished execution after our timeout, we trigger the interrupt handler.
 	SafelyGo(func() {
 		select {
-		case <-time.After(JSTimeout):
+		case <-time.After(timeout):
 			vm.Interrupt <- func() {
 				panic("timed out executing Javascript")
 			}
@@ -97,8 +83,8 @@ func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string
 
 }
 
-func EvaluateArray[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any) ([]ReturnType, error) {
-	result, err := EvaluateJavascript(ctx, logger, source, subject)
+func EvaluateArray[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any, timeout time.Duration) ([]ReturnType, error) {
+	result, err := EvaluateJavascript(ctx, logger, source, subject, timeout)
 	if err != nil {
 		return nil, errors.Wrap(err, "evaluating array value")
 	}
@@ -146,9 +132,9 @@ func EvaluateArray[ReturnType any](ctx context.Context, logger kitlog.Logger, so
 	return resultValues, nil
 }
 
-func EvaluateSingleValue[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any) (*ReturnType, error) {
+func EvaluateSingleValue[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any, timeout time.Duration) (*ReturnType, error) {
 	var emptyResult *ReturnType
-	result, err := EvaluateJavascript(ctx, logger, source, subject)
+	result, err := EvaluateJavascript(ctx, logger, source, subject, timeout)
 	if err != nil {
 		return emptyResult, errors.Wrap(err, "evaluating single value")
 	}
