@@ -224,6 +224,11 @@ createCatalogType:
 			}
 		}
 
+		var owningTeamIDs *[]string
+		if model.OwningTeamIDs != nil {
+			owningTeamIDs = lo.ToPtr(model.OwningTeamIDs)
+		}
+
 		var createdCatalogType client.CatalogTypeV3
 		if opt.DryRun {
 			logger.Log("msg", "catalog type does not already exist, simulating create for --dry-run")
@@ -244,6 +249,7 @@ createCatalogType:
 				TypeName:            model.TypeName,
 				Color:               color,
 				Icon:                icon,
+				OwningTeamIds:       owningTeamIDs,
 				UseNameAsIdentifier: model.UseNameAsIdentifier,
 				SourceRepoUrl:       &opt.SourceRepoUrl,
 			}
@@ -272,6 +278,7 @@ createCatalogType:
 				Annotations:         lo.ToPtr(getAnnotations(cfg.SyncID)),
 				Color:               color,
 				Icon:                icon,
+				OwningTeamIds:       owningTeamIDs,
 				UseNameAsIdentifier: lo.ToPtr(model.UseNameAsIdentifier),
 				SourceRepoUrl:       &opt.SourceRepoUrl,
 			})
@@ -325,6 +332,9 @@ createCatalogType:
 			}
 			if model.Icon != nil {
 				updatedCatalogType.Icon = client.CatalogTypeV3Icon(*model.Icon)
+			}
+			if model.OwningTeamIDs != nil {
+				updatedCatalogType.OwningTeamIds = lo.ToPtr(model.OwningTeamIDs)
 			}
 
 			// Then we pretend like we've already updated the schema, which means we rebuild the
@@ -412,6 +422,10 @@ createCatalogType:
 				val := client.CatalogUpdateTypePayloadV3Icon(*model.Icon)
 				icon = &val
 			}
+			var owningTeamIDs *[]string
+			if model.OwningTeamIDs != nil {
+				owningTeamIDs = lo.ToPtr(model.OwningTeamIDs)
+			}
 
 			logger.Log("msg", "updating catalog type", "catalog_type_id", catalogType.Id)
 			result, err := cl.CatalogV3UpdateTypeWithResponse(ctx, catalogType.Id, client.CatalogV3UpdateTypeJSONRequestBody{
@@ -422,6 +436,7 @@ createCatalogType:
 				Annotations:         lo.ToPtr(getAnnotations(cfg.SyncID)),
 				Color:               color,
 				Icon:                icon,
+				OwningTeamIds:       owningTeamIDs,
 				UseNameAsIdentifier: lo.ToPtr(model.UseNameAsIdentifier),
 				SourceRepoUrl:       &opt.SourceRepoUrl,
 			})

@@ -21,6 +21,7 @@ type Output struct {
 	Source              SourceConfig `json:"source"`
 	Attributes          []*Attribute `json:"attributes"`
 	Categories          []string     `json:"categories"`
+	OwningTeamIDs       []string     `json:"owning_team_ids"`
 }
 
 func (o Output) Validate() error {

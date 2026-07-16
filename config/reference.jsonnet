@@ -172,6 +172,13 @@
           color: 'blue',
           icon: 'users',
 
+          // Optional catalog entry IDs of the teams that own this type. Omit the
+          // field to leave ownership unmanaged (anything set in the dashboard is
+          // preserved); set [] to clear all owners. When team catalog permissions
+          // are set up, the API key must be able to assign the referenced teams
+          // (see the Team ownership section in docs/outputs.md).
+          owning_team_ids: ['01FCNDV6P870EA6S7TK1DSYDG0'],
+
           // If true, allows referring to entries by their name as well as external_id and
           // aliases. Defaults to false.
           use_name_as_identifier: false,

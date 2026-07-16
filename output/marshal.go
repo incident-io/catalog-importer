@@ -23,6 +23,7 @@ type CatalogTypeModel struct {
 	UseNameAsIdentifier bool
 	Attributes          []client.CatalogTypeAttributePayloadV3
 	Categories          []string
+	OwningTeamIDs       []string
 	SourceAttribute     *Attribute // tracks the origin attribute, if an enum model
 	SourceRepoUrl       string
 }
@@ -48,6 +49,7 @@ func MarshalType(output *Output) (base *CatalogTypeModel, enumTypes []*CatalogTy
 		UseNameAsIdentifier: output.UseNameAsIdentifier,
 		Attributes:          []client.CatalogTypeAttributePayloadV3{},
 		Categories:          output.Categories,
+		OwningTeamIDs:       output.OwningTeamIDs,
 	}
 	for _, attr := range output.Attributes {
 		var attrType string
