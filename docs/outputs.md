@@ -213,3 +213,36 @@ BackstageGroup type, which is managed in the dashboard:
   ],
 }
 ```
+
+### Team ownership
+
+Set `owning_team_ids` on an output to control which teams own the resulting
+catalog type. The value is a list of catalog entry IDs for the teams:
+
+```jsonnet
+{
+  name: 'Team',
+  type_name: 'Custom["Team"]',
+  owning_team_ids: ['01FCNDV6P870EA6S7TK1DSYDG0'],
+  ...
+}
+```
+
+Ownership is only managed when the field is present:
+
+- Omit `owning_team_ids` to leave ownership untouched. Owners set in the
+  dashboard are preserved across syncs.
+- Set it to a list of team IDs to own the type by exactly those teams.
+- Set it to `[]` to clear all owners.
+
+When team catalog permissions are set up for your organisation, the API key's
+team scope matters, and the simplest option is a key without team restrictions,
+which is always allowed:
+
+- Creating a type with owners requires the key to have catalog type create
+  permission on every team you reference.
+- Changing the owners of a type that is already owned is a global action: a
+  team-scoped key cannot reassign ownership even when it controls the teams
+  involved. Syncs that leave ownership unchanged are unaffected.
+
+If team permissions aren't set up, none of these restrictions apply.

@@ -169,6 +169,7 @@ var _ = Describe("MarshalType", func() {
 			Icon:                null.StringFrom("users"),
 			UseNameAsIdentifier: true,
 			Categories:          []string{"Category1", "Category2"},
+			OwningTeamIDs:       []string{"01FCNDV6P870EA6S7TK1DSYDG0"},
 			Attributes:          []*Attribute{},
 		}
 	})
@@ -185,8 +186,17 @@ var _ = Describe("MarshalType", func() {
 		Expect(base.Icon).To(PointTo(Equal("users")))
 		Expect(base.UseNameAsIdentifier).To(BeTrue())
 		Expect(base.Categories).To(Equal([]string{"Category1", "Category2"}))
+		Expect(base.OwningTeamIDs).To(Equal([]string{"01FCNDV6P870EA6S7TK1DSYDG0"}))
 		Expect(base.Attributes).To(HaveLen(0))
 		Expect(enumTypes).To(HaveLen(0))
+	})
+
+	It("leaves owning team IDs nil when unset", func() {
+		output.OwningTeamIDs = nil
+
+		base, _ := MarshalType(output)
+
+		Expect(base.OwningTeamIDs).To(BeNil())
 	})
 
 	It("includes standard attributes with API mode", func() {
