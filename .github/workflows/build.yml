@@ -51,6 +51,14 @@ jobs:
           version: "~> v1"
           args: release --snapshot --clean
       -
+        # Prove the cross-built images actually execute, not just build
+        # (arm64 runs under QEMU emulation).
+        name: Smoke test snapshot images
+        if: github.ref != 'refs/heads/master'
+        run: |
+          docker run --rm --platform linux/amd64 incidentio/catalog-importer:latest-amd64 --help
+          docker run --rm --platform linux/arm64 incidentio/catalog-importer:latest-arm64 --help
+      -
         id: tag
         name: Tag if new version
         if: github.ref == 'refs/heads/master'
