@@ -33,7 +33,12 @@ jobs:
         name: Run tests
         run: ginkgo -r .
       -
-        # Needed to cross-build the arm64 Docker image on the amd64 runner.
+        # Not needed to *build* the arm64 image (buildx handles cross-arch
+        # builds on its own, RUN steps included) — but the smoke test below
+        # runs the arm64 image on the host engine, which needs binfmt
+        # handlers registered. Verified empirically: without this, the
+        # snapshot build passes and the arm64 smoke run fails with an exec
+        # format error.
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       -
