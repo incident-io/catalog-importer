@@ -33,6 +33,24 @@ jobs:
         name: Run tests
         run: ginkgo -r .
       -
+        # Needed to cross-build the arm64 Docker image on the amd64 runner.
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        # The real release only runs on master, so validate the release
+        # config (including the multi-arch Docker builds) on every branch to
+        # catch breakage before it reaches a release.
+        name: Validate release config (snapshot)
+        if: github.ref != 'refs/heads/master'
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: "~> v1"
+          args: release --snapshot --clean
+      -
         id: tag
         name: Tag if new version
         if: github.ref == 'refs/heads/master'
@@ -40,22 +58,23 @@ jobs:
           CURRENT_VERSION="v$(cat cmd/catalog-importer/cmd/VERSION)"
           if [[ $(git tag -l "${CURRENT_VERSION}") == "${CURRENT_VERSION}" ]]; then
             echo "Version ${CURRENT_VERSION} is already released"
+            echo "release=no" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           git tag "${CURRENT_VERSION}"
           git push --tags
+          echo "release=yes" >> "$GITHUB_OUTPUT"
       -
         name: Login to Docker Hub
-        if: github.ref == 'refs/heads/master'
+        if: steps.tag.outputs.release == 'yes'
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_HUB_PUBLISHER_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PUBLISHER_KEY }}
       -
         name: Run GoReleaser
-        if: github.ref == 'refs/heads/master'
-        continue-on-error: true
+        if: steps.tag.outputs.release == 'yes'
         uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser
