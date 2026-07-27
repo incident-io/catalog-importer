@@ -34,8 +34,38 @@ brews:
     homepage: https://incident.io/
     description: Official incident.io catalog importer, for syncing catalog entries.
 
+# Build one Docker image per architecture, then roll them up into multi-arch
+# manifests under the public tags so the image runs on both amd64 and arm64
+# nodes. buildx (plus QEMU in CI) is required to cross-build the arm64 image
+# on the amd64 runner.
 dockers:
   - image_templates:
-      - incidentio/{{ .ProjectName }}:latest
-      - incidentio/{{ .ProjectName }}:{{ .Tag }}
-      - incidentio/{{ .ProjectName }}:v{{ .Major }}
+      - incidentio/{{ .ProjectName }}:{{ .Tag }}-amd64
+      - incidentio/{{ .ProjectName }}:v{{ .Major }}-amd64
+      - incidentio/{{ .ProjectName }}:latest-amd64
+    use: buildx
+    goarch: amd64
+    build_flag_templates:
+      - --platform=linux/amd64
+  - image_templates:
+      - incidentio/{{ .ProjectName }}:{{ .Tag }}-arm64
+      - incidentio/{{ .ProjectName }}:v{{ .Major }}-arm64
+      - incidentio/{{ .ProjectName }}:latest-arm64
+    use: buildx
+    goarch: arm64
+    build_flag_templates:
+      - --platform=linux/arm64
+
+docker_manifests:
+  - name_template: incidentio/{{ .ProjectName }}:{{ .Tag }}
+    image_templates:
+      - incidentio/{{ .ProjectName }}:{{ .Tag }}-amd64
+      - incidentio/{{ .ProjectName }}:{{ .Tag }}-arm64
+  - name_template: incidentio/{{ .ProjectName }}:v{{ .Major }}
+    image_templates:
+      - incidentio/{{ .ProjectName }}:v{{ .Major }}-amd64
+      - incidentio/{{ .ProjectName }}:v{{ .Major }}-arm64
+  - name_template: incidentio/{{ .ProjectName }}:latest
+    image_templates:
+      - incidentio/{{ .ProjectName }}:latest-amd64
+      - incidentio/{{ .ProjectName }}:latest-arm64
