@@ -14,6 +14,14 @@ The catalog importer is the official CLI tool for syncing catalog data into [inc
 - **Rich data transformation**: Filter, transform, and enrich your catalog data during import
 - **Team ownership**: Maintain catalog data alongside your code where teams can easily update it
 
+## Questions about the Catalog?
+
+If you're just getting started with your Catalog, you can [find basic info on Catalog types, setup, and data here](https://docs.incident.io/catalog/catalog-setup).
+
+While using the importer, you may find it useful to use the API for debugging or reference:
+- [Full API reference](https://docs.incident.io/api-reference/introduction)
+- [Catalog Types API reference](https://docs.incident.io/api-reference/catalog-types-v3)
+
 ## Quick start
 
 ### 1. Install the importer
