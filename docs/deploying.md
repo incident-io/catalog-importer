@@ -75,7 +75,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.23"
+          go-version: "1.27.0"
       - name: Install catalog-importer
         run: |
           VERSION="2.4.3"
