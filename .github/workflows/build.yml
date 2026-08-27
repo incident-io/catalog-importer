@@ -40,7 +40,7 @@ jobs:
         # snapshot build passes and the arm64 smoke run fails with an exec
         # format error.
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
