@@ -43,7 +43,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       -
         # The real release only runs on master, so validate the release
         # config (including the multi-arch Docker builds) on every branch to
