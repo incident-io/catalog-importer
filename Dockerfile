@@ -1,13 +1,14 @@
 FROM alpine:3.24.1 AS runtime
 
-# Add certificates so we can make HTTPS requests.
+# Bring the base image up to the current patch versions, then add certificates
+# so we can make HTTPS requests.
 #
-# Use ca-certificates-bundle rather than ca-certificates. The latter depends on
-# libcrypto3 (for the update-ca-certificates script), which pulls OpenSSL into
-# the image. We build with CGO_ENABLED=0, so TLS comes from crypto/tls in the Go
-# standard library and never links OpenSSL. The bundle package has no
-# dependencies and provides the same certificate file.
-RUN apk add --no-cache ca-certificates-bundle
+# The upgrade is doing the security work here. OpenSSL is present in the base
+# image regardless of what we install, because busybox's ssl_client depends on
+# it, so pinning the base alone leaves us on whatever OpenSSL that base release
+# happened to ship. Alpine publishes fixes into the 3.24 repository well before
+# it cuts a new base image, and this is how we pick them up.
+RUN apk upgrade --no-cache && apk add --no-cache ca-certificates
 
 # goreleaser supplies this for us.
 COPY catalog-importer /usr/local/bin
