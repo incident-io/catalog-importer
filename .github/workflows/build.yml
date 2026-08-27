@@ -22,7 +22,10 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v7
         with:
-          go-version: '1.27.0'
+          # Track the latest stable Go patch rather than pinning one. A
+          # hardcoded version only moves when somebody remembers to move it,
+          # and the released binary carries whatever toolchain built it.
+          go-version: 'stable'
       -
         name: Build
         run: go run cmd/catalog-importer/main.go --help
