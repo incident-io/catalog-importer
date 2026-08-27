@@ -64,8 +64,28 @@ jobs:
         name: Smoke test snapshot images
         if: github.ref != 'refs/heads/master'
         run: |
-          docker run --rm --platform linux/amd64 incidentio/catalog-importer:latest-amd64 --help
-          docker run --rm --platform linux/arm64 incidentio/catalog-importer:latest-arm64 --help
+          set -euo pipefail
+
+          for arch in amd64 arm64; do
+            image="incidentio/catalog-importer:latest-${arch}"
+
+            docker run --rm --platform "linux/${arch}" "$image" --help
+
+            # Prove the image completes a TLS handshake using the certificate
+            # bundle we ship. `--help` does not touch the network, so it could
+            # not catch a missing or broken bundle. `types` calls the real API,
+            # and a 401 can only come back after the handshake and the HTTP
+            # round trip both succeeded, which is all we assert here. A broken
+            # bundle fails with an x509 error well before that.
+            out=$(docker run --rm --platform "linux/${arch}" "$image" \
+              types --api-key=invalid 2>&1 || true)
+
+            echo "${out}"
+            if ! grep -q 'status 401' <<<"${out}"; then
+              echo "::error::${arch}: expected a 401 from the API. TLS or the certificate bundle looks broken."
+              exit 1
+            fi
+          done
       -
         id: tag
         name: Tag if new version
