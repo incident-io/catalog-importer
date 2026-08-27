@@ -11,32 +11,103 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       -
-        # Fails the job. A CRITICAL with a patched package available is
-        # something we can act on today, and it is what downstream registry
-        # scanners block their users on.
-        name: Fail on actionable CRITICAL
+        # exit-code stays 0 so we always reach the reporting steps below. The
+        # decision about what is worth acting on is made here, not by trivy.
+        name: Scan the published image
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: incidentio/catalog-importer:latest
-          severity: CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
-      -
-        # Reported, never enforced. HIGH findings regularly sit in the base
-        # image with no patched package published yet. Failing on those leaves
-        # the job red for weeks through no fault of ours, and a job that is
-        # always red gets muted, which costs us the CRITICAL signal above.
-        name: Report everything else
-        if: always()
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: incidentio/catalog-importer:latest
+          format: json
+          output: trivy.json
           severity: CRITICAL,HIGH,MEDIUM
           ignore-unfixed: false
           exit-code: '0'
+      -
+        # Everything found, on the run page itself, so nobody has to open a log
+        # to see the state of the image.
+        name: Write the run summary
+        run: |
+          set -euo pipefail
+
+          {
+            echo "## Scan of \`incidentio/catalog-importer:latest\`"
+            echo
+            echo "| Severity | Package | Vulnerability | Installed | Fixed in |"
+            echo "| -- | -- | -- | -- | -- |"
+            jq -r '
+              [.Results[]?.Vulnerabilities[]?]
+              | sort_by(.Severity)
+              | .[]
+              | "| \(.Severity) | \(.PkgName) | \(.VulnerabilityID) | \(.InstalledVersion) | \(.FixedVersion // "no fix yet") |"
+            ' trivy.json
+          } >> "$GITHUB_STEP_SUMMARY"
+      -
+        # We report a CRITICAL only when a patched package exists, because that
+        # is the subset we can actually do something about today. HIGH findings
+        # regularly sit in the base image for weeks with nothing published to
+        # upgrade to, and raising an issue nobody can close teaches people to
+        # ignore the issues.
+        name: Report actionable findings as an issue
+        env:
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        run: |
+          set -euo pipefail
+
+          jq -r '
+            [.Results[]?.Vulnerabilities[]?
+             | select(.Severity == "CRITICAL" and ((.FixedVersion // "") != ""))]
+            | unique_by(.VulnerabilityID)
+            | sort_by(.VulnerabilityID)
+          ' trivy.json > actionable.json
+
+          count=$(jq 'length' actionable.json)
+          if [ "$count" -eq 0 ]; then
+            echo "No actionable CRITICAL findings."
+            exit 0
+          fi
+
+          # Identify this finding set by its CVE ids, so a scan that finds the
+          # same thing tomorrow does not open a second issue, but a scan that
+          # finds something new does.
+          fingerprint=$(jq -r '[.[].VulnerabilityID] | join(",")' actionable.json)
+
+          gh label create security-scan \
+            --description 'Raised by the scheduled image scan' \
+            --color B60205 --force
+
+          if gh issue list --label security-scan --state open \
+               --json body --jq '.[].body' | grep -qF "scan-fingerprint: ${fingerprint}"; then
+            echo "An open issue already tracks this exact finding set. Nothing to do."
+            exit 0
+          fi
+
+          {
+            echo "The scheduled scan found ${count} CRITICAL vulnerability(ies) in"
+            echo "\`incidentio/catalog-importer:latest\` that have a patched version available."
+            echo
+            echo "| Package | Vulnerability | Installed | Fixed in |"
+            echo "| -- | -- | -- | -- |"
+            jq -r '.[] | "| \(.PkgName) | [\(.VulnerabilityID)](\(.PrimaryURL // "")) | \(.InstalledVersion) | \(.FixedVersion) |"' actionable.json
+            echo
+            echo "Reproduce with:"
+            echo
+            echo '```'
+            echo "trivy image incidentio/catalog-importer:latest --severity CRITICAL --ignore-unfixed"
+            echo '```'
+            echo
+            echo "[Run that found this](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+            echo
+            echo "<!-- scan-fingerprint: ${fingerprint} -->"
+          } > issue.md
+
+          gh issue create \
+            --title "Scheduled scan: ${count} actionable CRITICAL in the published image" \
+            --label security-scan \
+            --body-file issue.md
