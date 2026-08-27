@@ -1,0 +1,42 @@
+name: Scan
+
+# The published image gains vulnerabilities without any commit landing here,
+# because they come from the base image and from advisories published after we
+# built it. Scanning on push cannot see that, so scan the tag users pull on a
+# schedule instead.
+on:
+  schedule:
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        # Fails the job. A CRITICAL with a patched package available is
+        # something we can act on today, and it is what downstream registry
+        # scanners block their users on.
+        name: Fail on actionable CRITICAL
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: incidentio/catalog-importer:latest
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      -
+        # Reported, never enforced. HIGH findings regularly sit in the base
+        # image with no patched package published yet. Failing on those leaves
+        # the job red for weeks through no fault of ours, and a job that is
+        # always red gets muted, which costs us the CRITICAL signal above.
+        name: Report everything else
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: incidentio/catalog-importer:latest
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: false
+          exit-code: '0'
