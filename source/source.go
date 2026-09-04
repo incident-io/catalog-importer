@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"sync"
+	"time"
 
 	kitlog "github.com/go-kit/kit/log"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -84,11 +86,34 @@ func (s Source) Backend() (SourceBackend, error) {
 
 var ErrInvalidSourceEmpty = fmt.Errorf("invalid source, must specify at least one type of source configuration")
 
+// httpClient is the client shared by every source that makes HTTP requests, so that
+// connections to the same host are pooled and reused across requests. Note that the
+// GitHub source builds its own client via oauth2.NewClient and so does not use this.
+//
+// This deliberately uses cleanhttp.DefaultPooledTransport rather than
+// cleanhttp.DefaultClient: the latter sets DisableKeepAlives, which meant each request
+// opened a fresh TCP connection. Paginating a large Backstage catalog then burned one
+// connection (and one NAT source port) per page, which could exhaust the SNAT port pool.
+var httpClient = sync.OnceValue(func() *http.Client {
+	transport := cleanhttp.DefaultPooledTransport()
+
+	// Expire idle connections below the idle timeout of anything likely to sit between us
+	// and the source (ALB 60s, nginx 75s, many proxies 30-60s), so we don't pull a
+	// silently reaped connection out of the pool.
+	transport.IdleConnTimeout = 30 * time.Second
+
+	// Fail rather than hang if a server accepts the connection but never responds. This
+	// only covers time up to the response headers, so it doesn't cap large page bodies.
+	transport.ResponseHeaderTimeout = 60 * time.Second
+
+	return &http.Client{Transport: transport}
+})
+
 func (s Source) Load(ctx context.Context, logger kitlog.Logger) ([]*SourceEntry, error) {
 	source, err := s.Backend()
 	if err != nil {
 		return nil, err
 	}
 
-	return source.Load(ctx, logger, cleanhttp.DefaultClient())
+	return source.Load(ctx, logger, httpClient())
 }

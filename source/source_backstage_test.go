@@ -3,8 +3,12 @@ package source_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
+	"sync/atomic"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/hashicorp/go-cleanhttp"
@@ -251,6 +255,64 @@ var _ = Describe("SourceBackstage", func() {
 				})
 			})
 
+		})
+	})
+
+	// Paginating a large catalog used to open one TCP connection per page, which could
+	// exhaust the NAT source port pool. This drives the real Source.Load path (and so the
+	// shared pooled client) against a real server, and counts the connections it accepts.
+	Describe("connection reuse", func() {
+		var (
+			server   *httptest.Server
+			newConns atomic.Int32
+		)
+
+		BeforeEach(func() {
+			newConns.Store(0)
+
+			// Three pages of one entry each, chained by cursor.
+			nextCursor := map[string]string{"": "cursor-2", "cursor-2": "cursor-3", "cursor-3": ""}
+			name := map[string]string{"": "test_a", "cursor-2": "test_b", "cursor-3": "test_c"}
+
+			server = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// This handler runs on an httptest server goroutine, not the spec
+				// goroutine, so a failing assertion below would otherwise crash the
+				// suite rather than be reported against this spec.
+				defer GinkgoRecover()
+
+				cursor := r.URL.Query().Get("cursor")
+
+				w.Header().Set("Content-Type", "application/json")
+				Expect(json.NewEncoder(w).Encode(map[string]any{
+					"items": []any{
+						json.RawMessage(fmt.Sprintf(`{"kind":"Component","metadata":{"name":%q}}`, name[cursor])),
+					},
+					"pageInfo": map[string]any{"nextCursor": nextCursor[cursor]},
+				})).To(Succeed())
+			}))
+			server.Config.ConnState = func(_ net.Conn, state http.ConnState) {
+				if state == http.StateNew {
+					newConns.Add(1)
+				}
+			}
+			server.Start()
+			DeferCleanup(server.Close)
+		})
+
+		It("reuses a single connection across paginated requests", func() {
+			src := source.Source{
+				Backstage: &source.SourceBackstage{
+					Endpoint: source.Credential(server.URL + "/api/catalog/entities/by-query"),
+					PageSize: 1,
+				},
+			}
+
+			sourceEntries, err := src.Load(ctx, logger)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(sourceEntries).To(HaveLen(3), "should have paginated through all three pages")
+
+			Expect(newConns.Load()).To(BeEquivalentTo(1),
+				"three requests should share one TCP connection, not open one each")
 		})
 	})
 })

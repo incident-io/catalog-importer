@@ -68,6 +68,50 @@ func (s SourceBackstage) Load(ctx context.Context, logger kitlog.Logger, client 
 
 const defaultPageSize = 100
 
+// doRequest issues a single GET against the Backstage endpoint and decodes the JSON
+// response into out.
+//
+// This lives in its own function so that the deferred body close is scoped to a single
+// request: the callers page in a loop, and a defer inside that loop would hold every
+// response open until the whole loop finished.
+//
+// Closing the body is what lets the connection be returned to the pool for the next
+// page. It matters most on the paths that return without reading the body, such as a
+// non-200 response.
+func (s SourceBackstage) doRequest(ctx context.Context, client *http.Client, token string, query url.Values, out any) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(s.Endpoint)+"?"+query.Encode(), nil)
+	if err != nil {
+		return errors.Wrap(err, "building Backstage URL")
+	}
+
+	if token != "" {
+		header := s.Header
+		if header == "" {
+			header = "Authorization"
+		}
+
+		req.Header.Add(header, fmt.Sprintf("Bearer %s", token))
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "fetching Backstage entries")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.Wrap(
+			fmt.Errorf("received error from Backstage: %s", resp.Status),
+			"fetching Backstage entries")
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+		return errors.Wrap(err, "parsing Backstage entries")
+	}
+
+	return nil
+}
+
 // https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities
 func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, token string) ([]*SourceEntry, error) {
 	var (
@@ -89,33 +133,9 @@ func (s SourceBackstage) fetchEntries(ctx context.Context, client *http.Client, 
 			query.Set("filter", s.Filter)
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(s.Endpoint)+"?"+query.Encode(), nil)
-		if err != nil {
-			return nil, errors.Wrap(err, "building Backstage URL")
-		}
-
-		if token != "" {
-
-			header := s.Header
-
-			if header == "" {
-				header = "Authorization"
-			}
-
-			req.Header.Add(header, fmt.Sprintf("Bearer %s", token))
-		}
-
-		resp, err := client.Do(req)
-		if err == nil && resp.StatusCode != http.StatusOK {
-			err = fmt.Errorf("received error from Backstage: %s", resp.Status)
-		}
-		if err != nil {
-			return nil, errors.Wrap(err, "fetching Backstage entries")
-		}
-
 		page := []json.RawMessage{}
-		if err := json.NewDecoder(resp.Body).Decode(&page); err != nil {
-			return nil, errors.Wrap(err, "parsing Backstage entries")
+		if err := s.doRequest(ctx, client, token, query, &page); err != nil {
+			return nil, err
 		}
 
 		if len(page) == 0 {
@@ -164,33 +184,9 @@ func (s SourceBackstage) fetchEntriesByQuery(ctx context.Context, client *http.C
 			query.Set("filter", s.Filter)
 		}
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(s.Endpoint)+"?"+query.Encode(), nil)
-		if err != nil {
-			return nil, errors.Wrap(err, "building Backstage URL")
-		}
-
-		if token != "" {
-
-			header := s.Header
-
-			if header == "" {
-				header = "Authorization"
-			}
-
-			req.Header.Add(header, fmt.Sprintf("Bearer %s", token))
-		}
-
-		resp, err := client.Do(req)
-		if err == nil && resp.StatusCode != http.StatusOK {
-			err = fmt.Errorf("received error from Backstage: %s", resp.Status)
-		}
-		if err != nil {
-			return nil, errors.Wrap(err, "fetching Backstage entries")
-		}
-
 		page := getEntitiesByQueryResponse{}
-		if err := json.NewDecoder(resp.Body).Decode(&page); err != nil {
-			return nil, errors.Wrap(err, "parsing Backstage entries")
+		if err := s.doRequest(ctx, client, token, query, &page); err != nil {
+			return nil, err
 		}
 
 		if len(page.Items) == 0 {
