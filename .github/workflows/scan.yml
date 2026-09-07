@@ -57,6 +57,9 @@ jobs:
         name: Report actionable findings as an issue
         env:
           GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          # We never check out the repo, so gh cannot infer it from a git
+          # remote. Without this every gh call below fails.
+          GH_REPO: '${{ github.repository }}'
         run: |
           set -euo pipefail
 
