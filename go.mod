@@ -1,6 +1,6 @@
 module github.com/incident-io/catalog-importer/v2
 
-go 1.25.7
+go 1.26.0
 
 toolchain go1.27.0
 
@@ -35,7 +35,7 @@ require (
 	github.com/stretchr/objx v0.5.3
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
-	golang.org/x/oauth2 v0.36.0
+	golang.org/x/oauth2 v0.37.0
 	golang.org/x/sync v0.22.0
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
