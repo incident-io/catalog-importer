@@ -102,10 +102,6 @@ var httpClient = sync.OnceValue(func() *http.Client {
 	// silently reaped connection out of the pool.
 	transport.IdleConnTimeout = 30 * time.Second
 
-	// Fail rather than hang if a server accepts the connection but never responds. This
-	// only covers time up to the response headers, so it doesn't cap large page bodies.
-	transport.ResponseHeaderTimeout = 60 * time.Second
-
 	return &http.Client{Transport: transport}
 })
 
