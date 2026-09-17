@@ -1,8 +1,8 @@
 module github.com/incident-io/catalog-importer/v2
 
-go 1.25.7
+go 1.26.0
 
-toolchain go1.27.0
+toolchain go1.27.1
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
@@ -25,18 +25,18 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/oapi-codegen/oapi-codegen/v2 v2.8.0
 	github.com/oapi-codegen/runtime v1.7.0
-	github.com/onsi/ginkgo/v2 v2.32.1
+	github.com/onsi/ginkgo/v2 v2.32.2
 	github.com/onsi/gomega v1.43.0
 	github.com/pkg/errors v0.9.1
-	github.com/rodaine/table v1.3.1
+	github.com/rodaine/table v1.4.0
 	github.com/samber/lo v1.53.0
 	github.com/schollz/progressbar/v3 v3.19.1
 	github.com/sourcegraph/conc v0.3.0
 	github.com/stretchr/objx v0.5.3
 	github.com/yargevad/filepathx v1.0.0
 	github.com/zyedidia/highlight v0.0.0-20200217010119-291680feaca1
-	golang.org/x/oauth2 v0.36.0
-	golang.org/x/sync v0.22.0
+	golang.org/x/oauth2 v0.37.0
+	golang.org/x/sync v0.23.0
 	gopkg.in/guregu/null.v3 v3.5.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -54,7 +54,7 @@ require (
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
 
