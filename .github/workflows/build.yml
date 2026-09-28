@@ -71,6 +71,12 @@ jobs:
 
             docker run --rm --platform "linux/${arch}" "$image" --help
 
+            uid=$(docker run --rm --platform "linux/${arch}" --entrypoint id "$image" -u)
+            if [[ "${uid}" == "0" ]]; then
+              echo "::error::${arch}: image runs as root."
+              exit 1
+            fi
+
             # Prove the image completes a TLS handshake using the certificate
             # bundle we ship. `--help` does not touch the network, so it could
             # not catch a missing or broken bundle. `types` calls the real API,
