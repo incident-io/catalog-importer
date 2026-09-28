@@ -1,4 +1,4 @@
-FROM alpine:3.24.1 AS runtime
+FROM alpine:3.24.2 AS runtime
 
 # Add certificates so we can make HTTPS requests, and upgrade the base
 # packages: the versions in the base image have vulnerabilities that an
