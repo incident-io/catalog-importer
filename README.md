@@ -107,6 +107,9 @@ docker run \
     sync --config /config/importer.jsonnet
 ```
 
+The image runs as the unprivileged `nobody` user (UID and GID 65534), so any
+mounted config must be readable by that user.
+
 ## Linking the Catalog UI to your importer repository
 
 If you manage some of your catalog types through the catalog importer, you can
