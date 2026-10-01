@@ -172,3 +172,39 @@ var _ = Describe("Attribute validation", func() {
 		Expect(attr.Validate()).To(HaveOccurred())
 	})
 })
+
+var _ = Describe("Output CompileExpressions", func() {
+	var o output.Output
+
+	BeforeEach(func() {
+		o = output.Output{
+			Source: output.SourceConfig{
+				Filter:     null.StringFrom("$.kind == 'Component'"),
+				Name:       "$.metadata.name",
+				ExternalID: "$.metadata.uid",
+				Rank:       null.StringFrom("$.rank"),
+				Aliases:    []string{"$.metadata.title"},
+			},
+			Attributes: []*output.Attribute{
+				{ID: "owner", Source: null.StringFrom("$.spec.owner.replace('group:', '')")},
+				{ID: "tier"},
+			},
+		}
+	})
+
+	It("accepts valid expressions", func() {
+		Expect(o.CompileExpressions()).To(BeEmpty())
+	})
+
+	It("reports each invalid expression with where it is configured", func() {
+		o.Source.Filter = null.StringFrom("$.kind ==")
+		o.Source.Aliases = []string{"$.metadata.title", "$.metadata.(name"}
+		o.Attributes[0].Source = null.StringFrom("$.spec.owner.replace('group:', ''")
+
+		errs := o.CompileExpressions()
+		Expect(errs).To(HaveLen(3))
+		Expect(errs[0].Error()).To(HavePrefix("source.filter: "))
+		Expect(errs[1].Error()).To(HavePrefix("source.aliases.1: "))
+		Expect(errs[2].Error()).To(HavePrefix("attributes.owner: "))
+	})
+})
