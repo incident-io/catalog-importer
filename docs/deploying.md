@@ -4,8 +4,8 @@ Most people run the catalog from their CI pipelines, where they either sync on
 merge or trigger syncs periodically depending on their needs.
 
 If your catalog types already exist in incident.io, the **Manage in GitHub**
-button on the Catalog page sets up a repository for you, including the GitHub
-Actions workflows below.
+button on the Catalog page sets up a repository for you, including GitHub
+Actions workflows like the ones below.
 
 ## CircleCI
 
@@ -86,7 +86,7 @@ jobs:
             -e 'INCIDENT_API_KEY=${{ secrets.INCIDENT_API_KEY }}' \
             -e "SOURCE_REPO_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
             --rm \
-            incidentio/catalog-importer:v2 \
+            incidentio/catalog-importer:v2.12.6 \
             sync --config importer.jsonnet
 ```
 
@@ -109,9 +109,13 @@ jobs:
             -v "$(pwd)":/config --workdir /config \
             -e 'INCIDENT_API_KEY=${{ secrets.INCIDENT_API_KEY }}' \
             --rm \
-            incidentio/catalog-importer:v2 \
+            incidentio/catalog-importer:v2.12.6 \
             sync --config importer.jsonnet --dry-run
 ```
+
+Both workflows pin the image to a release, so a new version can't change your
+catalog until you update the tag. You can find the available tags on
+[Docker Hub](https://hub.docker.com/r/incidentio/catalog-importer/tags).
 
 The image is based on Alpine and runs as the unprivileged `nobody` user, so
 your repository needs to be readable by that user. It includes `curl` and `jq`
