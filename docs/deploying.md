@@ -86,7 +86,7 @@ jobs:
             -e 'INCIDENT_API_KEY=${{ secrets.INCIDENT_API_KEY }}' \
             -e "SOURCE_REPO_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
             --rm \
-            incidentio/catalog-importer:v2.12.6 \
+            incidentio/catalog-importer:v2 \
             sync --config importer.jsonnet
 ```
 
@@ -109,12 +109,12 @@ jobs:
             -v "$(pwd)":/config --workdir /config \
             -e 'INCIDENT_API_KEY=${{ secrets.INCIDENT_API_KEY }}' \
             --rm \
-            incidentio/catalog-importer:v2.12.6 \
+            incidentio/catalog-importer:v2 \
             sync --config importer.jsonnet --dry-run
 ```
 
-Both workflows pin the image to a release, so a new version can't change your
-catalog until you update the tag. You can find the available tags on
+The `v2` tag follows the latest 2.x release. To control when you upgrade, pin a
+specific version such as `v2.12.6`; the available tags are on
 [Docker Hub](https://hub.docker.com/r/incidentio/catalog-importer/tags).
 
 The image is based on Alpine and runs as the unprivileged `nobody` user, so
