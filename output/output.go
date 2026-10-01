@@ -1,9 +1,13 @@
 package output
 
 import (
+	"fmt"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/incident-io/catalog-importer/v2/expr"
+	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"gopkg.in/guregu/null.v3"
 )
 
@@ -31,6 +35,36 @@ func (o Output) Validate() error {
 		validation.Field(&o.TypeName, validation.Required, validation.Match(regexp.MustCompile(`^Custom\["[a-zA-Z0-9]+"\]$`))),
 		validation.Field(&o.Source, validation.Required),
 	)
+}
+
+// CompileExpressions checks every Javascript expression in the output is valid, without
+// running any of them, and returns an error for each one that isn't.
+func (o Output) CompileExpressions() []error {
+	expressions := []lo.Tuple2[string, string]{
+		lo.T2("source.name", o.Source.Name),
+		lo.T2("source.external_id", o.Source.ExternalID),
+	}
+	if o.Source.Filter.Valid {
+		expressions = append(expressions, lo.T2("source.filter", o.Source.Filter.String))
+	}
+	if o.Source.Rank.Valid {
+		expressions = append(expressions, lo.T2("source.rank", o.Source.Rank.String))
+	}
+	for idx, alias := range o.Source.Aliases {
+		expressions = append(expressions, lo.T2(fmt.Sprintf("source.aliases.%d", idx), alias))
+	}
+	for _, attr := range o.Attributes {
+		expressions = append(expressions, lo.T2(fmt.Sprintf("attributes.%s", attr.ID), attr.SourceExpression()))
+	}
+
+	errs := []error{}
+	for _, expression := range expressions {
+		if err := expr.Compile(expression.B); err != nil {
+			errs = append(errs, errors.Wrap(err, expression.A))
+		}
+	}
+
+	return errs
 }
 
 // SourceConfig controls how we filter the source for this output's entries, and sets the
@@ -76,6 +110,16 @@ func (a Attribute) Validate() error {
 			validation.Empty.When(a.Type.Valid).Error("enum cannot be provided when type is set"),
 		),
 	)
+}
+
+// SourceExpression is the expression that builds this attribute's value, defaulting to
+// the field with the same ID as the attribute.
+func (a Attribute) SourceExpression() string {
+	if a.Source.Valid {
+		return a.Source.String
+	}
+
+	return "$." + a.ID
 }
 
 func (a Attribute) IncludeInPayload() bool {

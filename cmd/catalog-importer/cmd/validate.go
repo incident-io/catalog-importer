@@ -28,6 +28,17 @@ func (opt *ValidateOptions) Run(ctx context.Context, logger kitlog.Logger) error
 		return err
 	}
 
+	invalid := 0
+	for _, outputType := range cfg.Outputs() {
+		for _, err := range outputType.CompileExpressions() {
+			ALWAYS_OUT("✖ %s: %s", outputType.TypeName, err)
+			invalid++
+		}
+	}
+	if invalid > 0 {
+		return errors.Errorf("found %d invalid Javascript expressions", invalid)
+	}
+
 	BANNER("Config printed below")
 	output, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
