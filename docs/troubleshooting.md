@@ -7,7 +7,7 @@ Having issues with the catalog importer? This guide covers the most common probl
 Start with these commands to diagnose issues:
 
 ```console
-# Check your configuration is valid
+# Check your configuration is valid, including the syntax of every expression
 catalog-importer validate --config=importer.jsonnet
 
 # See what would be synced without making changes

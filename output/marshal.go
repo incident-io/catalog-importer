@@ -146,13 +146,8 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 		attributeSources = map[string]string{}
 	)
 	for _, attr := range output.Attributes {
-		// Use the attribute ID by default if source isn't explicitly provided.
-		source := "$." + attr.ID
-		if attr.Source.Valid {
-			source = attr.Source.String
-		}
 		attributeByID[attr.ID] = attr
-		attributeSources[attr.ID] = source
+		attributeSources[attr.ID] = attr.SourceExpression()
 	}
 
 	catalogEntryModels := []*CatalogEntryModel{}

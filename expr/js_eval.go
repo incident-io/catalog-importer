@@ -11,6 +11,7 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
+	"github.com/robertkrimen/otto/parser"
 	underscore "github.com/robertkrimen/otto/underscore"
 )
 
@@ -81,6 +82,13 @@ func EvaluateJavascript(ctx context.Context, logger kitlog.Logger, source string
 
 	return outResult, nil
 
+}
+
+// Compile checks that source is valid Javascript without running it. Evaluation swallows
+// errors, so this is the only way to catch a broken expression before it syncs as nil.
+func Compile(source string) error {
+	_, err := parser.ParseFile(nil, "", source, 0)
+	return err
 }
 
 func EvaluateArray[ReturnType any](ctx context.Context, logger kitlog.Logger, source string, subject any, timeout time.Duration) ([]ReturnType, error) {
