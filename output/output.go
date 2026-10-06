@@ -54,6 +54,10 @@ func (o Output) CompileExpressions() []error {
 		expressions = append(expressions, lo.T2(fmt.Sprintf("source.aliases.%d", idx), alias))
 	}
 	for _, attr := range o.Attributes {
+		if !attr.IncludeInPayload() {
+			// incident.io sets these values, so their source expression is never evaluated.
+			continue
+		}
 		expressions = append(expressions, lo.T2(fmt.Sprintf("attributes.%s", attr.ID), attr.SourceExpression()))
 	}
 
