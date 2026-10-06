@@ -207,4 +207,37 @@ var _ = Describe("Output CompileExpressions", func() {
 		Expect(errs[1].Error()).To(HavePrefix("source.aliases.1: "))
 		Expect(errs[2].Error()).To(HavePrefix("attributes.owner: "))
 	})
+
+	// Attribute IDs created in the dashboard are ULIDs, which start with a digit, so the
+	// default source expression ($.01KG...) is not valid Javascript.
+	const ulid = "01KG2XN4AG7HGJCFXF305GH05M"
+
+	It("skips backlink attributes, which have no source expression", func() {
+		o.Attributes = append(o.Attributes, &output.Attribute{
+			ID:                ulid,
+			BacklinkAttribute: null.StringFrom("01KG2TVW9MTB6V5EP56G6DGR30"),
+		})
+		Expect(o.CompileExpressions()).To(BeEmpty())
+	})
+
+	It("skips path attributes, which have no source expression", func() {
+		o.Attributes = append(o.Attributes, &output.Attribute{
+			ID:   ulid,
+			Path: []string{"01KG2TVW9MTB6V5EP56G6DGR30", "01KG2TVW9MTB6V5EP56G6DGR31"},
+		})
+		Expect(o.CompileExpressions()).To(BeEmpty())
+	})
+
+	It("skips schema-only attributes, which have no source expression", func() {
+		o.Attributes = append(o.Attributes, &output.Attribute{ID: ulid, SchemaOnly: true})
+		Expect(o.CompileExpressions()).To(BeEmpty())
+	})
+
+	It("reports a synced attribute whose default source expression is invalid", func() {
+		o.Attributes = append(o.Attributes, &output.Attribute{ID: ulid})
+
+		errs := o.CompileExpressions()
+		Expect(errs).To(HaveLen(1))
+		Expect(errs[0].Error()).To(HavePrefix("attributes." + ulid + ": "))
+	})
 })
