@@ -28,7 +28,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.33.1
 	github.com/onsi/gomega v1.44.0
 	github.com/pkg/errors v0.9.1
-	github.com/rodaine/table v1.4.0
+	github.com/rodaine/table v1.4.1
 	github.com/samber/lo v1.53.0
 	github.com/schollz/progressbar/v3 v3.19.1
 	github.com/sourcegraph/conc v0.3.0
