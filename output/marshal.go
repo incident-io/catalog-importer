@@ -141,15 +141,6 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 	externalIDSource := output.Source.ExternalID
 	aliasesSource := output.Source.Aliases
 
-	var (
-		attributeByID    = map[string]*Attribute{}
-		attributeSources = map[string]string{}
-	)
-	for _, attr := range output.Attributes {
-		attributeByID[attr.ID] = attr
-		attributeSources[attr.ID] = attr.SourceExpression()
-	}
-
 	catalogEntryModels := []*CatalogEntryModel{}
 	for _, entry := range entries {
 		name, err := expr.EvaluateSingleValue[string](ctx, logger, nameSource, entry, jsTimeout)
@@ -171,79 +162,14 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 			}
 		}
 
-		// Try to parse each alias as either a string or a string array, then concat and
-		// dedupe them together.
-		aliases := []string{}
-		for idx, aliasSource := range aliasesSource {
-			toAdd := []string{}
-			alias, err := expr.EvaluateSingleValue[string](ctx, logger, aliasSource, entry, jsTimeout)
-			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
-			}
-			if alias == nil {
-				aliasArray, arrayErr := expr.EvaluateArray[string](ctx, logger, aliasSource, entry, jsTimeout)
-				if arrayErr != nil {
-					return nil, errors.Wrap(err, fmt.Sprintf("aliases.%d: evaluating entry alias", idx))
-				}
-				toAdd = append(toAdd, aliasArray...)
-			} else {
-				toAdd = append(toAdd, *alias)
-			}
-
-			for _, alias := range toAdd {
-				if alias != "" {
-					aliases = append(aliases, alias)
-				}
-			}
+		aliases, err := evaluateAliases(ctx, logger, "aliases", aliasesSource, entry, jsTimeout)
+		if err != nil {
+			return nil, err
 		}
 
-		// Attribute values are built best effort, as it might not be the case that upstream
-		// source entries have these fields, or have fields of the correct type.
-		attributeValues := map[string]client.CatalogEngineParamBindingPayloadV3{}
-
-		for attributeID, src := range attributeSources {
-			binding := client.CatalogEngineParamBindingPayloadV3{}
-
-			if attributeByID[attributeID].Array {
-				valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry, jsTimeout)
-				if err != nil {
-					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
-				}
-				if valueLiterals == nil {
-					continue
-				}
-
-				arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
-				for _, literalAny := range valueLiterals {
-					literal, ok := literalAny.(string)
-					if !ok {
-						continue
-					}
-
-					arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
-						Literal: lo.ToPtr(literal),
-					})
-				}
-
-				// Only set ArrayValue if there are actual items
-				if len(arrayValue) > 0 {
-					binding.ArrayValue = &arrayValue
-				}
-			} else {
-				literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger, jsTimeout)
-				if err != nil {
-					return catalogEntryModels, errors.Wrap(err, "evaluating attribute")
-				}
-				if literal == nil {
-					continue
-				}
-
-				binding.Value = &client.CatalogEngineParamBindingValuePayloadV3{
-					Literal: literal,
-				}
-			}
-
-			attributeValues[attributeID] = binding
+		attributeValues, err := evaluateAttributeValues(ctx, logger, output.Attributes, entry, jsTimeout)
+		if err != nil {
+			return catalogEntryModels, err
 		}
 
 		catalogEntryModel := CatalogEntryModel{
@@ -263,6 +189,143 @@ func MarshalEntries(ctx context.Context, logger kitlog.Logger, output *Output, e
 	}
 
 	return catalogEntryModels, nil
+}
+
+// SyncedEntryModel is what a SyncedTypeOutput writes to one existing entry of a synced
+// catalog type: the entry it matches, and its custom aliases and attribute values.
+type SyncedEntryModel struct {
+	// Match is the ID, external ID, name or alias of the existing entry.
+	Match string
+	// CustomAliases is nil when the output doesn't manage custom aliases.
+	CustomAliases   []string
+	AttributeValues map[string]client.CatalogEngineParamBindingPayloadV3
+}
+
+// MarshalSyncedEntries builds what to write to each existing entry of a synced catalog
+// type, assuming the source entries have already been filtered. attributes are the
+// output's attributes as resolved against the catalog type's schema.
+func MarshalSyncedEntries(ctx context.Context, logger kitlog.Logger, output *SyncedTypeOutput, attributes []*Attribute, entries []source.Entry, jsTimeout time.Duration) ([]*SyncedEntryModel, error) {
+	models := []*SyncedEntryModel{}
+	for _, entry := range entries {
+		match, err := expr.EvaluateSingleValue[string](ctx, logger, output.Source.Match, entry, jsTimeout)
+		if err != nil {
+			return nil, errors.Wrap(err, "evaluating entry match")
+		}
+
+		model := &SyncedEntryModel{}
+		if match != nil {
+			model.Match = *match
+		}
+
+		if output.Source.CustomAliases != nil {
+			model.CustomAliases, err = evaluateAliases(ctx, logger, "custom_aliases", output.Source.CustomAliases, entry, jsTimeout)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		model.AttributeValues, err = evaluateAttributeValues(ctx, logger, attributes, entry, jsTimeout)
+		if err != nil {
+			return nil, err
+		}
+
+		models = append(models, model)
+	}
+
+	return models, nil
+}
+
+// evaluateAliases evaluates each alias expression as either a string or a string array,
+// then concatenates the results, dropping empty strings. field prefixes errors.
+func evaluateAliases(ctx context.Context, logger kitlog.Logger, field string, aliasesSource []string, entry source.Entry, jsTimeout time.Duration) ([]string, error) {
+	aliases := []string{}
+	for idx, aliasSource := range aliasesSource {
+		toAdd := []string{}
+		alias, err := expr.EvaluateSingleValue[string](ctx, logger, aliasSource, entry, jsTimeout)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("%s.%d: evaluating entry alias", field, idx))
+		}
+		if alias == nil {
+			aliasArray, arrayErr := expr.EvaluateArray[string](ctx, logger, aliasSource, entry, jsTimeout)
+			if arrayErr != nil {
+				return nil, errors.Wrap(err, fmt.Sprintf("%s.%d: evaluating entry alias", field, idx))
+			}
+			toAdd = append(toAdd, aliasArray...)
+		} else {
+			toAdd = append(toAdd, *alias)
+		}
+
+		for _, alias := range toAdd {
+			if alias != "" {
+				aliases = append(aliases, alias)
+			}
+		}
+	}
+
+	return aliases, nil
+}
+
+// evaluateAttributeValues builds the value of each attribute from the entry. Values are
+// built best effort, as it might not be the case that upstream source entries have these
+// fields, or have fields of the correct type.
+func evaluateAttributeValues(ctx context.Context, logger kitlog.Logger, attributes []*Attribute, entry source.Entry, jsTimeout time.Duration) (map[string]client.CatalogEngineParamBindingPayloadV3, error) {
+	var (
+		attributeByID    = map[string]*Attribute{}
+		attributeSources = map[string]string{}
+	)
+	for _, attr := range attributes {
+		attributeByID[attr.ID] = attr
+		attributeSources[attr.ID] = attr.SourceExpression()
+	}
+
+	attributeValues := map[string]client.CatalogEngineParamBindingPayloadV3{}
+
+	for attributeID, src := range attributeSources {
+		binding := client.CatalogEngineParamBindingPayloadV3{}
+
+		if attributeByID[attributeID].Array {
+			valueLiterals, err := expr.EvaluateArray[any](ctx, logger, src, entry, jsTimeout)
+			if err != nil {
+				return nil, errors.Wrap(err, "evaluating attribute")
+			}
+			if valueLiterals == nil {
+				continue
+			}
+
+			arrayValue := []client.CatalogEngineParamBindingValuePayloadV3{}
+			for _, literalAny := range valueLiterals {
+				literal, ok := literalAny.(string)
+				if !ok {
+					continue
+				}
+
+				arrayValue = append(arrayValue, client.CatalogEngineParamBindingValuePayloadV3{
+					Literal: lo.ToPtr(literal),
+				})
+			}
+
+			// Only set ArrayValue if there are actual items
+			if len(arrayValue) > 0 {
+				binding.ArrayValue = &arrayValue
+			}
+		} else {
+			literal, err := evaluateEntryWithAttributeType(ctx, src, entry, attributeByID[attributeID], logger, jsTimeout)
+			if err != nil {
+				return nil, errors.Wrap(err, "evaluating attribute")
+			}
+			if literal == nil {
+				continue
+			}
+
+			binding.Value = &client.CatalogEngineParamBindingValuePayloadV3{
+				Literal: literal,
+			}
+		}
+
+		attributeValues[attributeID] = binding
+	}
+
+	return attributeValues, nil
 }
 
 func evaluateEntryWithAttributeType(ctx context.Context, src string, entry map[string]any, attribute *Attribute, logger kitlog.Logger, jsTimeout time.Duration) (*string, error) {

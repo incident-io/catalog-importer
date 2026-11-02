@@ -122,6 +122,7 @@ Now that you have the basics working, choose the path that matches your data:
 - [Configuration structure](config.md) - How pipelines, sources and outputs work
 - [Data sources](sources.md) - GitHub, Backstage, files, APIs, and more  
 - [Catalog outputs](outputs.md) - Creating types, attributes, and relationships
+- [Synced types](outputs.md#synced-types) - Adding custom aliases and attributes to schedules, escalation paths and other synced types ([example](synced-types/))
 - [Data transformation](expressions.md) - JavaScript expressions for filtering and mapping
 
 **Deployment and automation:**

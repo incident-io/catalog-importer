@@ -128,7 +128,11 @@ Key concepts:
 - Use **expressions** to map source data to catalog attributes
 - Support for relationships between catalog types
 
-**→ [Full outputs documentation](outputs.md)**
+To add custom aliases or attributes to catalog types that incident.io syncs
+from an integration, such as schedules and escalation paths, use
+`synced_type_outputs` instead. These never create or delete entries.
+
+**→ [Full outputs documentation](outputs.md)**, and **[synced types](outputs.md#synced-types)**
 
 ## File formats
 

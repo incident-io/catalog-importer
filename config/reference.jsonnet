@@ -276,6 +276,65 @@
           ],
         },
       ],
+
+      // Optional list of outputs that write to catalog types that incident.io
+      // syncs from an integration, such as Schedule, EscalationPath or User,
+      // instead of creating a type of their own.
+      //
+      // The integration owns those entries: their name, external ID, aliases
+      // and synced attributes. These outputs never create or delete entries and
+      // never change those fields. They match each source entry to an entry that
+      // already exists, then write its custom aliases and the attributes listed
+      // below. Entries that no source entry matches are left alone.
+      //
+      // A pipeline needs at least one output or synced type output.
+      synced_type_outputs: [
+        {
+          // The type name of the synced catalog type, as listed by
+          // `catalog-importer types`. Custom["..."] types are not allowed here:
+          // use outputs for those.
+          type_name: 'Schedule',
+
+          source: {
+            // Optionally filter entries provided by this pipeline's source.
+            filter: '$.schedule != null',
+
+            // Required expression that finds the existing entry to write to.
+            // We try it as the entry's ID, then external ID, then name, then
+            // one of the aliases the integration syncs. A source entry that
+            // matches no entry, or more than one, is reported and skipped, and
+            // the sync exits with an error once everything else has synced.
+            match: '$.schedule',
+
+            // Optional expressions for the entry's custom aliases. Each can
+            // return a string or a list of strings.
+            //
+            // When set, this output owns the whole custom alias list of each
+            // entry it matches: it removes any custom alias it doesn't produce,
+            // and an empty list clears them. Omit it to leave custom aliases
+            // alone, for example when you only want to set attributes.
+            custom_aliases: [
+              '$.handle',
+            ],
+          },
+
+          // Optional attributes to set on the matched entries. Each must already
+          // exist on the catalog type (add it in the incident.io dashboard), and
+          // be one you can set, not one the integration syncs. Its type comes
+          // from the catalog type, so you only give the id and the source.
+          //
+          // This output owns the value of each attribute listed here, and
+          // removes it when the source has none. Other attributes are left
+          // alone.
+          attributes: [
+            {
+              id: 'runbook_url',
+              // Defaults to the field with the same name as the id.
+              source: '$.runbook',
+            },
+          ],
+        },
+      ],
     },
   ],
 }

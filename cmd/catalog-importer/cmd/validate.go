@@ -35,6 +35,12 @@ func (opt *ValidateOptions) Run(ctx context.Context, logger kitlog.Logger) error
 			invalid++
 		}
 	}
+	for _, syncedOutput := range cfg.SyncedTypeOutputs() {
+		for _, err := range syncedOutput.CompileExpressions() {
+			ALWAYS_OUT("✖ %s: %s", syncedOutput.TypeName, err)
+			invalid++
+		}
+	}
 	if invalid > 0 {
 		return errors.Errorf("found %d invalid Javascript expressions", invalid)
 	}

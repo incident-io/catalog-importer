@@ -402,3 +402,65 @@ var _ = Describe("MarshalType", func() {
 		Expect(enumTypes).To(HaveLen(1))
 	})
 })
+
+var _ = Describe("MarshalSyncedEntries", func() {
+	var (
+		ctx          context.Context
+		logger       kitlog.Logger
+		syncedOutput *SyncedTypeOutput
+		attributes   []*Attribute
+	)
+
+	BeforeEach(func() {
+		ctx = context.Background()
+		logger = kitlog.NewNopLogger()
+		syncedOutput = &SyncedTypeOutput{
+			TypeName: "Schedule",
+			Source: SyncedTypeSourceConfig{
+				Match:         "$.schedule",
+				CustomAliases: []string{"$.handle", "$.other_handles"},
+			},
+		}
+		attributes = []*Attribute{
+			{ID: "runbook", Name: "Runbook", Type: null.StringFrom("String"), Source: null.StringFrom("$.runbook")},
+		}
+	})
+
+	It("builds the match value, custom aliases and attribute values", func() {
+		res, err := MarshalSyncedEntries(ctx, logger, syncedOutput, attributes, []source.Entry{
+			{
+				"schedule":      "Primary on-call",
+				"handle":        "primary",
+				"other_handles": []string{"ops", ""},
+				"runbook":       "https://example.com/runbook",
+			},
+		}, expr.DefaultJSTimeout)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(res).To(HaveLen(1))
+		Expect(res[0].Match).To(Equal("Primary on-call"))
+		Expect(res[0].CustomAliases).To(Equal([]string{"primary", "ops"}))
+		Expect(res[0].AttributeValues).To(HaveKeyWithValue("runbook", client.CatalogEngineParamBindingPayloadV3{
+			Value: &client.CatalogEngineParamBindingValuePayloadV3{Literal: lo.ToPtr("https://example.com/runbook")},
+		}))
+	})
+
+	It("produces an empty list when custom aliases are managed but there are none", func() {
+		res, err := MarshalSyncedEntries(ctx, logger, syncedOutput, attributes, []source.Entry{
+			{"schedule": "Primary on-call"},
+		}, expr.DefaultJSTimeout)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(res[0].CustomAliases).NotTo(BeNil())
+		Expect(res[0].CustomAliases).To(BeEmpty())
+		Expect(res[0].AttributeValues).To(BeEmpty())
+	})
+
+	It("leaves custom aliases nil when the output doesn't manage them", func() {
+		syncedOutput.Source.CustomAliases = nil
+
+		res, err := MarshalSyncedEntries(ctx, logger, syncedOutput, attributes, []source.Entry{
+			{"schedule": "Primary on-call", "handle": "primary"},
+		}, expr.DefaultJSTimeout)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(res[0].CustomAliases).To(BeNil())
+	})
+})

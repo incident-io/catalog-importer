@@ -246,3 +246,104 @@ which is always allowed:
   involved. Syncs that leave ownership unchanged are unaffected.
 
 If team permissions aren't set up, none of these restrictions apply.
+
+## Synced types
+
+Some catalog types are synced by incident.io from an integration, such as
+`Schedule`, `EscalationPath` and `User`. You can't create or edit their entries
+with a normal output, but you can add to them with `synced_type_outputs`:
+
+- **Custom aliases**, so other catalog entries and alert attributes can refer to
+  an entry by a name you choose, such as a Slack handle for a schedule.
+- **Attributes you added to the type**, such as a runbook URL on each
+  escalation path.
+
+```jsonnet
+{
+  sync_id: 'example-org/example-repo',
+  pipelines: [
+    {
+      sources: [
+        {
+          inline: {
+            entries: [
+              {
+                schedule: 'Primary on-call',
+                handles: ['payments-oncall', 'payments'],
+                runbook: 'https://example.com/runbooks/payments',
+              },
+            ],
+          },
+        },
+      ],
+      synced_type_outputs: [
+        {
+          type_name: 'Schedule',
+          source: {
+            match: '$.schedule',
+            custom_aliases: ['$.handles'],
+          },
+          attributes: [
+            { id: 'runbook_url', source: '$.runbook' },
+          ],
+        },
+      ],
+    },
+  ],
+}
+```
+
+Run `catalog-importer types` to find the type name of a synced type. A pipeline
+can have outputs, synced type outputs, or both.
+
+### Matching entries
+
+The integration creates and deletes entries in a synced type, so the importer
+never does. Instead, `source.match` finds the entry that already exists for each
+source entry. We try the value as the entry's ID, then its external ID, then its
+name, then one of the aliases the integration syncs. Custom aliases are not used
+for matching, because the importer sets them.
+
+If a source entry matches no entry (for example, the schedule was deleted), or
+matches more than one (for example, two schedules have the same name), the
+importer reports it and skips it. It still syncs every other entry and output,
+then exits with an error, so a scheduled run fails and you can fix the source.
+If two source entries match the same entry, the first one wins and the second is
+reported in the same way.
+
+Entries that no source entry matches are left alone.
+
+### What the importer owns
+
+For each entry it matches, the importer only writes:
+
+- The whole list of custom aliases, when `source.custom_aliases` is set. Any
+  custom alias it doesn't produce is removed, and an empty result clears them.
+  Omit `source.custom_aliases` to leave custom aliases alone. An alias the
+  integration already syncs onto the entry is skipped, as the entry already
+  answers to it.
+- The value of each attribute in `attributes`. If the source has no value, the
+  importer removes it.
+
+It never changes the entry's name, external ID, synced aliases or synced
+attributes, and the entries stay editable in the dashboard. Some types, such as
+alert priorities, manage their aliases elsewhere in incident.io and take no
+custom aliases: the importer reports an error if you set `source.custom_aliases`
+for one of them.
+
+### Attributes
+
+Each attribute must already exist on the synced type. Add it in the incident.io
+dashboard first, then refer to it by its ID. The importer takes the attribute's
+type from the catalog type, so you only give `id` and, optionally, `source`
+(which defaults to the field with the same name as the ID). You can't set an
+attribute that the integration syncs.
+
+### Users and team membership
+
+incident.io finds the members of a team through the entries of some types, such
+as `User`. A custom alias on one of those entries can change who belongs to a
+team, so changing them needs an API key with the `team.memberships_update`
+scope (the "Can manage team memberships and edit catalog entries" role). The
+importer's usual API key doesn't have it. Without it, the sync fails with an
+error that says which scope is missing.
