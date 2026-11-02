@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	_ "embed"
@@ -53,10 +54,13 @@ func (c Config) Filter(typeNames []string) *Config {
 
 			return false
 		})
+		clone.Pipelines[idx].SyncedTypeOutputs = lo.Filter(clone.Pipelines[idx].SyncedTypeOutputs, func(output *output.SyncedTypeOutput, _ int) bool {
+			return lo.Contains(typeNames, output.TypeName)
+		})
 	}
 
 	clone.Pipelines = lo.Filter(clone.Pipelines, func(pipeline *Pipeline, _ int) bool {
-		return len(pipeline.Outputs) > 0
+		return len(pipeline.Outputs) > 0 || len(pipeline.SyncedTypeOutputs) > 0
 	})
 
 	return &clone
@@ -81,6 +85,15 @@ func (c Config) Outputs() []*output.Output {
 	return outputs
 }
 
+func (c Config) SyncedTypeOutputs() []*output.SyncedTypeOutput {
+	outputs := []*output.SyncedTypeOutput{}
+	for _, pipeline := range c.Pipelines {
+		outputs = append(outputs, pipeline.SyncedTypeOutputs...)
+	}
+
+	return outputs
+}
+
 // Load returns currently loaded config
 func (c Config) Load(context.Context) (Config, error) {
 	return Config(c), nil
@@ -89,13 +102,33 @@ func (c Config) Load(context.Context) (Config, error) {
 type Pipeline struct {
 	Sources []*source.Source `json:"sources"`
 	Outputs []*output.Output `json:"outputs"`
+	// SyncedTypeOutputs write custom aliases and attributes onto existing entries of
+	// catalog types that incident.io syncs, rather than creating a type of their own.
+	SyncedTypeOutputs []*output.SyncedTypeOutput `json:"synced_type_outputs,omitempty"`
 }
 
 func (p Pipeline) Validate() error {
 	return validation.ValidateStruct(&p,
 		validation.Field(&p.Sources, validation.Required, validation.Length(1, 0).
 			Error("must specify at least one source")),
-		validation.Field(&p.Outputs, validation.Required, validation.Length(1, 0).
-			Error("must specify at least one output")),
+		validation.Field(&p.Outputs, validation.By(func(any) error {
+			if len(p.Outputs) == 0 && len(p.SyncedTypeOutputs) == 0 {
+				return errors.New("must specify at least one output or synced type output")
+			}
+			return nil
+		})),
+		validation.Field(&p.SyncedTypeOutputs),
 	)
+}
+
+// TypeNames lists the catalog types this pipeline writes to.
+func (p Pipeline) TypeNames() []string {
+	typeNames := lo.Map(p.Outputs, func(op *output.Output, _ int) string {
+		return op.TypeName
+	})
+	for _, op := range p.SyncedTypeOutputs {
+		typeNames = append(typeNames, op.TypeName)
+	}
+
+	return typeNames
 }

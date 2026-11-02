@@ -7,7 +7,6 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	kitlog "github.com/go-kit/kit/log"
-	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"gopkg.in/yaml.v2"
@@ -36,9 +35,7 @@ func (opt *SourceOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 	}
 
 	for _, pipeline := range cfg.Pipelines {
-		OUT("\n↻ Processing pipeline... (%s)", strings.Join(lo.Map(pipeline.Outputs, func(op *output.Output, _ int) string {
-			return op.TypeName
-		}), ", "))
+		OUT("\n↻ Processing pipeline... (%s)", strings.Join(pipeline.TypeNames(), ", "))
 
 		// Load entries from source
 		{

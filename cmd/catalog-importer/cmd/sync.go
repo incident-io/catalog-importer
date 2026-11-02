@@ -111,7 +111,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		}
 		var outputs, sources int
 		for _, pipeline := range cfg.Pipelines {
-			outputs += len(pipeline.Outputs)
+			outputs += len(pipeline.Outputs) + len(pipeline.SyncedTypeOutputs)
 			sources += len(pipeline.Sources)
 		}
 		OUT("✔ Loaded config (%d pipelines, %d sources, %d outputs)", len(cfg.Pipelines), outputs, sources)
@@ -167,6 +167,13 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 		}), ", "))
 	OUT("✔ Found %d catalog types, with %d that match our sync ID (%s)",
 		len(result.JSON200.CatalogTypes), len(existingCatalogTypes), cfg.SyncID)
+
+	// Check every synced type output against its catalog type before we write anything, so
+	// a config mistake can't leave a sync half done.
+	syncedTypes, err := resolveSyncedTypes(cfg.SyncedTypeOutputs(), result.JSON200.CatalogTypes)
+	if err != nil {
+		return err
+	}
 
 	// Remove unmanaged types
 	if opt.Prune {
@@ -497,10 +504,12 @@ createCatalogType:
 		}
 	}
 
+	// Source entries that match no entry of a synced type don't stop the sync, but we fail
+	// the run once everything else is done so they don't go unnoticed.
+	unmatchedEntries := []error{}
+
 	for _, pipeline := range cfg.Pipelines {
-		OUT("\n↻ Syncing pipeline... (%s)", strings.Join(lo.Map(pipeline.Outputs, func(op *output.Output, _ int) string {
-			return op.TypeName
-		}), ", "))
+		OUT("\n↻ Syncing pipeline... (%s)", strings.Join(pipeline.TypeNames(), ", "))
 
 		// Load entries from source
 		sourcedEntries := []source.Entry{}
@@ -612,9 +621,91 @@ createCatalogType:
 				}
 			}
 		}
+
+		for idx, syncedOutput := range pipeline.SyncedTypeOutputs {
+			OUT("\n    ↻ %s (synced type)", syncedOutput.TypeName)
+			resolved := syncedTypes[syncedOutput]
+			wrap := func(err error, msg string) error {
+				return errors.Wrap(err, fmt.Sprintf("synced_type_outputs.%d (type_name='%s'): %s", idx, syncedOutput.TypeName, msg))
+			}
+
+			entries, err := output.FilterEntries(ctx, logger, syncedOutput.Source.Filter, sourcedEntries, opt.JSTimeout)
+			if err != nil {
+				return wrap(err, "filtering entries")
+			}
+			OUT("      ✔ Building entries... (found %d entries matching filters)", len(entries))
+
+			models, err := output.MarshalSyncedEntries(ctx, logger, syncedOutput, resolved.attributes, entries, opt.JSTimeout)
+			if err != nil {
+				return wrap(err, "building entries")
+			}
+
+			showProgress := !opt.DryRun && !opt.NoProgress
+			unmatched, err := reconcile.SyncedEntries(ctx, logger, newEntriesClient(cl, existingCatalogTypes, opt.DryRun),
+				syncedOutput, resolved.catalogType, resolved.attributes, models, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
+			for _, unmatchedErr := range unmatched {
+				ALWAYS_OUT("      ✖ %s", unmatchedErr)
+			}
+			unmatchedEntries = append(unmatchedEntries, unmatched...)
+			if err != nil {
+				return wrap(err, "updating catalog entries")
+			}
+		}
+	}
+
+	if len(unmatchedEntries) > 0 {
+		return errors.Errorf("%d source entries could not be written to a synced catalog type (listed above), everything else was synced", len(unmatchedEntries))
 	}
 
 	return nil
+}
+
+type syncedType struct {
+	catalogType *client.CatalogTypeV3
+	attributes  []*output.Attribute
+}
+
+// resolveSyncedTypes finds the catalog type each synced type output writes to, and checks
+// the output can write to it.
+func resolveSyncedTypes(outputs []*output.SyncedTypeOutput, catalogTypes []client.CatalogTypeV3) (map[*output.SyncedTypeOutput]syncedType, error) {
+	resolved := map[*output.SyncedTypeOutput]syncedType{}
+	seen := map[string]bool{}
+	for idx, syncedOutput := range outputs {
+		fail := func(msg string, args ...any) error {
+			return fmt.Errorf("synced_type_outputs (type_name = '%s'): %s", syncedOutput.TypeName, fmt.Sprintf(msg, args...))
+		}
+
+		// Two outputs writing to one type would each remove the other's custom aliases.
+		if seen[syncedOutput.TypeName] {
+			return nil, fail("more than one synced type output writes to this type: combine them into one")
+		}
+		seen[syncedOutput.TypeName] = true
+
+		catalogType, found := lo.Find(catalogTypes, func(catalogType client.CatalogTypeV3) bool {
+			return catalogType.TypeName == syncedOutput.TypeName
+		})
+		if !found {
+			return nil, fail("no catalog type with this type name exists. Synced types only exist once their integration is connected: run `catalog-importer types` to list them")
+		}
+		if catalogType.IsEditable {
+			return nil, fail("this catalog type isn't synced by incident.io, so you manage its entries directly: use outputs instead")
+		}
+		if syncedOutput.Source.CustomAliases != nil && !catalogType.SupportsCustomAliases {
+			return nil, fail("entries of this type don't take custom aliases, as you edit their aliases elsewhere in incident.io: remove source.custom_aliases")
+		}
+
+		attributes, err := syncedOutput.ResolveAttributes(&catalogType)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("synced_type_outputs.%d", idx))
+		}
+
+		resolved[syncedOutput] = syncedType{
+			catalogType: &catalogType,
+			attributes:  attributes,
+		}
+	}
+
+	return resolved, nil
 }
 
 // newEntriesClient will return a client that speaks to the real API if dry-run is false,
@@ -695,8 +786,24 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 					Name:            existingEntry.Name,
 					Rank:            &existingEntry.Rank,
 				}
-				if payload.Rank == nil && existingEntry.Rank == 0 {
+
+				// Only diff the fields this update sends. Synced type outputs leave the name,
+				// external ID, aliases and rank alone, and set custom aliases instead.
+				if partialEntry.Name == nil {
+					payload.Name = existingEntry.Name
+				}
+				if partialEntry.ExternalId == nil {
+					existingPayload.ExternalId = nil
+				}
+				if partialEntry.Aliases == nil {
+					existingPayload.Aliases = nil
+				}
+				if partialEntry.Rank == nil {
 					existingPayload.Rank = nil
+				}
+				if partialEntry.CustomAliases != nil {
+					payload.CustomAliases = partialEntry.CustomAliases
+					existingPayload.CustomAliases = lo.ToPtr(existingEntry.CustomAliases)
 				}
 				for attrID, attr := range existingEntry.AttributeValues {
 					result := client.CatalogEngineParamBindingPayloadV3{}
