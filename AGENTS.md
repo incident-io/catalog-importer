@@ -107,8 +107,10 @@ The catalog-importer is a CLI tool for syncing catalog data from various sources
 
 **Update Process** (for incident.io staff):
 ```bash
-# Copy the public schema with secret endpoints from your core repository
-cp ../core/server/lib/openapi/public-schema-v3-including-secret-endpoints.json client/openapi3.json
+# Copy the public schema with secret endpoints from your core repository, without the
+# webhook definitions, which the client doesn't use. Don't copy
+# public-schema-v3-no-webhooks.json instead: it leaves out the secret endpoints.
+jq 'del(."x-webhooks")' ../core/server/lib/openapi/public-schema-v3-including-secret-endpoints.json > client/openapi3.json
 
 # Regenerate the client
 make client/client.gen.go
