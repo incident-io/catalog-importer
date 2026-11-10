@@ -240,7 +240,7 @@ func Fatal(err error) {
 		os.Exit(1)
 	}
 
-	kingpin.Fatalf(err.Error())
+	kingpin.Fatalf("%s", err.Error())
 }
 
 func BANNER(msg string, args ...any) {
