@@ -760,12 +760,12 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 		},
 		BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
 			for _, partialEntry := range entries {
-				fmt.Println(color.New(color.FgYellow).Sprintf("    UPDATE: entry_id=%s", partialEntry.EntryId))
+				OUT("%s", color.New(color.FgYellow).Sprintf("    UPDATE: entry_id=%s", partialEntry.EntryId))
 
 				// Find existing entry for comparison
 				existingEntry, ok := entriesByID[partialEntry.EntryId]
 				if !ok {
-					fmt.Println(color.New(color.FgRed).Sprintf("      ERROR: could not find entry for diff"))
+					OUT("%s", color.New(color.FgRed).Sprint("      ERROR: could not find entry for diff"))
 					continue
 				}
 
@@ -852,8 +852,8 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 // newEntriesProgress creates hooks to render progress into the terminal while reconciling
 // catalog entries.
 func newEntriesProgress(showBars bool) *reconcile.EntriesProgress {
-	// `--quiet` suppresses all progress bars.
-	if lo.FromPtr(quiet) {
+	// `--quiet` suppresses all progress bars, and they can't be drawn as JSON lines.
+	if lo.FromPtr(quiet) || outputLogger != nil {
 		showBars = false
 	}
 
