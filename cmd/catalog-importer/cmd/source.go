@@ -68,7 +68,7 @@ func (opt *SourceOptions) Run(ctx context.Context, logger kitlog.Logger) error {
 							return errors.Wrap(err, "marshaling YAML")
 						}
 
-						OUT("---\n" + string(data))
+						OUT("---\n%s", string(data))
 					}
 				}
 			}

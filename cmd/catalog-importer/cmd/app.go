@@ -25,6 +25,11 @@ import (
 
 var logger kitlog.Logger
 
+// outputLogger writes progress output as JSON lines when --log-format is json, so the
+// output can be parsed alongside the logs. It's nil otherwise, and progress output is
+// written to the terminal as plain text.
+var outputLogger kitlog.Logger
+
 var (
 	app = kingpin.New("catalog-importer", "Import data into your incident.io catalog").Version(versionStanza())
 
@@ -32,7 +37,7 @@ var (
 	debug     = app.Flag("debug", "Enable debug logging").Default("false").Bool()
 	quiet     = app.Flag("quiet", "Suppress all non-error output").Default("false").Bool()
 	noColor   = app.Flag("no-color", "Disable colored output").Default("false").Bool()
-	logFormat = app.Flag("log-format", "Format in which to emit logs (either json or logfmt)").Default("logfmt").String()
+	logFormat = app.Flag("log-format", "Format in which to emit logs (either json or logfmt). json also writes progress output as JSON lines, without colors or progress bars").Default("logfmt").String()
 
 	// Init
 	initCmd     = app.Command("init", "Initialises a new config from a template")
@@ -73,6 +78,8 @@ func Run(ctx context.Context) (err error) {
 	switch *logFormat {
 	case "json":
 		logger = kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stderr))
+		outputLogger = kitlog.With(logger, "ts", kitlog.DefaultTimestampUTC)
+		color.NoColor = true
 	case "logfmt":
 		logger = kitlog.NewLogfmtLogger(kitlog.NewSyncWriter(os.Stderr))
 	default:
@@ -155,9 +162,12 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
 			ALWAYS_OUT("Failed to load config file! It's either in an unexpected format, or we can't find it using that path.\n")
 		}
 
-		ALWAYS_OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
+		// The highlighted example is written straight to stdout, so it's only shown in a
+		// terminal.
+		if outputLogger == nil {
+			ALWAYS_OUT(`We expect a config file in Jsonnet, JSON or YAML format that looks like:
 `)
-		config.PrettyPrint(`// e.g. importer.jsonnet
+			config.PrettyPrint(`// e.g. importer.jsonnet
 {
   sync_id: 'unique-sync-id',
   pipelines: [
@@ -167,6 +177,7 @@ func loadConfigOrError(ctx context.Context, configFile string) (cfg *config.Conf
     }
   ],
 }`)
+		}
 
 		ALWAYS_OUT(`
 View reference config file in GitHub: https://github.com/incident-io/catalog-importer/blob/master/config/reference.jsonnet
@@ -198,15 +209,50 @@ func OUT(msg string, args ...any) {
 		return
 	}
 
-	fmt.Fprintf(os.Stderr, msg+"\n", args...)
+	ALWAYS_OUT(msg, args...)
 }
 
 // ALWAYS_OUT prints output to stderr, even if --quiet is set.
 func ALWAYS_OUT(msg string, args ...any) {
+	if outputLogger != nil {
+		logOutput(level.Info(outputLogger), fmt.Sprintf(msg, args...))
+		return
+	}
+
 	fmt.Fprintf(os.Stderr, msg+"\n", args...)
 }
 
+// logOutput writes progress output as a log entry, without the blank lines and
+// indentation that lay it out in a terminal.
+func logOutput(logger kitlog.Logger, msg string, keyvals ...any) {
+	msg = strings.TrimSpace(msg)
+	if msg == "" {
+		return
+	}
+
+	logger.Log(append([]any{"msg", msg}, keyvals...)...)
+}
+
+// exit is replaced in tests, so Fatal can be called without ending the test run.
+var exit = os.Exit
+
+// Fatal reports the error that stopped the command, and exits.
+func Fatal(err error) {
+	if outputLogger != nil {
+		logOutput(level.Error(outputLogger), err.Error())
+	} else {
+		app.Errorf("%s", err.Error())
+	}
+
+	exit(1)
+}
+
 func BANNER(msg string, args ...any) {
+	if outputLogger != nil {
+		ALWAYS_OUT(msg, args...)
+		return
+	}
+
 	msg = strings.Join(
 		[]string{
 			"################################################################################",
@@ -231,6 +277,13 @@ func DIFF[Type any](prefix string, this, that Type) {
 	var buf strings.Builder
 
 	diff := cmp.Diff(thisNormalised, thatNormalised)
+	if outputLogger != nil {
+		if diff != "" && !lo.FromPtr(quiet) {
+			logOutput(level.Info(outputLogger), "diff", "diff", diff)
+		}
+		return
+	}
+
 	if diff != "" {
 		// Set up colored output
 		green := color.New(color.FgGreen)
@@ -256,6 +309,6 @@ func DIFF[Type any](prefix string, this, that Type) {
 	}
 
 	if strings.TrimSpace(buf.String()) != "" {
-		OUT(strings.TrimRight(buf.String(), "\n "))
+		OUT("%s", strings.TrimRight(buf.String(), "\n "))
 	}
 }
