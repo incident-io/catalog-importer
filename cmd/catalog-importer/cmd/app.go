@@ -233,14 +233,18 @@ func logOutput(logger kitlog.Logger, msg string, keyvals ...any) {
 	logger.Log(append([]any{"msg", msg}, keyvals...)...)
 }
 
+// exit is replaced in tests, so Fatal can be called without ending the test run.
+var exit = os.Exit
+
 // Fatal reports the error that stopped the command, and exits.
 func Fatal(err error) {
 	if outputLogger != nil {
 		logOutput(level.Error(outputLogger), err.Error())
-		os.Exit(1)
+	} else {
+		app.Errorf("%s", err.Error())
 	}
 
-	kingpin.Fatalf("%s", err.Error())
+	exit(1)
 }
 
 func BANNER(msg string, args ...any) {
