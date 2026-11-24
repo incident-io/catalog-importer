@@ -16,6 +16,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"github.com/schollz/progressbar/v3"
+	"golang.org/x/time/rate"
 
 	"github.com/incident-io/catalog-importer/v2/client"
 	"github.com/incident-io/catalog-importer/v2/config"
@@ -504,6 +505,18 @@ createCatalogType:
 		}
 	}
 
+	// List the existing entries of every type we're about to reconcile in the background,
+	// while we load sources and reconcile the types before them. We start once the schemas
+	// are synced, so we see entries as they are under the new schema.
+	prefetchCtx, cancelPrefetch := context.WithCancel(ctx)
+	defer cancelPrefetch()
+	listLimiter := rate.NewLimiter(listEntriesPerSecond, 1)
+	prefetchedEntries := reconcile.PrefetchEntries(prefetchCtx, logger,
+		func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error) {
+			return reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize, listLimiter)
+		},
+		catalogTypesToReconcile(cfg, catalogTypesByOutput, syncedTypes), opt.CatalogEntriesAPIPageSize, maxConcurrentTypeListings)
+
 	// Source entries that match no entry of a synced type don't stop the sync, but we fail
 	// the run once everything else is done so they don't go unnoticed.
 	unmatchedEntries := []error{}
@@ -569,7 +582,7 @@ createCatalogType:
 			}
 
 			// This can be reused for both model and enum types.
-			entriesClient := newEntriesClient(cl, existingCatalogTypes, opt.DryRun)
+			entriesClient := newEntriesClient(cl, existingCatalogTypes, opt.DryRun, prefetchedEntries.GetEntries)
 
 			{
 				logger.Log("msg", "reconciling catalog entries", "output", outputType.TypeName)
@@ -641,7 +654,7 @@ createCatalogType:
 			}
 
 			showProgress := !opt.DryRun && !opt.NoProgress
-			unmatched, err := reconcile.SyncedEntries(ctx, logger, newEntriesClient(cl, existingCatalogTypes, opt.DryRun),
+			unmatched, err := reconcile.SyncedEntries(ctx, logger, newEntriesClient(cl, existingCatalogTypes, opt.DryRun, prefetchedEntries.GetEntries),
 				syncedOutput, resolved.catalogType, resolved.attributes, models, newEntriesProgress(showProgress), opt.CatalogEntriesAPIPageSize)
 			for _, unmatchedErr := range unmatched {
 				ALWAYS_OUT("      ✖ %s", unmatchedErr)
@@ -658,6 +671,36 @@ createCatalogType:
 	}
 
 	return nil
+}
+
+const (
+	// The API allows 20 requests per second. Listing takes at most half of that, leaving the
+	// rest for the types reconciling while we list.
+	listEntriesPerSecond = 10
+	// Each type's pages are listed one after another, so this also caps how many list
+	// requests are in flight. It's below the client's 10 connections per host.
+	maxConcurrentTypeListings = 4
+)
+
+// catalogTypesToReconcile returns the catalog types whose entries we'll reconcile, in the
+// order we reconcile them. Types we're faking for a dry-run have no entries to list.
+func catalogTypesToReconcile(cfg *config.Config, catalogTypesByOutput map[string]*client.CatalogTypeV3, syncedTypes map[*output.SyncedTypeOutput]syncedType) []*client.CatalogTypeV3 {
+	catalogTypes := []*client.CatalogTypeV3{}
+	for _, pipeline := range cfg.Pipelines {
+		for _, outputType := range pipeline.Outputs {
+			baseModel, enumModels := output.MarshalType(outputType)
+			for _, model := range append([]*output.CatalogTypeModel{baseModel}, enumModels...) {
+				catalogTypes = append(catalogTypes, catalogTypesByOutput[model.TypeName])
+			}
+		}
+		for _, syncedOutput := range pipeline.SyncedTypeOutputs {
+			catalogTypes = append(catalogTypes, syncedTypes[syncedOutput].catalogType)
+		}
+	}
+
+	return lo.Reject(catalogTypes, func(catalogType *client.CatalogTypeV3, _ int) bool {
+		return strings.HasPrefix(catalogType.Id, "DRY-RUN")
+	})
 }
 
 type syncedType struct {
@@ -709,10 +752,13 @@ func resolveSyncedTypes(outputs []*output.SyncedTypeOutput, catalogTypes []clien
 }
 
 // newEntriesClient will return a client that speaks to the real API if dry-run is false,
-// or we'll create a no-op client that just outputs diffs.
-func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []client.CatalogTypeV3, dryRun bool) reconcile.EntriesClient {
+// or we'll create a no-op client that just outputs diffs. Either way, it lists existing
+// entries with getEntries.
+func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []client.CatalogTypeV3, dryRun bool, getEntries reconcile.GetEntriesFunc) reconcile.EntriesClient {
 	if !dryRun {
-		return reconcile.EntriesClientFromClient(cl)
+		entriesClient := reconcile.EntriesClientFromClient(cl)
+		entriesClient.GetEntries = getEntries
+		return entriesClient
 	}
 
 	// Cache entries by ID for bulk update diff generation
@@ -734,7 +780,7 @@ func newEntriesClient(cl *client.ClientWithResponses, existingCatalogTypes []cli
 			}
 
 			// We're just a normal catalog type, use the real client.
-			catalogType, entries, err := reconcile.GetEntries(ctx, cl, catalogTypeID, pageSize)
+			catalogType, entries, err := getEntries(ctx, catalogTypeID, pageSize)
 			if err != nil {
 				return nil, nil, err
 			}
