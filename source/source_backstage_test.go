@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/jarcoal/httpmock"
+	"github.com/samber/lo"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -181,6 +182,53 @@ var _ = Describe("SourceBackstage", func() {
 
 					It("is included in the request", func() {
 						Expect(backstageRequest.URL.Query().Get("filter")).To(Equal("kind=user,metadata.namespace=default"))
+					})
+				})
+			})
+
+			Context("auth", func() {
+				When("an unsigned token is given", func() {
+					BeforeEach(func() {
+						s.Token = "static-token"
+						s.SignJWT = lo.ToPtr(false)
+					})
+
+					It("sends it as a bearer token", func() {
+						Expect(backstageRequest.Header.Get("Authorization")).To(Equal("Bearer static-token"))
+					})
+
+					When("a custom header is given", func() {
+						BeforeEach(func() {
+							s.Header = "X-Backstage-Auth"
+						})
+
+						It("sends the bearer token in that header instead", func() {
+							Expect(backstageRequest.Header.Get("X-Backstage-Auth")).To(Equal("Bearer static-token"))
+							Expect(backstageRequest.Header.Get("Authorization")).To(BeEmpty())
+						})
+					})
+				})
+
+				When("extra headers are given", func() {
+					BeforeEach(func() {
+						os.Setenv("TEST_BACKSTAGE_PROXY_SECRET_2", "from-env")
+						DeferCleanup(os.Unsetenv, "TEST_BACKSTAGE_PROXY_SECRET_2")
+
+						var parsed source.SourceBackstage
+						Expect(json.Unmarshal([]byte(`{
+							"endpoint": "https://example.com/api/catalog/entities/by-query",
+							"headers": {
+								"X-Proxy-Client-Id": "client-id",
+								"X-Proxy-Secret": "$(TEST_BACKSTAGE_PROXY_SECRET_2)"
+							}
+						}`), &parsed)).To(Succeed())
+						s = parsed
+					})
+
+					It("sends them as-is, substituting environment variables", func() {
+						Expect(backstageRequest.Header.Get("X-Proxy-Client-Id")).To(Equal("client-id"))
+						Expect(backstageRequest.Header.Get("X-Proxy-Secret")).To(Equal("from-env"))
+						Expect(backstageRequest.Header.Get("Authorization")).To(BeEmpty())
 					})
 				})
 			})

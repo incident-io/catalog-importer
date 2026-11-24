@@ -524,6 +524,7 @@ createCatalogType:
 					return errors.Wrap(err, fmt.Sprintf("loading entries from source: %s", sourceLabel))
 				}
 
+				sourcedBefore := len(sourcedEntries)
 				for _, sourceEntry := range sourceEntries {
 					parsedEntries, err := sourceEntry.Parse()
 					if err != nil {
@@ -541,7 +542,7 @@ createCatalogType:
 					sourcedEntries = append(sourcedEntries, parsedEntries...)
 				}
 
-				OUT("    ✔ %s (found %d entries)", sourceLabel, len(sourcedEntries))
+				OUT("    ✔ %s (found %d entries)", sourceLabel, len(sourcedEntries)-sourcedBefore)
 			}
 		}
 

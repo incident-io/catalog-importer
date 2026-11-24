@@ -25,6 +25,10 @@ type SourceBackstage struct {
 	Header   string     `json:"header"`
 	PageSize int        `json:"page_size"`
 	Filter   string     `json:"filter"`
+
+	// Headers are sent as-is with every request, for when Backstage sits behind a proxy
+	// or gateway that wants its own credentials.
+	Headers map[string]Credential `json:"headers"`
 }
 
 func (s SourceBackstage) Validate() error {
@@ -91,6 +95,10 @@ func (s SourceBackstage) doRequest(ctx context.Context, client *http.Client, tok
 		}
 
 		req.Header.Add(header, fmt.Sprintf("Bearer %s", token))
+	}
+
+	for name, value := range s.Headers {
+		req.Header.Set(name, string(value))
 	}
 
 	resp, err := client.Do(req)

@@ -7,7 +7,7 @@ import (
 )
 
 // Matches a pattern like "$(ENV_VAR_NAME)"
-var envRegex = regexp.MustCompile(`\$\(([a-zA-Z_-]+)\)`)
+var envRegex = regexp.MustCompile(`\$\(([a-zA-Z0-9_-]+)\)`)
 
 // ReplaceEnv replaces all environment variable placeholders with the contents from the
 // environment.

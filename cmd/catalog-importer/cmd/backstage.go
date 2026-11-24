@@ -8,6 +8,7 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/incident-io/catalog-importer/v2/config"
 	"github.com/incident-io/catalog-importer/v2/docs"
+	"github.com/incident-io/catalog-importer/v2/expr"
 	"github.com/incident-io/catalog-importer/v2/source"
 	"github.com/pkg/errors"
 )
@@ -18,6 +19,7 @@ type BackstageOptions struct {
 	BackstageEndpoint string
 	BackstageToken    string
 	BackstageSignJWT  bool
+	BackstageFilter   string
 	DryRun            bool
 }
 
@@ -41,6 +43,9 @@ func (opt *BackstageOptions) Bind(cmd *kingpin.CmdClause) *BackstageOptions {
 		Default("true").
 		Envar("BACKSTAGE_SIGN_JWT").
 		BoolVar(&opt.BackstageSignJWT)
+	cmd.Flag("backstage-filter", "Backstage API filter for the entities to fetch. Defaults to the kinds in the Backstage template's kinds.libsonnet").
+		Envar("BACKSTAGE_FILTER").
+		StringVar(&opt.BackstageFilter)
 	cmd.Flag("dry-run", "Only calculate the changes needed and print the diff, don't actually make changes").
 		Default("false").
 		BoolVar(&opt.DryRun)
@@ -59,6 +64,24 @@ func (opt *BackstageOptions) Run(ctx context.Context, logger kitlog.Logger) erro
 		return errors.Wrap(err, "parsing Backstage config")
 	}
 
+	// Only fetch the kinds the template imports, unless told otherwise. Large catalogs
+	// can hold far more entities of other kinds than of these.
+	filter := opt.BackstageFilter
+	if filter == "" {
+		kindsData, err := docs.EvaluateJsonnet("backstage", "kinds.libsonnet")
+		if err != nil {
+			return errors.Wrap(err, "evaluating Backstage kinds")
+		}
+
+		var kinds struct {
+			Filter string `json:"filter"`
+		}
+		if err := json.Unmarshal(kindsData, &kinds); err != nil {
+			return errors.Wrap(err, "parsing Backstage kinds")
+		}
+		filter = kinds.Filter
+	}
+
 	// Find the local file pipeline and change the source to point at Backstage.
 	for _, pipeline := range cfg.Pipelines {
 		if len(pipeline.Sources) > 0 && pipeline.Sources[0].Local != nil {
@@ -68,13 +91,22 @@ func (opt *BackstageOptions) Run(ctx context.Context, logger kitlog.Logger) erro
 						Endpoint: source.Credential(opt.BackstageEndpoint),
 						Token:    source.Credential(opt.BackstageToken),
 						SignJWT:  &opt.BackstageSignJWT,
+						Filter:   filter,
 					},
 				},
 			}
 		}
 	}
 
+	// Kingpin only applies the sync command's flag defaults when sync is the command
+	// being run, so fill in the ones a sync can't run without.
 	syncOpt := *syncOptions
+	if syncOpt.JSTimeout == 0 {
+		syncOpt.JSTimeout = expr.DefaultJSTimeout
+	}
+	if syncOpt.CatalogEntriesAPIPageSize == 0 {
+		syncOpt.CatalogEntriesAPIPageSize = 250
+	}
 	syncOpt.APIEndpoint = opt.APIEndpoint
 	syncOpt.APIKey = opt.APIKey
 	syncOpt.AllowDeleteAll = true

@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"path/filepath"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -12,7 +13,12 @@ import (
 func Parse(filename string, data []byte) (*Config, error) {
 	// If we think this is jsonnet, try parsing it.
 	if strings.HasSuffix(filename, ".jsonnet") {
-		jsonString, err := jsonnet.MakeVM().EvaluateAnonymousSnippet(filename, string(data))
+		// Resolve imports from the working directory first, then from the config file's
+		// directory, so --config works from any directory.
+		vm := jsonnet.MakeVM()
+		vm.Importer(&jsonnet.FileImporter{JPaths: []string{filepath.Dir(filename)}})
+
+		jsonString, err := vm.EvaluateAnonymousSnippet(filename, string(data))
 		if err != nil {
 			return nil, errors.Wrap(err, "parsing jsonnet")
 		}
