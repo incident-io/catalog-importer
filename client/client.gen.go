@@ -17963,7 +17963,7 @@ type CatalogBulkArchiveEntriesPayloadV3 struct {
 	// Example: 01GW2G3V0S59R238FAHPDS1R66
 	CatalogTypeId string `json:"catalog_type_id"`
 
-	// EntryIds The IDs of the entries to archive. Maximum 1,000 entries per request.
+	// EntryIds The IDs of the entries to archive. Maximum 250 entries per request.
 	//
 	// Example: ["01GW2G3V0S59R238FAHPDS1R67","01GW2G3V0S59R238FAHPDS1R68"]
 	EntryIds []string `json:"entry_ids"`
@@ -41614,9 +41614,7 @@ type ClientInterface interface {
 
 	// CatalogV3BulkArchiveEntriesWithBody BulkArchiveEntries Catalog V3
 	//
-	// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-	//
-	// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
 	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 	//
@@ -41627,9 +41625,7 @@ type ClientInterface interface {
 
 	// CatalogV3BulkArchiveEntries BulkArchiveEntries Catalog V3
 	//
-	// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-	//
-	// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
 	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 	//
@@ -53200,9 +53196,7 @@ func (c *Client) CatalogV3CreateEntry(ctx context.Context, body CatalogV3CreateE
 
 // CatalogV3BulkArchiveEntriesWithBody BulkArchiveEntries Catalog V3
 //
-// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-//
-// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
 // Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 //
@@ -53223,9 +53217,7 @@ func (c *Client) CatalogV3BulkArchiveEntriesWithBody(ctx context.Context, conten
 
 // CatalogV3BulkArchiveEntries BulkArchiveEntries Catalog V3
 //
-// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-//
-// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
 // Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 //
@@ -79848,9 +79840,7 @@ type ClientWithResponsesInterface interface {
 
 	// CatalogV3BulkArchiveEntriesWithBodyWithResponse BulkArchiveEntries Catalog V3
 	//
-	// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-	//
-	// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
 	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 	//
@@ -79861,9 +79851,7 @@ type ClientWithResponsesInterface interface {
 
 	// CatalogV3BulkArchiveEntriesWithResponse BulkArchiveEntries Catalog V3
 	//
-	// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-	//
-	// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
 	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 	//
@@ -143115,9 +143103,7 @@ func (c *ClientWithResponses) CatalogV3CreateEntryWithResponse(ctx context.Conte
 
 // CatalogV3BulkArchiveEntriesWithBodyWithResponse BulkArchiveEntries Catalog V3
 //
-// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-//
-// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
 // Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 //
@@ -143134,9 +143120,7 @@ func (c *ClientWithResponses) CatalogV3BulkArchiveEntriesWithBodyWithResponse(ct
 
 // CatalogV3BulkArchiveEntriesWithResponse BulkArchiveEntries Catalog V3
 //
-// Archive up to 1,000 entries of one catalog type in a single request. This has the same effect as deleting each entry individually.
-//
-// Entries are archived in batches, so if the request fails part-way through, some entries may already be archived. Retrying the request is safe: entries that are already archived are reported in `not_found_entry_ids`.
+// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
 // Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
 //

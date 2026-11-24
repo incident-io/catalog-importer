@@ -18,7 +18,7 @@ import (
 
 const (
 	bulkUpsertBatchSize  = 250
-	bulkArchiveBatchSize = 1000
+	bulkArchiveBatchSize = 250
 )
 
 type EntriesClient struct {

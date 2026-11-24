@@ -673,7 +673,7 @@ var _ = Describe("Entries", func() {
 			outputType = &output.Output{}
 
 			existingEntries = []client.CatalogEntryV3{}
-			for i := range 1500 {
+			for i := range 300 {
 				existingEntries = append(existingEntries, client.CatalogEntryV3{
 					Id:         fmt.Sprintf("entry-old-%d", i),
 					ExternalId: lo.ToPtr(fmt.Sprintf("old-%d", i)),
@@ -707,13 +707,13 @@ var _ = Describe("Entries", func() {
 			}))
 		})
 
-		It("archives entries in batches of 1000", func() {
+		It("archives entries in batches of 250", func() {
 			mustReconcile()
 
 			Expect(deletedEntries).To(BeEmpty())
 			Expect(bulkArchiveBatches).To(HaveLen(2))
-			Expect(bulkArchiveBatches[0]).To(HaveLen(1000))
-			Expect(bulkArchiveBatches[1]).To(HaveLen(500))
+			Expect(bulkArchiveBatches[0]).To(HaveLen(250))
+			Expect(bulkArchiveBatches[1]).To(HaveLen(50))
 		})
 
 		When("some entries fail", func() {
@@ -766,7 +766,7 @@ var _ = Describe("Entries", func() {
 			It("falls back to single calls", func() {
 				mustReconcile()
 
-				Expect(deletedEntries).To(HaveLen(1500))
+				Expect(deletedEntries).To(HaveLen(300))
 				Expect(createdEntries).To(HaveLen(300))
 			})
 		})
