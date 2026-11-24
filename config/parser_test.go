@@ -1,6 +1,9 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -53,5 +56,21 @@ var _ = Describe("Parse", func() {
 	]
 }`))
 		Expect(err).To(MatchError(ContainSubstring("unknown field \"invalid_key\"")))
+	})
+
+	It("resolves Jsonnet imports relative to the config file", func() {
+		dir := GinkgoT().TempDir()
+		Expect(os.MkdirAll(filepath.Join(dir, "pipelines"), 0o755)).To(Succeed())
+		Expect(os.WriteFile(filepath.Join(dir, "pipelines", "inline.jsonnet"), []byte(`{
+			sources: [{ inline: { entries: [] } }],
+			outputs: [],
+		}`), 0o644)).To(Succeed())
+
+		filename := filepath.Join(dir, "importer.jsonnet")
+		data := []byte(`{ sync_id: 'something', pipelines: [import 'pipelines/inline.jsonnet'] }`)
+
+		cfg, err := Parse(filename, data)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(cfg.Pipelines).To(HaveLen(1))
 	})
 })
