@@ -5,6 +5,7 @@ import (
 	stderrors "errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
@@ -82,6 +83,41 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 				UpdateAttributes: updateAttributes,
 			})
 			return err
+		},
+		BulkUpsert: func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]BulkUpsertResult, error) {
+			result, err := cl.CatalogV3BulkUpsertEntriesWithResponse(ctx, client.CatalogBulkUpsertEntriesPayloadV3{
+				CatalogTypeId: catalogTypeID,
+				Entries: lo.Map(payloads, func(payload client.CatalogCreateEntryPayloadV3, _ int) client.BulkUpsertEntryPayloadV3 {
+					return client.BulkUpsertEntryPayloadV3{
+						ExternalId:      lo.FromPtr(payload.ExternalId),
+						Name:            payload.Name,
+						Rank:            payload.Rank,
+						Aliases:         payload.Aliases,
+						AttributeValues: payload.AttributeValues,
+					}
+				}),
+			})
+			if err != nil {
+				return nil, err
+			}
+			if result.JSON200 == nil {
+				return nil, errors.Errorf("unexpected nil 200 response. Status Code: %d", result.HTTPResponse.StatusCode)
+			}
+
+			return lo.Map(result.JSON200.Results, func(entry client.BulkUpsertEntryResultV3, _ int) BulkUpsertResult {
+				if entry.Status == client.BulkUpsertEntryResultV3StatusFailed {
+					messages := lo.Map(lo.FromPtr(entry.Errors), func(entryErr client.BulkUpsertEntryErrorV3, _ int) string {
+						if entryErr.Field != nil {
+							return fmt.Sprintf("%s: %s", *entryErr.Field, entryErr.Message)
+						}
+						return entryErr.Message
+					})
+
+					return BulkUpsertResult{Err: errors.New(strings.Join(messages, "; "))}
+				}
+
+				return BulkUpsertResult{Entry: &client.CatalogEntryV3{Id: lo.FromPtr(entry.CatalogEntryId)}}
+			}), nil
 		},
 		BulkArchive: func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
 			entryIDs := lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })

@@ -3483,6 +3483,27 @@ func (e AnnouncementTemplateRichTextV2Type) Valid() bool {
 	}
 }
 
+// Defines values for BulkUpsertEntryResultV3Status.
+const (
+	BulkUpsertEntryResultV3StatusCreated BulkUpsertEntryResultV3Status = "created"
+	BulkUpsertEntryResultV3StatusFailed  BulkUpsertEntryResultV3Status = "failed"
+	BulkUpsertEntryResultV3StatusUpdated BulkUpsertEntryResultV3Status = "updated"
+)
+
+// Valid indicates whether the value is a known member of the BulkUpsertEntryResultV3Status enum.
+func (e BulkUpsertEntryResultV3Status) Valid() bool {
+	switch e {
+	case BulkUpsertEntryResultV3StatusCreated:
+		return true
+	case BulkUpsertEntryResultV3StatusFailed:
+		return true
+	case BulkUpsertEntryResultV3StatusUpdated:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CallRouteOptionV2Digit.
 const (
 	CallRouteOptionV2DigitN1 CallRouteOptionV2Digit = "1"
@@ -17257,6 +17278,73 @@ type AnnouncementTemplatesUpdateResultV2 struct {
 	AnnouncementTemplate AnnouncementTemplateV2 `json:"announcement_template"`
 }
 
+// BulkUpsertEntryErrorV3 Example: {"field":"attribute_values.01GW2G3V0S59R238FAHPDS1R67","message":"unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"}
+type BulkUpsertEntryErrorV3 struct {
+	// Field The field of the entry the error is about, if it is about one
+	//
+	// Example: attribute_values.01GW2G3V0S59R238FAHPDS1R67
+	Field *string `json:"field,omitempty"`
+
+	// Message What went wrong
+	//
+	// Example: unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'
+	Message string `json:"message"`
+}
+
+// BulkUpsertEntryPayloadV3 An entry to create, or to update if an entry of the type already has its external_id
+//
+// Example: {"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}},"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3}
+type BulkUpsertEntryPayloadV3 struct {
+	// Aliases Optional aliases that can be used to reference this entry
+	//
+	// Example: ["lawrence@incident.io","lawrence"]
+	Aliases *[]string `json:"aliases,omitempty"`
+
+	// AttributeValues Values of this entry
+	//
+	// Example: {"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}}
+	AttributeValues map[string]CatalogEngineParamBindingPayloadV3 `json:"attribute_values"`
+
+	// ExternalId The external ID used to match this entry to an existing one. Must be unique within the request.
+	//
+	// Example: 761722cd-d1d7-477b-ac7e-90f9e079dc33
+	ExternalId string `json:"external_id"`
+
+	// Name Name is the human readable name of this entry
+	//
+	// Example: Primary On-call
+	Name string `json:"name"`
+
+	// Rank When catalog type is ranked, this is used to help order things
+	//
+	// Example: 3
+	Rank *int32 `json:"rank,omitempty"`
+}
+
+// BulkUpsertEntryResultV3 Example: {"catalog_entry_id":"01FCNDV6P870EA6S7TK1DSYDG0","errors":[{"field":"attribute_values.01GW2G3V0S59R238FAHPDS1R67","message":"unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"}],"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","status":"updated"}
+type BulkUpsertEntryResultV3 struct {
+	// CatalogEntryId The ID of the entry that was created or updated. Not set when the entry failed.
+	//
+	// Example: 01FCNDV6P870EA6S7TK1DSYDG0
+	CatalogEntryId *string `json:"catalog_entry_id,omitempty"`
+
+	// Errors Why the entry failed. Only set when status is failed.
+	//
+	// Example: [{"field":"attribute_values.01GW2G3V0S59R238FAHPDS1R67","message":"unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"}]
+	Errors *[]BulkUpsertEntryErrorV3 `json:"errors,omitempty"`
+
+	// ExternalId The external ID of the entry in the request
+	//
+	// Example: 761722cd-d1d7-477b-ac7e-90f9e079dc33
+	ExternalId string `json:"external_id"`
+
+	// Status Example: updated
+	Status BulkUpsertEntryResultV3Status `json:"status"`
+}
+
+// BulkUpsertEntryResultV3Status Example: updated
+type BulkUpsertEntryResultV3Status string
+
 // CallRouteAllowedCallerV2 A phone number allowed to reach a call route.
 //
 // Example: {"id":"01FCNDV6P870EA6S7TK1DSYDG0","name":"Regulator duty desk","phone_number":"+15551234567"}
@@ -17915,6 +18003,27 @@ type CatalogBulkUpdateEntriesPayloadV3 struct {
 	//
 	// Example: ["01GW2G3V0S59R238FAHPDS1R66","01GW2G3V0S59R238FAHPDS1R67"]
 	UpdateAttributes *[]string `json:"update_attributes,omitempty"`
+}
+
+// CatalogBulkUpsertEntriesPayloadV3 Example: {"catalog_type_id":"01GW2G3V0S59R238FAHPDS1R66","entries":[{"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}},"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3},{"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}},"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3}]}
+type CatalogBulkUpsertEntriesPayloadV3 struct {
+	// CatalogTypeId The unique identifier of the catalog type to upsert entries into
+	//
+	// Example: 01GW2G3V0S59R238FAHPDS1R66
+	CatalogTypeId string `json:"catalog_type_id"`
+
+	// Entries The entries to create or update. Maximum 250 entries per request.
+	//
+	// Example: [{"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}},"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3},{"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123"}],"value":{"literal":"SEV123"}}},"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3}]
+	Entries []BulkUpsertEntryPayloadV3 `json:"entries"`
+}
+
+// CatalogBulkUpsertEntriesResultV3 Example: {"results":[{"catalog_entry_id":"01FCNDV6P870EA6S7TK1DSYDG0","errors":[{"field":"attribute_values.01GW2G3V0S59R238FAHPDS1R67","message":"unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"}],"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","status":"updated"}]}
+type CatalogBulkUpsertEntriesResultV3 struct {
+	// Results One result per entry in the request, in the same order
+	//
+	// Example: [{"catalog_entry_id":"01FCNDV6P870EA6S7TK1DSYDG0","errors":[{"field":"attribute_values.01GW2G3V0S59R238FAHPDS1R67","message":"unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"}],"external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","status":"updated"}]
+	Results []BulkUpsertEntryResultV3 `json:"results"`
 }
 
 // CatalogCreateEntryPayloadV2 Example: {"aliases":["lawrence@incident.io","lawrence"],"attribute_values":{"abc123":{"array_value":[{"literal":"SEV123","reference":"incident.severity"}],"value":{"literal":"SEV123","reference":"incident.severity"}}},"catalog_type_id":"01FCNDV6P870EA6S7TK1DSYDG0","external_id":"761722cd-d1d7-477b-ac7e-90f9e079dc33","name":"Primary On-call","rank":3}
@@ -35572,6 +35681,9 @@ type CatalogV3BulkArchiveEntriesJSONRequestBody = CatalogBulkArchiveEntriesPaylo
 // CatalogV3BulkUpdateEntriesJSONRequestBody defines body for CatalogV3BulkUpdateEntries for application/json ContentType.
 type CatalogV3BulkUpdateEntriesJSONRequestBody = CatalogBulkUpdateEntriesPayloadV3
 
+// CatalogV3BulkUpsertEntriesJSONRequestBody defines body for CatalogV3BulkUpsertEntries for application/json ContentType.
+type CatalogV3BulkUpsertEntriesJSONRequestBody = CatalogBulkUpsertEntriesPayloadV3
+
 // CatalogV3UpdateEntryJSONRequestBody defines body for CatalogV3UpdateEntry for application/json ContentType.
 type CatalogV3UpdateEntryJSONRequestBody = CatalogUpdateEntryPayloadV3
 
@@ -41543,6 +41655,32 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /v3/catalog_entries/actions/bulk_update (the `CatalogV3BulkUpdateEntries` operationId).
 	CatalogV3BulkUpdateEntries(ctx context.Context, body CatalogV3BulkUpdateEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogV3BulkUpsertEntriesWithBody BulkUpsertEntries Catalog V3
+	//
+	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+	//
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	//
+	// Results are returned in the same order as the entries in the request.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+	CatalogV3BulkUpsertEntriesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogV3BulkUpsertEntries BulkUpsertEntries Catalog V3
+	//
+	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+	//
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	//
+	// Results are returned in the same order as the entries in the request.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+	CatalogV3BulkUpsertEntries(ctx context.Context, body CatalogV3BulkUpsertEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogV3DestroyEntry DestroyEntry Catalog V3
 	//
@@ -53134,6 +53272,52 @@ func (c *Client) CatalogV3BulkUpdateEntriesWithBody(ctx context.Context, content
 // Corresponds with POST /v3/catalog_entries/actions/bulk_update (the `CatalogV3BulkUpdateEntries` operationId).
 func (c *Client) CatalogV3BulkUpdateEntries(ctx context.Context, body CatalogV3BulkUpdateEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCatalogV3BulkUpdateEntriesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CatalogV3BulkUpsertEntriesWithBody BulkUpsertEntries Catalog V3
+//
+// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+//
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+//
+// Results are returned in the same order as the entries in the request.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+func (c *Client) CatalogV3BulkUpsertEntriesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogV3BulkUpsertEntriesRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CatalogV3BulkUpsertEntries BulkUpsertEntries Catalog V3
+//
+// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+//
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+//
+// Results are returned in the same order as the entries in the request.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+func (c *Client) CatalogV3BulkUpsertEntries(ctx context.Context, body CatalogV3BulkUpsertEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogV3BulkUpsertEntriesRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -71465,6 +71649,46 @@ func NewCatalogV3BulkUpdateEntriesRequestWithBody(server string, contentType str
 	return req, nil
 }
 
+// NewCatalogV3BulkUpsertEntriesRequest calls the generic CatalogV3BulkUpsertEntries builder with application/json body
+func NewCatalogV3BulkUpsertEntriesRequest(server string, body CatalogV3BulkUpsertEntriesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogV3BulkUpsertEntriesRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCatalogV3BulkUpsertEntriesRequestWithBody constructs an http.Request for the CatalogV3BulkUpsertEntries method, with any body, and a specified content type
+func NewCatalogV3BulkUpsertEntriesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/catalog_entries/actions/bulk_upsert")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewCatalogV3DestroyEntryRequest constructs an http.Request for the CatalogV3DestroyEntry method
 func NewCatalogV3DestroyEntryRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -79665,6 +79889,32 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /v3/catalog_entries/actions/bulk_update (the `CatalogV3BulkUpdateEntries` operationId).
 	CatalogV3BulkUpdateEntriesWithResponse(ctx context.Context, body CatalogV3BulkUpdateEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogV3BulkUpdateEntriesResponse, error)
+
+	// CatalogV3BulkUpsertEntriesWithBodyWithResponse BulkUpsertEntries Catalog V3
+	//
+	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+	//
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	//
+	// Results are returned in the same order as the entries in the request.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+	CatalogV3BulkUpsertEntriesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogV3BulkUpsertEntriesResponse, error)
+
+	// CatalogV3BulkUpsertEntriesWithResponse BulkUpsertEntries Catalog V3
+	//
+	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+	//
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	//
+	// Results are returned in the same order as the entries in the request.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+	CatalogV3BulkUpsertEntriesWithResponse(ctx context.Context, body CatalogV3BulkUpsertEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogV3BulkUpsertEntriesResponse, error)
 
 	// CatalogV3DestroyEntryWithResponse DestroyEntry Catalog V3
 	//
@@ -128074,6 +128324,138 @@ func (r CatalogV3BulkUpdateEntriesResponse) ContentType() string {
 	return ""
 }
 
+type CatalogV3BulkUpsertEntriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *CatalogBulkUpsertEntriesResultV3
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ErrorResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON405 the response for an HTTP 405 `application/json` response
+	JSON405 *ErrorResponse
+	// JSON406 the response for an HTTP 406 `application/json` response
+	JSON406 *ErrorResponse
+	// JSON408 the response for an HTTP 408 `application/json` response
+	JSON408 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSON412 the response for an HTTP 412 `application/json` response
+	JSON412 *ErrorResponse
+	// JSON413 the response for an HTTP 413 `application/json` response
+	JSON413 *ErrorResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *ErrorResponse
+	// JSON429 the response for an HTTP 429 `application/json` response
+	JSON429 *ErrorResponse
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON200() *CatalogBulkUpsertEntriesResultV3 {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON400() *ErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON401() *ErrorResponse {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON405 returns the response for an HTTP 405 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON405() *ErrorResponse {
+	return r.JSON405
+}
+
+// GetJSON406 returns the response for an HTTP 406 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON406() *ErrorResponse {
+	return r.JSON406
+}
+
+// GetJSON408 returns the response for an HTTP 408 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON408() *ErrorResponse {
+	return r.JSON408
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSON412 returns the response for an HTTP 412 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON412() *ErrorResponse {
+	return r.JSON412
+}
+
+// GetJSON413 returns the response for an HTTP 413 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON413() *ErrorResponse {
+	return r.JSON413
+}
+
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON422() *ErrorResponse {
+	return r.JSON422
+}
+
+// GetJSON429 returns the response for an HTTP 429 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON429() *ErrorResponse {
+	return r.JSON429
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CatalogV3BulkUpsertEntriesResponse) GetJSON500() *ErrorResponse {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r CatalogV3BulkUpsertEntriesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogV3BulkUpsertEntriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogV3BulkUpsertEntriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CatalogV3BulkUpsertEntriesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type CatalogV3DestroyEntryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -142797,6 +143179,44 @@ func (c *ClientWithResponses) CatalogV3BulkUpdateEntriesWithResponse(ctx context
 		return nil, err
 	}
 	return ParseCatalogV3BulkUpdateEntriesResponse(rsp)
+}
+
+// CatalogV3BulkUpsertEntriesWithBodyWithResponse BulkUpsertEntries Catalog V3
+//
+// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+//
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+//
+// Results are returned in the same order as the entries in the request.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+func (c *ClientWithResponses) CatalogV3BulkUpsertEntriesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogV3BulkUpsertEntriesResponse, error) {
+	rsp, err := c.CatalogV3BulkUpsertEntriesWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogV3BulkUpsertEntriesResponse(rsp)
+}
+
+// CatalogV3BulkUpsertEntriesWithResponse BulkUpsertEntries Catalog V3
+//
+// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
+//
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+//
+// Results are returned in the same order as the entries in the request.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v3/catalog_entries/actions/bulk_upsert (the `CatalogV3BulkUpsertEntries` operationId).
+func (c *ClientWithResponses) CatalogV3BulkUpsertEntriesWithResponse(ctx context.Context, body CatalogV3BulkUpsertEntriesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogV3BulkUpsertEntriesResponse, error) {
+	rsp, err := c.CatalogV3BulkUpsertEntries(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogV3BulkUpsertEntriesResponse(rsp)
 }
 
 // CatalogV3DestroyEntryWithResponse DestroyEntry Catalog V3
@@ -186198,6 +186618,123 @@ func ParseCatalogV3BulkUpdateEntriesResponse(rsp *http.Response) (*CatalogV3Bulk
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 405:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON405 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 406:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON406 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 408:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON408 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 412:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON412 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 413:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON413 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON429 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogV3BulkUpsertEntriesResponse parses an HTTP response from a CatalogV3BulkUpsertEntriesWithResponse call
+func ParseCatalogV3BulkUpsertEntriesResponse(rsp *http.Response) (*CatalogV3BulkUpsertEntriesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogV3BulkUpsertEntriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogBulkUpsertEntriesResultV3
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest ErrorResponse
