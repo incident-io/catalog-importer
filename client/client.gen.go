@@ -41660,7 +41660,7 @@ type ClientInterface interface {
 	//
 	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 	//
-	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 	//
 	// Results are returned in the same order as the entries in the request.
 	//
@@ -41673,7 +41673,7 @@ type ClientInterface interface {
 	//
 	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 	//
-	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 	//
 	// Results are returned in the same order as the entries in the request.
 	//
@@ -53286,7 +53286,7 @@ func (c *Client) CatalogV3BulkUpdateEntries(ctx context.Context, body CatalogV3B
 //
 // Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 //
-// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 //
 // Results are returned in the same order as the entries in the request.
 //
@@ -53309,7 +53309,7 @@ func (c *Client) CatalogV3BulkUpsertEntriesWithBody(ctx context.Context, content
 //
 // Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 //
-// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 //
 // Results are returned in the same order as the entries in the request.
 //
@@ -79894,7 +79894,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 	//
-	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 	//
 	// Results are returned in the same order as the entries in the request.
 	//
@@ -79907,7 +79907,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 	//
-	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+	// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 	//
 	// Results are returned in the same order as the entries in the request.
 	//
@@ -143185,7 +143185,7 @@ func (c *ClientWithResponses) CatalogV3BulkUpdateEntriesWithResponse(ctx context
 //
 // Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 //
-// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 //
 // Results are returned in the same order as the entries in the request.
 //
@@ -143204,7 +143204,7 @@ func (c *ClientWithResponses) CatalogV3BulkUpsertEntriesWithBodyWithResponse(ctx
 //
 // Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.
 //
-// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. Entries are written independently: one that fails (for example because it sets an attribute that doesn't exist, or one you can't change) is reported in its result, and the others are still written.
+// An entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.
 //
 // Results are returned in the same order as the entries in the request.
 //
