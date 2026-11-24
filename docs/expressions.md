@@ -28,7 +28,7 @@ Taking an example from the Backstage config (extended slightly):
           description: 'APIs synced from Backstage.',
           type_name: 'Custom["BackstageAPI"]',
           source: {
-            filter: '$.apiVersion == "backstage.io/v1alpha1" && $.kind == "API"',
+            filter: '$.kind == "API"',
             name: '$.metadata.name',
             external_id: '$.metadata.name',
           },

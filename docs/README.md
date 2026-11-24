@@ -66,7 +66,7 @@ catalog-importer init
 
 This creates a working configuration based on a template. Choose:
 - **Simple** - Perfect for learning, uses inline data
-- **Backstage** - Import existing catalog-info.yaml files
+- **Backstage** - Import from the Backstage API or catalog-info.yaml files
 
 ### 2. Set up authentication
 
