@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"io"
 	"math"
@@ -117,10 +118,10 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 		if resp.StatusCode > 299 {
 			data, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, fmt.Errorf("status %d: no response body", resp.StatusCode)
+				return nil, &HTTPError{StatusCode: resp.StatusCode}
 			}
 
-			return nil, fmt.Errorf("status %d: %s", resp.StatusCode, string(data))
+			return nil, &HTTPError{StatusCode: resp.StatusCode, Body: string(data)}
 		}
 
 		return resp, err
@@ -142,6 +143,26 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	}
 
 	return client, nil
+}
+
+// HTTPError is returned for any response with a non-2xx status code.
+type HTTPError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *HTTPError) Error() string {
+	if e.Body == "" {
+		return fmt.Sprintf("status %d: no response body", e.StatusCode)
+	}
+
+	return fmt.Sprintf("status %d: %s", e.StatusCode, e.Body)
+}
+
+// IsNotFound returns true if the API responded with a 404.
+func IsNotFound(err error) bool {
+	var httpErr *HTTPError
+	return stderrors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound
 }
 
 // WithReadOnly restricts the client to GET requests only, useful when creating a client

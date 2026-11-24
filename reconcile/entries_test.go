@@ -16,6 +16,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// The suite shadows the package name with a reconcile function.
+type bulkUpsertResult = reconcile.BulkUpsertResult
+
 var _ = Describe("Entries", func() {
 	var (
 		ctx    context.Context
@@ -618,6 +621,154 @@ var _ = Describe("Entries", func() {
 		It("does not trigger an update", func() {
 			mustReconcile()
 			Expect(updatedEntries).To(HaveLen(0))
+		})
+	})
+
+	Describe("bulk endpoints", func() {
+		var (
+			bulkUpsertBatches  [][]client.CatalogCreateEntryPayloadV3
+			bulkArchiveBatches [][]string
+			failExternalIDs    map[string]bool
+			failEntryIDs       map[string]bool
+			bulkUpsertErr      error
+			bulkArchiveErr     error
+		)
+		BeforeEach(func() {
+			bulkUpsertBatches = nil
+			bulkArchiveBatches = nil
+			failExternalIDs = map[string]bool{}
+			failEntryIDs = map[string]bool{}
+			bulkUpsertErr = nil
+			bulkArchiveErr = nil
+
+			mockClient.BulkUpsert = func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]bulkUpsertResult, error) {
+				if bulkUpsertErr != nil {
+					return nil, bulkUpsertErr
+				}
+
+				bulkUpsertBatches = append(bulkUpsertBatches, payloads)
+				return lo.Map(payloads, func(payload client.CatalogCreateEntryPayloadV3, _ int) bulkUpsertResult {
+					if failExternalIDs[*payload.ExternalId] {
+						return bulkUpsertResult{Err: fmt.Errorf("external ID conflict")}
+					}
+
+					return bulkUpsertResult{Entry: &client.CatalogEntryV3{Id: "entry-" + *payload.ExternalId}}
+				}), nil
+			}
+			mockClient.BulkArchive = func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
+				if bulkArchiveErr != nil {
+					return nil, bulkArchiveErr
+				}
+
+				bulkArchiveBatches = append(bulkArchiveBatches, lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id }))
+				return lo.Map(entries, func(entry client.CatalogEntryV3, _ int) error {
+					if failEntryIDs[entry.Id] {
+						return fmt.Errorf("not allowed")
+					}
+					return nil
+				}), nil
+			}
+
+			catalogType = &client.CatalogTypeV3{Id: "type-123", TypeName: "Test Type"}
+			outputType = &output.Output{}
+
+			existingEntries = []client.CatalogEntryV3{}
+			for i := range 1500 {
+				existingEntries = append(existingEntries, client.CatalogEntryV3{
+					Id:         fmt.Sprintf("entry-old-%d", i),
+					ExternalId: lo.ToPtr(fmt.Sprintf("old-%d", i)),
+				})
+			}
+
+			entryModels = []*output.CatalogEntryModel{}
+			for i := range 300 {
+				entryModels = append(entryModels, &output.CatalogEntryModel{
+					Name:       fmt.Sprintf("Entry %d", i),
+					ExternalID: fmt.Sprintf("ext-%d", i),
+					Rank:       int32(i),
+					Aliases:    []string{},
+				})
+			}
+		})
+
+		It("creates entries in batches of 250", func() {
+			mustReconcile()
+
+			Expect(createdEntries).To(BeEmpty())
+			Expect(bulkUpsertBatches).To(HaveLen(2))
+			Expect(bulkUpsertBatches[0]).To(HaveLen(250))
+			Expect(bulkUpsertBatches[1]).To(HaveLen(50))
+			Expect(bulkUpsertBatches[0][0]).To(Equal(client.CatalogCreateEntryPayloadV3{
+				CatalogTypeId: "type-123",
+				Name:          "Entry 0",
+				Rank:          lo.ToPtr(int32(0)),
+				ExternalId:    lo.ToPtr("ext-0"),
+				Aliases:       lo.ToPtr([]string{}),
+			}))
+		})
+
+		It("archives entries in batches of 1000", func() {
+			mustReconcile()
+
+			Expect(deletedEntries).To(BeEmpty())
+			Expect(bulkArchiveBatches).To(HaveLen(2))
+			Expect(bulkArchiveBatches[0]).To(HaveLen(1000))
+			Expect(bulkArchiveBatches[1]).To(HaveLen(500))
+		})
+
+		When("some entries fail", func() {
+			BeforeEach(func() {
+				failExternalIDs["ext-3"] = true
+				failExternalIDs["ext-260"] = true
+			})
+
+			It("reports each failed entry and still sends every batch", func() {
+				err := reconcile()
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-3, got error: external ID conflict")))
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-260, got error: external ID conflict")))
+				Expect(err).NotTo(MatchError(ContainSubstring("external_id=ext-4,")))
+				Expect(bulkUpsertBatches).To(HaveLen(2))
+			})
+		})
+
+		When("some archives fail", func() {
+			BeforeEach(func() {
+				failEntryIDs["entry-old-7"] = true
+			})
+
+			It("reports each failed entry and does not create", func() {
+				err := reconcile()
+				Expect(err).To(MatchError(ContainSubstring("unable to destroy catalog entry with id=entry-old-7, got error: not allowed")))
+				Expect(bulkArchiveBatches).To(HaveLen(2))
+				Expect(bulkUpsertBatches).To(BeEmpty())
+			})
+		})
+
+		When("a whole batch fails", func() {
+			BeforeEach(func() {
+				bulkUpsertErr = &client.HTTPError{StatusCode: 422, Body: "invalid"}
+			})
+
+			It("reports a failure for every entry in the batch", func() {
+				err := reconcile()
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-0, got error: status 422: invalid")))
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-299, got error: status 422: invalid")))
+				Expect(createdEntries).To(BeEmpty())
+			})
+		})
+
+		When("the API doesn't have the bulk endpoints", func() {
+			BeforeEach(func() {
+				bulkUpsertErr = &client.HTTPError{StatusCode: 404, Body: "not found"}
+				bulkArchiveErr = &client.HTTPError{StatusCode: 404, Body: "not found"}
+			})
+
+			It("falls back to single calls", func() {
+				mustReconcile()
+
+				Expect(deletedEntries).To(HaveLen(1500))
+				Expect(createdEntries).To(HaveLen(300))
+			})
 		})
 	})
 })

@@ -2,6 +2,7 @@ package reconcile
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"reflect"
 
@@ -14,11 +15,31 @@ import (
 	"github.com/sourcegraph/conc/pool"
 )
 
+const (
+	bulkUpsertBatchSize  = 250
+	bulkArchiveBatchSize = 1000
+)
+
 type EntriesClient struct {
 	GetEntries func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error)
 	Delete     func(ctx context.Context, entry *client.CatalogEntryV3) error
 	Create     func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error)
 	BulkUpdate func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error
+
+	// BulkUpsert creates or updates entries by external ID, returning one result per payload
+	// in the same order. If it is nil, or returns an error that satisfies client.IsNotFound
+	// (an API without the endpoint), we fall back to calling Create for each entry.
+	BulkUpsert func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]BulkUpsertResult, error)
+	// BulkArchive archives entries, returning one error (nil on success) per entry in the
+	// same order. If it is nil, or returns an error that satisfies client.IsNotFound, we fall
+	// back to calling Delete for each entry.
+	BulkArchive func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error)
+}
+
+// BulkUpsertResult is the outcome for a single entry sent to BulkUpsert.
+type BulkUpsertResult struct {
+	Entry *client.CatalogEntryV3
+	Err   error
 }
 
 // EntriesClientFromClient wraps a real client with hooks that can create, update and delete
@@ -128,33 +149,11 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 
 		logger.Log("msg", fmt.Sprintf("found %d entries in the catalog, deleting %d of them", len(entries), len(toDelete)))
 
-		// Use a pool of workers to avoid hitting API limits but multiple other
-		// routines doing a smash and grab on the rate we do have available.
 		if onStart := progress.OnDeleteStart; onStart != nil {
 			onStart(len(toDelete))
 		}
 
-		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
-		for _, entry := range toDelete {
-			var (
-				entry = entry // avoid shadow loop variable
-			)
-			p.Go(func(ctx context.Context) error {
-				if onProgress := progress.OnDeleteProgress; onProgress != nil {
-					defer onProgress()
-				}
-
-				err := cl.Delete(ctx, &entry)
-				if err != nil {
-					return errors.Wrap(err, "unable to destroy catalog entry, got error")
-				}
-
-				logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
-				return nil
-			})
-		}
-
-		err := p.Wait()
+		err := deleteEntries(ctx, logger, cl, catalogType.Id, toDelete, progress.OnDeleteProgress)
 		if err != nil {
 			return errors.Wrap(err, "destroying catalog entries")
 		}
@@ -184,38 +183,20 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			onStart(len(toCreate))
 		}
 
-		p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
-		for _, model := range toCreate {
-			var (
-				model = model // capture loop variable
-			)
+		payloads := lo.Map(toCreate, func(model *output.CatalogEntryModel, _ int) client.CatalogCreateEntryPayloadV3 {
+			return client.CatalogCreateEntryPayloadV3{
+				CatalogTypeId:   catalogType.Id,
+				Name:            model.Name,
+				Rank:            lo.ToPtr(model.Rank),
+				ExternalId:      lo.ToPtr(model.ExternalID),
+				Aliases:         lo.ToPtr(model.Aliases),
+				AttributeValues: model.AttributeValues,
+			}
+		})
 
-			p.Go(func(ctx context.Context) error {
-				if onProgress := progress.OnCreateProgress; onProgress != nil {
-					defer onProgress()
-				}
-
-				result, err := cl.Create(ctx, client.CatalogCreateEntryPayloadV3{
-					CatalogTypeId:   catalogType.Id,
-					Name:            model.Name,
-					Rank:            &model.Rank,
-					ExternalId:      lo.ToPtr(model.ExternalID),
-					Aliases:         lo.ToPtr(model.Aliases),
-					AttributeValues: model.AttributeValues,
-				})
-				if err != nil {
-					return errors.Wrap(err, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", model.ExternalID))
-				}
-
-				logger.Log("msg", "created catalog entry", "external_id", model.ExternalID, "entry_id", result.Id)
-
-				return nil
-			})
-		}
-
-		err := p.Wait()
+		err := createEntries(ctx, logger, cl, catalogType.Id, payloads, progress.OnCreateProgress)
 		if err != nil {
-			return errors.Wrap(err, "destroying catalog entries")
+			return errors.Wrap(err, "creating catalog entries")
 		}
 	}
 
@@ -299,6 +280,138 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	}
 
 	return nil
+}
+
+// deleteEntries archives entries in batches through BulkArchive, falling back to one
+// Delete per entry if the API doesn't support bulk archiving.
+func deleteEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalogTypeID string, entries []client.CatalogEntryV3, onProgress func()) error {
+	if cl.BulkArchive == nil {
+		return deleteEntriesOneByOne(ctx, logger, cl, entries, onProgress)
+	}
+
+	errs := []error{}
+	for start := 0; start < len(entries); start += bulkArchiveBatchSize {
+		batch := entries[start:min(start+bulkArchiveBatchSize, len(entries))]
+
+		logger.Log("msg", fmt.Sprintf("bulk archiving %d catalog entries", len(batch)))
+		results, err := cl.BulkArchive(ctx, catalogTypeID, batch)
+		if client.IsNotFound(err) {
+			logger.Log("msg", "bulk archive endpoint not found, falling back to deleting entries one at a time")
+			errs = append(errs, deleteEntriesOneByOne(ctx, logger, cl, entries[start:], onProgress))
+			break
+		}
+		if err == nil && len(results) != len(batch) {
+			err = errors.Errorf("expected %d results, got %d", len(batch), len(results))
+		}
+
+		for idx, entry := range batch {
+			entryErr := err
+			if entryErr == nil {
+				entryErr = results[idx]
+			}
+
+			if entryErr != nil {
+				errs = append(errs, errors.Wrap(entryErr, fmt.Sprintf("unable to destroy catalog entry with id=%s, got error", entry.Id)))
+			} else {
+				logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
+			}
+
+			if onProgress != nil {
+				onProgress()
+			}
+		}
+	}
+
+	return stderrors.Join(errs...)
+}
+
+func deleteEntriesOneByOne(ctx context.Context, logger kitlog.Logger, cl EntriesClient, entries []client.CatalogEntryV3, onProgress func()) error {
+	// Use a pool of workers to avoid hitting API limits but multiple other
+	// routines doing a smash and grab on the rate we do have available.
+	p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
+	for _, entry := range entries {
+		p.Go(func(ctx context.Context) error {
+			if onProgress != nil {
+				defer onProgress()
+			}
+
+			err := cl.Delete(ctx, &entry)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("unable to destroy catalog entry with id=%s, got error", entry.Id))
+			}
+
+			logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
+			return nil
+		})
+	}
+
+	return p.Wait()
+}
+
+// createEntries creates entries in batches through BulkUpsert, falling back to one Create
+// per entry if the API doesn't support bulk upserting.
+func createEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3, onProgress func()) error {
+	if cl.BulkUpsert == nil {
+		return createEntriesOneByOne(ctx, logger, cl, payloads, onProgress)
+	}
+
+	errs := []error{}
+	for start := 0; start < len(payloads); start += bulkUpsertBatchSize {
+		batch := payloads[start:min(start+bulkUpsertBatchSize, len(payloads))]
+
+		logger.Log("msg", fmt.Sprintf("bulk upserting %d catalog entries", len(batch)))
+		results, err := cl.BulkUpsert(ctx, catalogTypeID, batch)
+		if client.IsNotFound(err) {
+			logger.Log("msg", "bulk upsert endpoint not found, falling back to creating entries one at a time")
+			errs = append(errs, createEntriesOneByOne(ctx, logger, cl, payloads[start:], onProgress))
+			break
+		}
+		if err == nil && len(results) != len(batch) {
+			err = errors.Errorf("expected %d results, got %d", len(batch), len(results))
+		}
+
+		for idx, payload := range batch {
+			entryErr := err
+			if entryErr == nil {
+				entryErr = results[idx].Err
+			}
+
+			externalID := lo.FromPtr(payload.ExternalId)
+			if entryErr != nil {
+				errs = append(errs, errors.Wrap(entryErr, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", externalID)))
+			} else {
+				logger.Log("msg", "created catalog entry", "external_id", externalID, "entry_id", lo.FromPtr(results[idx].Entry).Id)
+			}
+
+			if onProgress != nil {
+				onProgress()
+			}
+		}
+	}
+
+	return stderrors.Join(errs...)
+}
+
+func createEntriesOneByOne(ctx context.Context, logger kitlog.Logger, cl EntriesClient, payloads []client.CatalogCreateEntryPayloadV3, onProgress func()) error {
+	p := pool.New().WithErrors().WithContext(ctx).WithMaxGoroutines(10)
+	for _, payload := range payloads {
+		p.Go(func(ctx context.Context) error {
+			if onProgress != nil {
+				defer onProgress()
+			}
+
+			externalID := lo.FromPtr(payload.ExternalId)
+			result, err := cl.Create(ctx, payload)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", externalID))
+			}
+
+			logger.Log("msg", "created catalog entry", "external_id", externalID, "entry_id", result.Id)
+			return nil
+		})
+	}
+
+	return p.Wait()
 }
 
 // GetEntries paginates through all catalog entries for the given type.
