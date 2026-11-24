@@ -11,13 +11,18 @@ function(sources, kinds)
   // "default/payments".
   local externalID = '($.metadata.namespace || "default") + "/" + $.metadata.name';
 
+  // Backstage references ignore case, and the ones in relations are lowercased,
+  // so each entry also gets its external ID in lowercase as an alias.
+  local aliases = ['$.metadata.name', '(%s).toLowerCase()' % externalID];
+
   // Backstage writes references to other entities as "name", "namespace/name"
-  // or "kind:namespace/name". refs() turns each into "namespace/name", the
-  // external ID of the entry it points at, and drops references to other kinds.
+  // or "kind:namespace/name". refs() turns each into a lowercase
+  // "namespace/name", which matches that alias, and drops references to other
+  // kinds.
   local refs(expr, kind) = |||
     _.uniq(_.compact(_.map([].concat(%s || []), function(ref) {
-      var m = String(ref).match(/^(?:([^:]+):)?(?:([^\/]+)\/)?(.+)$/);
-      if (!m || (m[1] && m[1].toLowerCase() != "%s")) return null;
+      var m = String(ref).toLowerCase().match(/^(?:([^:]+):)?(?:([^\/]+)\/)?(.+)$/);
+      if (!m || (m[1] && m[1] != "%s")) return null;
       return (m[2] || "default") + "/" + m[3];
     })))
   ||| % [expr, std.asciiLower(kind)];
@@ -37,7 +42,7 @@ function(sources, kinds)
           filter: '$.kind == "Component"',
           name: '$.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {
@@ -143,7 +148,7 @@ function(sources, kinds)
           filter: '$.kind == "System"',
           name: '$.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {
@@ -180,7 +185,7 @@ function(sources, kinds)
           filter: '$.kind == "Domain"',
           name: '$.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {
@@ -210,7 +215,7 @@ function(sources, kinds)
           filter: '$.kind == "Group"',
           name: '$.spec.profile.displayName || $.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {
@@ -283,7 +288,7 @@ function(sources, kinds)
           filter: '$.kind == "User"',
           name: '$.spec.profile.displayName || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           // Links each Backstage user to the incident.io user with the same
@@ -319,7 +324,7 @@ function(sources, kinds)
           filter: '$.kind == "API"',
           name: '$.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {
@@ -368,7 +373,7 @@ function(sources, kinds)
           filter: '$.kind == "Resource"',
           name: '$.metadata.title || $.metadata.name',
           external_id: externalID,
-          aliases: ['$.metadata.name'],
+          aliases: aliases,
         },
         attributes: [
           {

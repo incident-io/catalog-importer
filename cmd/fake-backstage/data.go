@@ -36,8 +36,9 @@ func seed(apiCount int) []entity {
 		{"platform", "backstage.io/v1beta1", "team", "Platform", "engineering", []string{"sre"}, nil},
 		{"sre", "backstage.io/v1beta1", "team", "Site Reliability", "platform", []string{}, nil},
 		{"payments", "backstage.io/v1alpha1", "team", "Payments", "engineering", []string{}, nil},
-		// Growth lists its members on the Group rather than on each User.
-		{"growth", "backstage.io/v1beta1", "team", "Growth", "engineering", []string{}, []string{"user:default/sue", "mo"}},
+		// Growth lists its members on the Group rather than on each User. Its name is
+		// capitalised but references to it aren't, so they only match ignoring case.
+		{"Growth", "backstage.io/v1beta1", "team", "Growth", "engineering", []string{}, []string{"user:default/sue", "mo"}},
 		{"data", "backstage.io/v1alpha1", "team", "Data", "engineering", []string{}, nil},
 	}
 	for _, g := range groups {
@@ -46,7 +47,7 @@ func seed(apiCount int) []entity {
 			"children": g.children,
 			"profile": map[string]any{
 				"displayName": g.displayName,
-				"email":       g.name + "-team@example.com",
+				"email":       strings.ToLower(g.name) + "-team@example.com",
 			},
 		}
 		if g.parent != "" {
@@ -335,12 +336,13 @@ func withRelations(entities []entity) []entity {
 	return entities
 }
 
-// ref returns the entity's reference in Backstage's kind:namespace/name form.
+// ref returns the entity's reference in Backstage's kind:namespace/name form. Like
+// Backstage, it lowercases all three parts.
 func ref(e entity) string {
 	metadata, _ := e["metadata"].(map[string]any)
 	namespace, _ := metadata["namespace"].(string)
 	name, _ := metadata["name"].(string)
-	return strings.ToLower(kindOf(e)) + ":" + namespace + "/" + name
+	return strings.ToLower(kindOf(e) + ":" + namespace + "/" + name)
 }
 
 func kindOf(e entity) string {
@@ -349,7 +351,8 @@ func kindOf(e entity) string {
 }
 
 // parseRef expands a possibly shortened entity reference like "payments" or
-// "group:payments" into its full kind:namespace/name form.
+// "group:payments" into its full kind:namespace/name form, lowercased as Backstage
+// does.
 func parseRef(s, defaultKind string) string {
 	kind := defaultKind
 	if k, rest, ok := strings.Cut(s, ":"); ok {
@@ -359,7 +362,7 @@ func parseRef(s, defaultKind string) string {
 	if ns, name, ok := strings.Cut(s, "/"); ok {
 		namespace, s = ns, name
 	}
-	return strings.ToLower(kind) + ":" + namespace + "/" + s
+	return strings.ToLower(kind + ":" + namespace + "/" + s)
 }
 
 func stringList(v any) []string {

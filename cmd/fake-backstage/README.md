@@ -36,7 +36,8 @@ A fictional engineering organisation:
   `backstage.io/v1beta1`.
 - Users with `spec.memberOf`, written as both `payments` and
   `group:default/payments`. Growth lists its members on the Group instead, in
-  `spec.members`.
+  `spec.members`, and is named `Growth` while every reference to it says
+  `growth`.
 - Components, Systems, Domains and Resources, with `spec.owner` in every reference form
   Backstage allows.
 - An `example.com/on-call-team` annotation on most Components, naming the Group that
