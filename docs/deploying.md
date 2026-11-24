@@ -1,9 +1,9 @@
 # Deploying
 
-The importer is a command you run, not a service: each run syncs once and
-exits. Most people run it from CI, either when the config changes or on a
-schedule. If it reads from a system that changes on its own, such as the
-Backstage API, run it on a schedule so incident.io keeps up.
+Each run of the importer syncs once and exits. Most people run it from CI,
+either when the config changes or on a schedule. If it reads from a system that
+changes on its own, such as the Backstage API, run it on a schedule so
+incident.io keeps up.
 
 The run needs to reach both incident.io and your source. Hosted CI runners
 usually can't reach an internal Backstage, so for that you can use a

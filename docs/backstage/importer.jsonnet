@@ -19,8 +19,9 @@ local sources = [
     backstage: {
       endpoint: 'https://backstage.example.com/api/catalog/entities/by-query',
 
-      // Only fetch the kinds listed in kinds.libsonnet. Add more conditions to
-      // narrow it further, such as 'kind=component,metadata.namespace=default'.
+      // Only fetch the kinds listed in kinds.libsonnet. To narrow it further,
+      // add conditions on the end, such as
+      // kinds.filter + ',metadata.namespace=default'.
       filter: kinds.filter,
 
       // A static token from Backstage's backend.auth.externalAccess config,

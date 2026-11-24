@@ -100,9 +100,9 @@ local sources = [
 ];
 ```
 
-`filter: kinds.filter` asks Backstage only for the kinds you import, which is
-what keeps a sync quick on a large catalog. See [Authentication](#authentication)
-for the token.
+`filter: kinds.filter` means Backstage only sends the kinds you import, so
+syncs stay quick on a big catalog. See [Authentication](#authentication) for
+the token.
 
 Check the config, then preview the changes:
 
@@ -129,8 +129,8 @@ CI, a Kubernetes CronJob, and cron with Docker.
 
 ## Authentication
 
-Backstage's API needs a token from any caller outside Backstage. How you get one
-depends on how your Backstage is set up.
+Anything calling Backstage's API from outside needs a token. Pick the option
+that matches your Backstage config.
 
 **Static token.** Backstage's `backend.auth.externalAccess` config can accept a
 fixed token:
@@ -191,12 +191,16 @@ moves the `Authorization` header elsewhere. See
 **Roadie.** Use `https://api.roadie.so/api/catalog/entities/by-query` as the
 endpoint, a Roadie API token, and `sign_jwt: false`.
 
-To check a token works before you sync, ask for a single entity:
+To check a static or Roadie token works before you sync, ask for a single
+entity:
 
 ```console
 curl -H "Authorization: Bearer $BACKSTAGE_TOKEN" \
   'https://backstage.example.com/api/catalog/entities/by-query?limit=1'
 ```
+
+This won't work with a legacy secret, which the importer signs into a JWT
+first. Run `catalog-importer sync --dry-run` to check one of those instead.
 
 ## Choose what to import
 
@@ -219,8 +223,8 @@ local kinds = [
 ];
 ```
 
-The list controls three things at once: the Backstage filter, which outputs
-exist, and the attributes that link kinds together. Turning on API adds the
+This list drives the Backstage filter, which catalog types get created, and
+the attributes that link them. Turning on API adds the
 **Backstage API** and **Backstage API Type** types, and **Provides APIs** and
 **Consumes APIs** on components.
 
@@ -290,9 +294,10 @@ that powers teams.
 
 ## Add your own attributes
 
-Most organizations keep extra facts in annotations. To add one, add an
-attribute to the output in `pipelines/entries.jsonnet`. For example, to put each
-user's GitHub handle on the **Backstage User** type:
+Annotations are where most teams keep everything else they know about an
+entity. To bring one across, add an attribute to the output in
+`pipelines/entries.jsonnet`. For example, to put each user's GitHub handle on
+the **Backstage User** type:
 
 ```jsonnet
 {
@@ -317,8 +322,27 @@ on each component, from an annotation that names a Group:
 
 `ref` (and `refs`, for lists) are helpers at the top of
 `pipelines/entries.jsonnet`. They turn a Backstage entity reference like
-`payments` or `group:default/payments` into the external ID of the entry it
-points at.
+`payments` or `group:default/Payments` into `default/payments`, which every
+entry has as an alias. References match whatever the case, as they do in
+Backstage.
+
+## Upgrade from the old template
+
+If you set this up from an earlier version of the template, two things changed
+that a sync would otherwise undo.
+
+**The escalation path attribute.** The old template had one escalation path per
+group, in an attribute with the ID `escalation-path`. This one has a list, in
+`escalation_paths`. If you've filled in the old one, or chosen it as your team
+type's escalation paths attribute, keep it: in `pipelines/entries.jsonnet`, set
+the attribute's `id` back to `escalation-path` and remove `array: true`.
+Otherwise the sync drops the values you set, or fails because incident.io won't
+change an attribute that powers teams.
+
+**API entities.** The old template imported API entities. This one doesn't, so
+your Backstage API type stops updating. Turn API on in `kinds.libsonnet` to keep
+it (it no longer has a Definition attribute), or
+[remove it](#remove-a-kind-you-imported-by-mistake).
 
 ## Remove a kind you imported by mistake
 
@@ -331,7 +355,7 @@ catalog-importer sync --config importer.jsonnet --prune
 
 `--prune` deletes catalog types that this config (its `sync_id`) created but no
 longer has. The type goes in one request, and incident.io archives its entries
-in the background, so this is quick however many entries the type holds.
+in the background, so it's quick however big the type is.
 
 Don't remove the entries by filtering them out and syncing: the importer then
 deletes them one at a time, which can take hours for a large type.
