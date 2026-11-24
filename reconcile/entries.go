@@ -83,6 +83,36 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 			})
 			return err
 		},
+		BulkArchive: func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
+			entryIDs := lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })
+			result, err := cl.CatalogV3BulkArchiveEntriesWithResponse(ctx, client.CatalogBulkArchiveEntriesPayloadV3{
+				CatalogTypeId: catalogTypeID,
+				EntryIds:      entryIDs,
+			})
+			if err != nil {
+				return nil, err
+			}
+			if result.JSON200 == nil {
+				return nil, errors.Errorf("unexpected nil 200 response. Status Code: %d", result.HTTPResponse.StatusCode)
+			}
+
+			archived := lo.Keyify(result.JSON200.ArchivedEntryIds)
+			notFound := lo.Keyify(result.JSON200.NotFoundEntryIds)
+			notAllowed := lo.Keyify(result.JSON200.NotAllowedEntryIds)
+
+			return lo.Map(entryIDs, func(entryID string, _ int) error {
+				switch {
+				case lo.HasKey(archived, entryID):
+					return nil
+				case lo.HasKey(notFound, entryID):
+					return errors.New("entry not found, or already archived")
+				case lo.HasKey(notAllowed, entryID):
+					return errors.New("not allowed to archive entry, as it sets attributes you don't have permission to clear")
+				default:
+					return errors.New("entry missing from bulk archive response")
+				}
+			}), nil
+		},
 	}
 }
 
