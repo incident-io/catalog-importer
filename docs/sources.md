@@ -105,67 +105,95 @@ See more details about acceptable formats in [Parsing](#parsing).
 
 ## `backstage`
 
-If you already have a Backstage catalog setup, you can ask the importer to pull
-directly from the Backstage API.
-
-This looks like:
+Pulls entities from the Backstage catalog API. For a complete config that maps
+Backstage kinds to catalog types, start from the [Backstage
+template](backstage/README.md).
 
 ```jsonnet
 // pipelines.*.sources.*
 {
   backstage: {
-    // This will depend on where your Backstage is located, and if it's
-    // available on the same network as the importer.
-    endpoint: 'https://backstage-internal.example.com/api/catalog/entities/by-query',
+    // Your Backstage's GET /api/catalog/entities/by-query endpoint. It must be
+    // reachable from wherever the importer runs.
+    endpoint: 'https://backstage.example.com/api/catalog/entities/by-query',
 
-    // Supports environment variable substitution.
-    // https://github.com/incident-io/catalog-importer/blob/master/docs/sources.md#credentials
-    //
-    // This token must be in base64 according to the Backstage requirements for
-    // external API tokens.
-    //
-    // You can generate a token using something like:
-    // $ node -p 'require("crypto").randomBytes(24).toString("base64")'
-    //
-    // https://backstage.io/docs/auth/service-to-service-auth/#usage-in-external-callers
+    // Optional. Passed to Backstage, so only matching entities are fetched.
+    filter: 'kind=component,kind=system,kind=domain,kind=group,kind=user',
+
+    // Optional. Supports environment variable substitution, see Credentials.
     token: '$(BACKSTAGE_TOKEN)',
 
-    // By default, we send the token in the `Authorization` HTTP header. If you
-    // want to override this, then you use this optional configuration value to
-    // override the header name that is used.
-    // header: 'CustomHeader'
-
-    // Some Backstage instances (e.g. Roadie) may prefer tokens to be used
-    // as-is instead of signed into JWTs. If this is you, explicitly opt-out of
-    // signing like so:
+    // Optional. Whether to sign the token into a JWT, defaults to true.
     sign_jwt: false,
   },
 }
 ```
 
-[backstage-endpoint]: https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities
+[by-query]: https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entitiesby-query
+[external-access]: https://backstage.io/docs/auth/service-to-service-auth/#static-tokens
 
-The `endpoint` should be pointing at whatever URL maps to [GET
-/entities][backstage-endpoint] on your Backstage instance, and the `token` should
-be a bearer token with permissions to make this call.
+The `endpoint` should point at [GET /entities/by-query][by-query]. The older
+`/api/catalog/entities` endpoint still works, but is deprecated.
 
-This will pull in all catalog entries after which you may use the source
-`filter`s to separate entries into different types.
+### Authentication
 
-Note: these instructions also work for Backstage hosted with [Roadie](<[url](https://roadie.io)>). You will need to adjust the `endpoint` to:
+How you configure `token` depends on how your Backstage accepts [external
+callers][external-access]:
 
+- **Static token** (`type: static` in `backend.auth.externalAccess`): set
+  `token` to the token and `sign_jwt: false`. The importer sends
+  `Authorization: Bearer <token>`.
+- **Legacy secret** (`type: legacy`, or the older `backend.auth.keys`): set
+  `token` to the base64 secret and leave `sign_jwt` out. The importer signs a
+  JWT with the secret on every run, with `sub: backstage-server` and a one hour
+  expiry.
+- **Roadie**: use `https://api.roadie.so/api/catalog/entities/by-query` as the
+  `endpoint`, a Roadie API token, and `sign_jwt: false`.
+- **No auth**: leave `token` out, and the importer sends no `Authorization`
+  header.
+
+If something in front of Backstage needs other headers, such as an auth proxy
+or API gateway, use these options alongside `token`, or instead of it:
+
+```jsonnet
+backstage: {
+  endpoint: 'https://backstage.example.com/api/catalog/entities/by-query',
+
+  // Sent as-is with every request. Values support environment variable
+  // substitution. Needs version 2.15.0 or later.
+  headers: {
+    'X-Proxy-Client-Id': 'catalog-importer',
+    'X-Proxy-Secret': '$(BACKSTAGE_PROXY_SECRET)',
+  },
+
+  // Sends "Bearer <token>" in this header instead of Authorization.
+  // header: 'X-Backstage-Authorization',
+},
 ```
-https://api.roadie.so/api/catalog/entities/by-query
-```
 
-And you should append `sign_jwt: false,` to your jsonnet, as explained above.
+### Filtering
+
+`filter` uses the [Backstage filter syntax][by-query], and Backstage applies it
+before returning anything, so it's the cheapest way to leave entities out:
+
+- Conditions are comma-separated, such as `kind=group,spec.type=team`.
+- A key repeated in one filter matches any of its values, so
+  `kind=component,kind=system` fetches both kinds.
+- Different keys must all match, so `kind=component,spec.lifecycle=production`
+  fetches production components only.
+- A key with no value matches entities that have it, such as
+  `metadata.annotations.pagerduty.com/service-id`.
+
+Because different keys must all match, a condition that only some kinds have
+filters out the rest. To combine conditions like that, use one `backstage`
+source per filter in the same pipeline: the importer loads them all.
+
+To filter on something Backstage can't, use the `filter` expression on each
+output instead. See [Expressions](expressions.md).
 
 ### Other parameters
 
-You can also specify the following parameters in your source:
-
-- `page_size`: Allows you to customise how many entities we fetch from Backstage at once.
-- `filter`: Allows you to filter entities as per [the Backstage API spec](https://backstage.io/docs/features/software-catalog/software-catalog-api/#get-entities), for example `kind=user,metadata.namespace=default`.
+- `page_size`: how many entities to fetch per request. Defaults to 100.
 
 ## `github`
 

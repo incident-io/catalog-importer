@@ -1,7 +1,15 @@
-# Deploying using CI
+# Deploying
 
-Most people run the catalog from their CI pipelines, where they either sync on
-merge or trigger syncs periodically depending on their needs.
+The importer is a command you run, not a service: each run syncs once and
+exits. Most people run it from CI, either when the config changes or on a
+schedule. If it reads from a system that changes on its own, such as the
+Backstage API, run it on a schedule so incident.io keeps up.
+
+The run needs to reach both incident.io and your source. Hosted CI runners
+usually can't reach an internal Backstage, so for that you can use a
+self-hosted runner inside your network, or run it in your own infrastructure
+with a [Kubernetes CronJob](#kubernetes-cronjob) or [cron and
+Docker](#cron-and-docker).
 
 If your catalog types already exist in incident.io, the **Manage in GitHub**
 button on the Catalog page sets up a repository for you, including GitHub
@@ -167,3 +175,76 @@ sync:
         /tmp/catalog-importer sync --config importer.jsonnet --dry-run
       fi
 ```
+
+## Kubernetes CronJob
+
+If Backstage runs in Kubernetes, run the importer next to it. Build an image
+that adds your config to ours:
+
+```dockerfile
+# Dockerfile, next to importer.jsonnet
+FROM incidentio/catalog-importer:v2
+COPY . /config
+WORKDIR /config
+```
+
+```console
+docker build -t registry.example.com/catalog-importer-config:1 .
+docker push registry.example.com/catalog-importer-config:1
+```
+
+Put the credentials in a Secret, then schedule the sync:
+
+```console
+kubectl create secret generic catalog-importer \
+  --from-literal=INCIDENT_API_KEY='<incident.io API key>' \
+  --from-literal=BACKSTAGE_TOKEN='<Backstage token>'
+```
+
+```yaml
+# cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: catalog-importer
+spec:
+  schedule: "0 * * * *" # hourly
+  concurrencyPolicy: Forbid # never start a sync while the last one is running
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: catalog-importer
+              image: registry.example.com/catalog-importer-config:1
+              args: ["sync", "--config", "importer.jsonnet", "--no-progress"]
+              envFrom:
+                - secretRef:
+                    name: catalog-importer
+```
+
+```console
+kubectl apply -f cronjob.yaml
+kubectl create job --from=cronjob/catalog-importer catalog-importer-now # run one now
+```
+
+## Cron and Docker
+
+On any machine with Docker, a crontab entry is enough. Keep the credentials in
+an env file outside the config directory:
+
+```console
+$ cat /etc/catalog-importer.env
+INCIDENT_API_KEY=<incident.io API key>
+BACKSTAGE_TOKEN=<Backstage token>
+```
+
+```crontab
+# Sync hourly, at 15 minutes past.
+15 * * * * docker run --rm -v /opt/catalog-importer:/config --workdir /config --env-file /etc/catalog-importer.env incidentio/catalog-importer:v2 sync --config importer.jsonnet --no-progress
+```
+
+The image runs as the unprivileged `nobody` user, so the config directory must
+be readable by everyone.

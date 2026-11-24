@@ -1,50 +1,84 @@
+# Example entities, so you can try a sync before connecting to Backstage. Once
+# you point importer.jsonnet at your Backstage API, this file isn't used.
 ---
 apiVersion: backstage.io/v1alpha1
-kind: API
+kind: Domain
 metadata:
-  description: The incident.io public API
+  name: commerce
   namespace: default
+  description: Everything that takes money from customers.
 spec:
-  definition:
-    $text: https://api.incident.io/v1/openapi.json
-  lifecycle: production
-  owner: engineering
-  type: openapi
+  owner: group:default/payments
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: checkout
+  namespace: default
+  description: Basket, checkout and order placement.
+spec:
+  owner: payments
+  domain: commerce
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  description: The incident.io backend server
-  name: core-server
+  name: checkout-api
   namespace: default
+  description: Takes orders and payment details.
   tags:
-    - language-go
+    - go
+  annotations:
+    example.com/on-call-team: payments
 spec:
-  consumesApis: []
-  lifecycle: production
-  owner: engineering
-  providesApis: [api-incident-io]
   type: service
+  lifecycle: production
+  owner: group:default/payments
+  system: checkout
+  providesApis:
+    - checkout-api
 ---
 apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: checkout-api
+  namespace: default
+  description: The checkout API.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: payments
+  system: checkout
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: checkout-api
+      version: 1.0.0
+    paths: {}
+---
+# Groups and Users can use either backstage.io/v1alpha1 or backstage.io/v1beta1.
+apiVersion: backstage.io/v1beta1
 kind: Group
 metadata:
-  name: engineering
+  name: payments
   namespace: default
 spec:
-  children: []
   type: team
+  children: []
+  profile:
+    displayName: Payments
+    email: payments-team@example.com
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
-  annotations:
-    github.com/user-login: lawrencejones
-  name: lawrence
+  name: ed
   namespace: default
+  annotations:
+    github.com/user-login: ed-gh
 spec:
   memberOf:
-    - engineering
+    - payments
   profile:
-    displayName: Lawrence Jones
-    email: lawrence@incident.io
+    displayName: Ed Amame
+    email: ed@example.com
