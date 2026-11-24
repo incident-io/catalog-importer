@@ -21,3 +21,13 @@ export INCIDENT_ENDPOINT="http://localhost:3001/api/public"
 To run it with a debugger attached you can edit the settings in `launch.json`
 
 [go]: https://go.dev/doc/install
+
+## Trying the Backstage source
+
+[`cmd/fake-backstage`](cmd/fake-backstage/README.md) serves a seeded Backstage
+catalog API, so you can run the Backstage template, or check its docs, without a
+real Backstage:
+
+```
+go run ./cmd/fake-backstage --apis 5000 --auth static --token local-token
+```
