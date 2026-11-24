@@ -146,7 +146,7 @@ func (opt *SyncOptions) Run(ctx context.Context, logger kitlog.Logger, cfg *conf
 
 		syncID, ok := catalogType.Annotations[AnnotationSyncID]
 		if !ok {
-			if catalogType.SourceRepoUrl == nil && catalogType.IsEditable {
+			if (catalogType.SourceRepoUrl == nil || *catalogType.SourceRepoUrl == "") && catalogType.IsEditable {
 				level.Debug(logger).Log("msg", "catalog type is editable and unmanaged",
 					"catalog_type_id", catalogType.Id)
 				unmanagedCatalogTypes = append(unmanagedCatalogTypes, catalogType)
