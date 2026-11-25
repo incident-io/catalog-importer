@@ -40,28 +40,34 @@ var _ = Describe("EntriesClientFromClient", func() {
 				Expect(r.URL.Path).To(Equal("/v3/catalog_entries/actions/bulk_archive"))
 				Expect(json.NewDecoder(r.Body).Decode(&requested)).To(Succeed())
 
-				w.Header().Set("Content-Type", "application/json")
-				Expect(json.NewEncoder(w).Encode(client.CatalogBulkArchiveEntriesResultV3{
-					ArchivedEntryIds: []string{"a"},
-					NotFoundEntryIds: []string{"b"},
-				})).To(Succeed())
+				w.WriteHeader(http.StatusNoContent)
 			}
 		})
 
-		It("returns an error for each entry that wasn't archived", func() {
-			errs, err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{
-				{Id: "a"}, {Id: "b"}, {Id: "c"},
+		It("sends the entry IDs", func() {
+			err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{
+				{Id: "a"}, {Id: "b"},
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(requested).To(Equal(client.CatalogBulkArchiveEntriesPayloadV3{
 				CatalogTypeId: "type-123",
-				EntryIds:      []string{"a", "b", "c"},
+				EntryIds:      []string{"a", "b"},
 			}))
+		})
 
-			Expect(errs).To(HaveLen(3))
-			Expect(errs[0]).NotTo(HaveOccurred())
-			Expect(errs[1]).To(MatchError(ContainSubstring("not found")))
-			Expect(errs[2]).To(MatchError(ContainSubstring("missing from bulk archive response")))
+		When("the entries set an attribute the key can't clear", func() {
+			BeforeEach(func() {
+				handler = func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusForbidden)
+					w.Write([]byte(`{"type":"forbidden","status":403,"request_id":"req","errors":[{"code":"restricted_attribute","message":"Can't archive these entries: a."}]}`))
+				}
+			})
+
+			It("returns a restricted_attribute error", func() {
+				err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{{Id: "a"}})
+				Expect(client.HasErrorCode(err, "restricted_attribute")).To(BeTrue())
+			})
 		})
 
 		When("the endpoint doesn't exist", func() {
@@ -72,7 +78,7 @@ var _ = Describe("EntriesClientFromClient", func() {
 			})
 
 			It("returns a not found error", func() {
-				_, err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{{Id: "a"}})
+				err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{{Id: "a"}})
 				Expect(client.IsNotFound(err)).To(BeTrue())
 			})
 		})

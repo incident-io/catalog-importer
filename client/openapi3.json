@@ -19717,7 +19717,19 @@
               "id": "production"
             }
           ],
-          "id": "page-owning-team"
+          "id": "page-owning-team",
+          "message_template": {
+            "array_value": [
+              {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            ],
+            "value": {
+              "literal": "SEV123",
+              "reference": "incident.severity"
+            }
+          }
         },
         "properties": {
           "branches": {
@@ -20053,6 +20065,9 @@
             "maxLength": 128,
             "minLength": 1,
             "type": "string"
+          },
+          "message_template": {
+            "$ref": "#/components/schemas/EngineParamBindingPayloadV3"
           }
         },
         "required": [
@@ -21592,7 +21607,19 @@
                   "id": "production"
                 }
               ],
-              "id": "page-owning-team"
+              "id": "page-owning-team",
+              "message_template": {
+                "array_value": [
+                  {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                ],
+                "value": {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              }
             }
           ],
           "created_at": "2021-08-17T13:28:57.801578Z",
@@ -21715,6 +21742,18 @@
           ],
           "id": "01FCNDV6P870EA6S7TK1DSYDG0",
           "kind": "team",
+          "message_template": {
+            "array_value": [
+              {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            ],
+            "value": {
+              "literal": "SEV123",
+              "reference": "incident.severity"
+            }
+          },
           "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
           "updated_at": "2021-08-17T13:28:57.801578Z",
           "version": 3
@@ -22044,7 +22083,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "items": {
@@ -22196,6 +22247,9 @@
             ],
             "example": "team",
             "type": "string"
+          },
+          "message_template": {
+            "$ref": "#/components/schemas/EngineParamBindingPayloadV3"
           },
           "team_id": {
             "description": "The catalog entry ID of the team, set only for team rules",
@@ -22550,7 +22604,19 @@
                   "id": "production"
                 }
               ],
-              "id": "page-owning-team"
+              "id": "page-owning-team",
+              "message_template": {
+                "array_value": [
+                  {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                ],
+                "value": {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              }
             }
           ],
           "expressions": [
@@ -22671,6 +22737,18 @@
             }
           ],
           "kind": "team",
+          "message_template": {
+            "array_value": [
+              {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            ],
+            "value": {
+              "literal": "SEV123",
+              "reference": "incident.severity"
+            }
+          },
           "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH"
         },
         "properties": {
@@ -22998,7 +23076,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "items": {
@@ -23139,6 +23229,9 @@
             ],
             "example": "team",
             "type": "string"
+          },
+          "message_template": {
+            "$ref": "#/components/schemas/EngineParamBindingPayloadV3"
           },
           "team_id": {
             "description": "The catalog entry ID of the team. Set it for team rules only.",
@@ -23477,7 +23570,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "created_at": "2021-08-17T13:28:57.801578Z",
@@ -23600,6 +23705,18 @@
             ],
             "id": "01FCNDV6P870EA6S7TK1DSYDG0",
             "kind": "team",
+            "message_template": {
+              "array_value": [
+                {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              ],
+              "value": {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            },
             "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
             "updated_at": "2021-08-17T13:28:57.801578Z",
             "version": 3
@@ -23941,7 +24058,19 @@
                       "id": "production"
                     }
                   ],
-                  "id": "page-owning-team"
+                  "id": "page-owning-team",
+                  "message_template": {
+                    "array_value": [
+                      {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    ],
+                    "value": {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  }
                 }
               ],
               "created_at": "2021-08-17T13:28:57.801578Z",
@@ -24064,6 +24193,18 @@
               ],
               "id": "01FCNDV6P870EA6S7TK1DSYDG0",
               "kind": "team",
+              "message_template": {
+                "array_value": [
+                  {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                ],
+                "value": {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              },
               "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
               "updated_at": "2021-08-17T13:28:57.801578Z",
               "version": 3
@@ -24400,7 +24541,19 @@
                         "id": "production"
                       }
                     ],
-                    "id": "page-owning-team"
+                    "id": "page-owning-team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    }
                   }
                 ],
                 "created_at": "2021-08-17T13:28:57.801578Z",
@@ -24523,6 +24676,18 @@
                 ],
                 "id": "01FCNDV6P870EA6S7TK1DSYDG0",
                 "kind": "team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                },
                 "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
                 "updated_at": "2021-08-17T13:28:57.801578Z",
                 "version": 3
@@ -24868,7 +25033,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "created_at": "2021-08-17T13:28:57.801578Z",
@@ -24991,6 +25168,18 @@
             ],
             "id": "01FCNDV6P870EA6S7TK1DSYDG0",
             "kind": "team",
+            "message_template": {
+              "array_value": [
+                {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              ],
+              "value": {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            },
             "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
             "updated_at": "2021-08-17T13:28:57.801578Z",
             "version": 3
@@ -25330,7 +25519,19 @@
                   "id": "production"
                 }
               ],
-              "id": "page-owning-team"
+              "id": "page-owning-team",
+              "message_template": {
+                "array_value": [
+                  {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                ],
+                "value": {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              }
             }
           ],
           "expressions": [
@@ -25450,6 +25651,18 @@
               "root_reference": "incident.status"
             }
           ],
+          "message_template": {
+            "array_value": [
+              {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            ],
+            "value": {
+              "literal": "SEV123",
+              "reference": "incident.severity"
+            }
+          },
           "version": 4
         },
         "properties": {
@@ -25777,7 +25990,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "items": {
@@ -25908,6 +26133,9 @@
               "$ref": "#/components/schemas/ExpressionPayloadV3"
             },
             "type": "array"
+          },
+          "message_template": {
+            "$ref": "#/components/schemas/EngineParamBindingPayloadV3"
           },
           "version": {
             "description": "The version this update writes. When set, it must be one more than the set's current version, so two editors can't overwrite each other. When omitted, the update applies to the current version.",
@@ -26246,7 +26474,19 @@
                     "id": "production"
                   }
                 ],
-                "id": "page-owning-team"
+                "id": "page-owning-team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                }
               }
             ],
             "created_at": "2021-08-17T13:28:57.801578Z",
@@ -26369,6 +26609,18 @@
             ],
             "id": "01FCNDV6P870EA6S7TK1DSYDG0",
             "kind": "team",
+            "message_template": {
+              "array_value": [
+                {
+                  "literal": "SEV123",
+                  "reference": "incident.severity"
+                }
+              ],
+              "value": {
+                "literal": "SEV123",
+                "reference": "incident.severity"
+              }
+            },
             "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
             "updated_at": "2021-08-17T13:28:57.801578Z",
             "version": 3
@@ -82106,45 +82358,6 @@
         ],
         "type": "object"
       },
-      "CatalogBulkArchiveEntriesResultV3": {
-        "example": {
-          "archived_entry_ids": [
-            "01GW2G3V0S59R238FAHPDS1R67"
-          ],
-          "not_found_entry_ids": [
-            "01GW2G3V0S59R238FAHPDS1R68"
-          ]
-        },
-        "properties": {
-          "archived_entry_ids": {
-            "description": "The IDs of the entries that this request archived",
-            "example": [
-              "01GW2G3V0S59R238FAHPDS1R67"
-            ],
-            "items": {
-              "example": "abc123",
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "not_found_entry_ids": {
-            "description": "The IDs of entries that don't exist, are already archived, or belong to a different catalog type",
-            "example": [
-              "01GW2G3V0S59R238FAHPDS1R68"
-            ],
-            "items": {
-              "example": "abc123",
-              "type": "string"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "archived_entry_ids",
-          "not_found_entry_ids"
-        ],
-        "type": "object"
-      },
       "CatalogBulkUpdateEntriesPayloadV3": {
         "example": {
           "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
@@ -89915,6 +90128,105 @@
               "low"
             ],
             "example": "high",
+            "type": "string"
+          },
+          "users": {
+            "description": "This field will be populated for notified_users and acked events.",
+            "example": [
+              {
+                "email": "lisa@incident.io",
+                "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                "name": "Lisa Karlin Curtis",
+                "role": "owner",
+                "slack_user_id": "U02AYNF2XJM"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/UserV2"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "event",
+          "occurred_at"
+        ],
+        "type": "object"
+      },
+      "EscalationEventV3": {
+        "example": {
+          "channels": [
+            {
+              "microsoft_teams_channel_id": "abc123",
+              "microsoft_teams_team_id": "abc123",
+              "slack_channel_id": "abc123",
+              "slack_team_id": "abc123"
+            }
+          ],
+          "event": "entered_grace_period",
+          "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+          "interruption_level": "high",
+          "occurred_at": "2021-08-17T13:28:57.801578Z",
+          "users": [
+            {
+              "email": "lisa@incident.io",
+              "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+              "name": "Lisa Karlin Curtis",
+              "role": "owner",
+              "slack_user_id": "U02AYNF2XJM"
+            }
+          ]
+        },
+        "properties": {
+          "channels": {
+            "description": "This field will be populated for notified_channels events.",
+            "example": [
+              {
+                "microsoft_teams_channel_id": "abc123",
+                "microsoft_teams_team_id": "abc123",
+                "slack_channel_id": "abc123",
+                "slack_team_id": "abc123"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ChatChannelSlimV2"
+            },
+            "type": "array"
+          },
+          "event": {
+            "description": "The type of event that occured.",
+            "enum": [
+              "entered_grace_period",
+              "triggered",
+              "notified_users",
+              "notified_channels",
+              "acked",
+              "cancelled",
+              "resolved",
+              "expired"
+            ],
+            "example": "entered_grace_period",
+            "type": "string"
+          },
+          "id": {
+            "description": "The unique ID for this escalation event",
+            "example": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "type": "string"
+          },
+          "interruption_level": {
+            "description": "How intrusively we notified users: high or low. This isn't an escalation urgency. Set for notified_users events.",
+            "enum": [
+              "high",
+              "low"
+            ],
+            "example": "high",
+            "type": "string"
+          },
+          "occurred_at": {
+            "description": "The time when this escalation event was processed",
+            "example": "2021-08-17T13:28:57.801578Z",
+            "format": "date-time",
             "type": "string"
           },
           "users": {
@@ -100028,6 +100340,30 @@
         ],
         "type": "object"
       },
+      "EscalationUrgencySlimV3": {
+        "description": "The escalation urgency this escalation pages with.",
+        "example": {
+          "id": "01GW2G3V0S59R238FAHPDS1R66",
+          "name": "Urgent"
+        },
+        "properties": {
+          "id": {
+            "description": "The ID of this urgency",
+            "example": "01GW2G3V0S59R238FAHPDS1R66",
+            "type": "string"
+          },
+          "name": {
+            "description": "The human readable label for this urgency",
+            "example": "Urgent",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
       "EscalationUserResponseOptionsV2": {
         "example": {
           "available_actions": [
@@ -100291,6 +100627,235 @@
           "title",
           "description",
           "priority",
+          "creator",
+          "events",
+          "related_incidents",
+          "related_alerts"
+        ],
+        "type": "object"
+      },
+      "EscalationV3": {
+        "example": {
+          "created_at": "2021-08-17T13:28:57.801578Z",
+          "creator": {
+            "alert": {
+              "id": "01GW2G3V0S59R238FAHPDS1R66",
+              "title": "*errors.withMessage: PG::Error failed to connect"
+            },
+            "user": {
+              "email": "lisa@incident.io",
+              "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+              "name": "Lisa Karlin Curtis",
+              "role": "owner",
+              "slack_user_id": "U02AYNF2XJM"
+            },
+            "workflow": {
+              "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+              "name": "My little workflow"
+            }
+          },
+          "description": "Database CPU has been above 90% for 5 minutes",
+          "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+          "events": [
+            {
+              "channels": [
+                {
+                  "microsoft_teams_channel_id": "abc123",
+                  "microsoft_teams_team_id": "abc123",
+                  "slack_channel_id": "abc123",
+                  "slack_team_id": "abc123"
+                }
+              ],
+              "event": "entered_grace_period",
+              "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+              "interruption_level": "high",
+              "occurred_at": "2021-08-17T13:28:57.801578Z",
+              "users": [
+                {
+                  "email": "lisa@incident.io",
+                  "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                  "name": "Lisa Karlin Curtis",
+                  "role": "owner",
+                  "slack_user_id": "U02AYNF2XJM"
+                }
+              ]
+            }
+          ],
+          "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+          "related_alerts": [
+            {
+              "alert_group_ids": [
+                "01GW2G3V0S59R238FAHPDS1R66"
+              ],
+              "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+              "created_at": "2021-08-17T13:28:57.801578Z",
+              "deduplication_key": "4293868629",
+              "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+              "id": "01GW2G3V0S59R238FAHPDS1R66",
+              "resolved_at": "2021-08-17T14:28:57.801578Z",
+              "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+              "status": "firing",
+              "title": "*errors.withMessage: PG::Error failed to connect",
+              "updated_at": "2021-08-17T13:28:57.801578Z"
+            }
+          ],
+          "related_incidents": [
+            {
+              "external_id": 123,
+              "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+              "name": "Our database is sad",
+              "reference": "INC-123",
+              "status_category": "triage",
+              "summary": "Our database is really really sad, and we don't know why yet.",
+              "visibility": "public"
+            }
+          ],
+          "status": "pending",
+          "title": "Database CPU is high",
+          "updated_at": "2021-08-17T13:28:57.801578Z",
+          "urgency": {
+            "id": "01GW2G3V0S59R238FAHPDS1R66",
+            "name": "Urgent"
+          }
+        },
+        "properties": {
+          "created_at": {
+            "description": "When this escalation was created",
+            "example": "2021-08-17T13:28:57.801578Z",
+            "format": "date-time",
+            "type": "string"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/EscalationCreatorV2"
+          },
+          "description": {
+            "description": "Additional detail provided with this escalation. When it isn't set explicitly, this is taken from the alert description or the incident summary, and is empty when neither applies.",
+            "example": "Database CPU has been above 90% for 5 minutes",
+            "type": "string"
+          },
+          "escalation_path_id": {
+            "description": "Unique identifier of the escalation path that the escalation was created from",
+            "example": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "type": "string"
+          },
+          "events": {
+            "description": "Events which describe the history of this escalation. Events include information about what users or channels were notified and what users acked.",
+            "example": [
+              {
+                "channels": [
+                  {
+                    "microsoft_teams_channel_id": "abc123",
+                    "microsoft_teams_team_id": "abc123",
+                    "slack_channel_id": "abc123",
+                    "slack_team_id": "abc123"
+                  }
+                ],
+                "event": "entered_grace_period",
+                "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                "interruption_level": "high",
+                "occurred_at": "2021-08-17T13:28:57.801578Z",
+                "users": [
+                  {
+                    "email": "lisa@incident.io",
+                    "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                    "name": "Lisa Karlin Curtis",
+                    "role": "owner",
+                    "slack_user_id": "U02AYNF2XJM"
+                  }
+                ]
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/EscalationEventV3"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "Unique ID of the escalation",
+            "example": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "type": "string"
+          },
+          "related_alerts": {
+            "description": "Alerts related to this escalation",
+            "example": [
+              {
+                "alert_group_ids": [
+                  "01GW2G3V0S59R238FAHPDS1R66"
+                ],
+                "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                "created_at": "2021-08-17T13:28:57.801578Z",
+                "deduplication_key": "4293868629",
+                "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                "id": "01GW2G3V0S59R238FAHPDS1R66",
+                "resolved_at": "2021-08-17T14:28:57.801578Z",
+                "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                "status": "firing",
+                "title": "*errors.withMessage: PG::Error failed to connect",
+                "updated_at": "2021-08-17T13:28:57.801578Z"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/AlertSlimV2"
+            },
+            "type": "array"
+          },
+          "related_incidents": {
+            "description": "Incidents related to this escalation",
+            "example": [
+              {
+                "external_id": 123,
+                "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                "name": "Our database is sad",
+                "reference": "INC-123",
+                "status_category": "triage",
+                "summary": "Our database is really really sad, and we don't know why yet.",
+                "visibility": "public"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/IncidentSlimV2"
+            },
+            "type": "array"
+          },
+          "status": {
+            "description": "Status of the escalation",
+            "enum": [
+              "pending",
+              "triggered",
+              "acked",
+              "resolved",
+              "expired",
+              "cancelled",
+              "snoozed",
+              "delayed",
+              "pending_repeat"
+            ],
+            "example": "pending",
+            "type": "string"
+          },
+          "title": {
+            "description": "The title of this escalation",
+            "example": "Database CPU is high",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "When this escalation was last updated",
+            "example": "2021-08-17T13:28:57.801578Z",
+            "format": "date-time",
+            "type": "string"
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/EscalationUrgencySlimV3"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "status",
+          "title",
+          "description",
+          "urgency",
           "creator",
           "events",
           "related_incidents",
@@ -100857,6 +101422,200 @@
         ],
         "type": "object"
       },
+      "EscalationsListResultV3": {
+        "example": {
+          "escalations": [
+            {
+              "created_at": "2021-08-17T13:28:57.801578Z",
+              "creator": {
+                "alert": {
+                  "id": "01GW2G3V0S59R238FAHPDS1R66",
+                  "title": "*errors.withMessage: PG::Error failed to connect"
+                },
+                "user": {
+                  "email": "lisa@incident.io",
+                  "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                  "name": "Lisa Karlin Curtis",
+                  "role": "owner",
+                  "slack_user_id": "U02AYNF2XJM"
+                },
+                "workflow": {
+                  "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                  "name": "My little workflow"
+                }
+              },
+              "description": "Database CPU has been above 90% for 5 minutes",
+              "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+              "events": [
+                {
+                  "channels": [
+                    {
+                      "microsoft_teams_channel_id": "abc123",
+                      "microsoft_teams_team_id": "abc123",
+                      "slack_channel_id": "abc123",
+                      "slack_team_id": "abc123"
+                    }
+                  ],
+                  "event": "entered_grace_period",
+                  "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                  "interruption_level": "high",
+                  "occurred_at": "2021-08-17T13:28:57.801578Z",
+                  "users": [
+                    {
+                      "email": "lisa@incident.io",
+                      "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                      "name": "Lisa Karlin Curtis",
+                      "role": "owner",
+                      "slack_user_id": "U02AYNF2XJM"
+                    }
+                  ]
+                }
+              ],
+              "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+              "related_alerts": [
+                {
+                  "alert_group_ids": [
+                    "01GW2G3V0S59R238FAHPDS1R66"
+                  ],
+                  "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                  "created_at": "2021-08-17T13:28:57.801578Z",
+                  "deduplication_key": "4293868629",
+                  "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                  "id": "01GW2G3V0S59R238FAHPDS1R66",
+                  "resolved_at": "2021-08-17T14:28:57.801578Z",
+                  "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                  "status": "firing",
+                  "title": "*errors.withMessage: PG::Error failed to connect",
+                  "updated_at": "2021-08-17T13:28:57.801578Z"
+                }
+              ],
+              "related_incidents": [
+                {
+                  "external_id": 123,
+                  "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                  "name": "Our database is sad",
+                  "reference": "INC-123",
+                  "status_category": "triage",
+                  "summary": "Our database is really really sad, and we don't know why yet.",
+                  "visibility": "public"
+                }
+              ],
+              "status": "pending",
+              "title": "Database CPU is high",
+              "updated_at": "2021-08-17T13:28:57.801578Z",
+              "urgency": {
+                "id": "01GW2G3V0S59R238FAHPDS1R66",
+                "name": "Urgent"
+              }
+            }
+          ],
+          "pagination_meta": {
+            "after": "01FCNDV6P870EA6S7TK1DSYDG0",
+            "page_size": 25
+          }
+        },
+        "properties": {
+          "escalations": {
+            "example": [
+              {
+                "created_at": "2021-08-17T13:28:57.801578Z",
+                "creator": {
+                  "alert": {
+                    "id": "01GW2G3V0S59R238FAHPDS1R66",
+                    "title": "*errors.withMessage: PG::Error failed to connect"
+                  },
+                  "user": {
+                    "email": "lisa@incident.io",
+                    "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                    "name": "Lisa Karlin Curtis",
+                    "role": "owner",
+                    "slack_user_id": "U02AYNF2XJM"
+                  },
+                  "workflow": {
+                    "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                    "name": "My little workflow"
+                  }
+                },
+                "description": "Database CPU has been above 90% for 5 minutes",
+                "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                "events": [
+                  {
+                    "channels": [
+                      {
+                        "microsoft_teams_channel_id": "abc123",
+                        "microsoft_teams_team_id": "abc123",
+                        "slack_channel_id": "abc123",
+                        "slack_team_id": "abc123"
+                      }
+                    ],
+                    "event": "entered_grace_period",
+                    "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                    "interruption_level": "high",
+                    "occurred_at": "2021-08-17T13:28:57.801578Z",
+                    "users": [
+                      {
+                        "email": "lisa@incident.io",
+                        "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                        "name": "Lisa Karlin Curtis",
+                        "role": "owner",
+                        "slack_user_id": "U02AYNF2XJM"
+                      }
+                    ]
+                  }
+                ],
+                "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                "related_alerts": [
+                  {
+                    "alert_group_ids": [
+                      "01GW2G3V0S59R238FAHPDS1R66"
+                    ],
+                    "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                    "created_at": "2021-08-17T13:28:57.801578Z",
+                    "deduplication_key": "4293868629",
+                    "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                    "id": "01GW2G3V0S59R238FAHPDS1R66",
+                    "resolved_at": "2021-08-17T14:28:57.801578Z",
+                    "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                    "status": "firing",
+                    "title": "*errors.withMessage: PG::Error failed to connect",
+                    "updated_at": "2021-08-17T13:28:57.801578Z"
+                  }
+                ],
+                "related_incidents": [
+                  {
+                    "external_id": 123,
+                    "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                    "name": "Our database is sad",
+                    "reference": "INC-123",
+                    "status_category": "triage",
+                    "summary": "Our database is really really sad, and we don't know why yet.",
+                    "visibility": "public"
+                  }
+                ],
+                "status": "pending",
+                "title": "Database CPU is high",
+                "updated_at": "2021-08-17T13:28:57.801578Z",
+                "urgency": {
+                  "id": "01GW2G3V0S59R238FAHPDS1R66",
+                  "name": "Urgent"
+                }
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/EscalationV3"
+            },
+            "type": "array"
+          },
+          "pagination_meta": {
+            "$ref": "#/components/schemas/PaginationMetaResultV2"
+          }
+        },
+        "required": [
+          "escalations",
+          "pagination_meta"
+        ],
+        "type": "object"
+      },
       "EscalationsReassignEscalationPayloadV2": {
         "example": {
           "description": "Database CPU has been above 90% for 5 minutes",
@@ -101116,6 +101875,102 @@
         "properties": {
           "escalation": {
             "$ref": "#/components/schemas/EscalationV2"
+          }
+        },
+        "required": [
+          "escalation"
+        ],
+        "type": "object"
+      },
+      "EscalationsShowResultV3": {
+        "example": {
+          "escalation": {
+            "created_at": "2021-08-17T13:28:57.801578Z",
+            "creator": {
+              "alert": {
+                "id": "01GW2G3V0S59R238FAHPDS1R66",
+                "title": "*errors.withMessage: PG::Error failed to connect"
+              },
+              "user": {
+                "email": "lisa@incident.io",
+                "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                "name": "Lisa Karlin Curtis",
+                "role": "owner",
+                "slack_user_id": "U02AYNF2XJM"
+              },
+              "workflow": {
+                "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                "name": "My little workflow"
+              }
+            },
+            "description": "Database CPU has been above 90% for 5 minutes",
+            "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "events": [
+              {
+                "channels": [
+                  {
+                    "microsoft_teams_channel_id": "abc123",
+                    "microsoft_teams_team_id": "abc123",
+                    "slack_channel_id": "abc123",
+                    "slack_team_id": "abc123"
+                  }
+                ],
+                "event": "entered_grace_period",
+                "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                "interruption_level": "high",
+                "occurred_at": "2021-08-17T13:28:57.801578Z",
+                "users": [
+                  {
+                    "email": "lisa@incident.io",
+                    "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                    "name": "Lisa Karlin Curtis",
+                    "role": "owner",
+                    "slack_user_id": "U02AYNF2XJM"
+                  }
+                ]
+              }
+            ],
+            "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "related_alerts": [
+              {
+                "alert_group_ids": [
+                  "01GW2G3V0S59R238FAHPDS1R66"
+                ],
+                "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                "created_at": "2021-08-17T13:28:57.801578Z",
+                "deduplication_key": "4293868629",
+                "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                "id": "01GW2G3V0S59R238FAHPDS1R66",
+                "resolved_at": "2021-08-17T14:28:57.801578Z",
+                "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                "status": "firing",
+                "title": "*errors.withMessage: PG::Error failed to connect",
+                "updated_at": "2021-08-17T13:28:57.801578Z"
+              }
+            ],
+            "related_incidents": [
+              {
+                "external_id": 123,
+                "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                "name": "Our database is sad",
+                "reference": "INC-123",
+                "status_category": "triage",
+                "summary": "Our database is really really sad, and we don't know why yet.",
+                "visibility": "public"
+              }
+            ],
+            "status": "pending",
+            "title": "Database CPU is high",
+            "updated_at": "2021-08-17T13:28:57.801578Z",
+            "urgency": {
+              "id": "01GW2G3V0S59R238FAHPDS1R66",
+              "name": "Urgent"
+            }
+          }
+        },
+        "properties": {
+          "escalation": {
+            "$ref": "#/components/schemas/EscalationV3"
           }
         },
         "required": [
@@ -248102,7 +248957,19 @@
                               "id": "production"
                             }
                           ],
-                          "id": "page-owning-team"
+                          "id": "page-owning-team",
+                          "message_template": {
+                            "array_value": [
+                              {
+                                "literal": "SEV123",
+                                "reference": "incident.severity"
+                              }
+                            ],
+                            "value": {
+                              "literal": "SEV123",
+                              "reference": "incident.severity"
+                            }
+                          }
                         }
                       ],
                       "created_at": "2021-08-17T13:28:57.801578Z",
@@ -248225,6 +249092,18 @@
                       ],
                       "id": "01FCNDV6P870EA6S7TK1DSYDG0",
                       "kind": "team",
+                      "message_template": {
+                        "array_value": [
+                          {
+                            "literal": "SEV123",
+                            "reference": "incident.severity"
+                          }
+                        ],
+                        "value": {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      },
                       "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
                       "updated_at": "2021-08-17T13:28:57.801578Z",
                       "version": 3
@@ -248713,7 +249592,19 @@
                         "id": "production"
                       }
                     ],
-                    "id": "page-owning-team"
+                    "id": "page-owning-team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    }
                   }
                 ],
                 "expressions": [
@@ -248834,6 +249725,18 @@
                   }
                 ],
                 "kind": "team",
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                },
                 "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH"
               },
               "schema": {
@@ -249171,7 +250074,19 @@
                             "id": "production"
                           }
                         ],
-                        "id": "page-owning-team"
+                        "id": "page-owning-team",
+                        "message_template": {
+                          "array_value": [
+                            {
+                              "literal": "SEV123",
+                              "reference": "incident.severity"
+                            }
+                          ],
+                          "value": {
+                            "literal": "SEV123",
+                            "reference": "incident.severity"
+                          }
+                        }
                       }
                     ],
                     "created_at": "2021-08-17T13:28:57.801578Z",
@@ -249294,6 +250209,18 @@
                     ],
                     "id": "01FCNDV6P870EA6S7TK1DSYDG0",
                     "kind": "team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    },
                     "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
                     "updated_at": "2021-08-17T13:28:57.801578Z",
                     "version": 3
@@ -249958,7 +250885,19 @@
                             "id": "production"
                           }
                         ],
-                        "id": "page-owning-team"
+                        "id": "page-owning-team",
+                        "message_template": {
+                          "array_value": [
+                            {
+                              "literal": "SEV123",
+                              "reference": "incident.severity"
+                            }
+                          ],
+                          "value": {
+                            "literal": "SEV123",
+                            "reference": "incident.severity"
+                          }
+                        }
                       }
                     ],
                     "created_at": "2021-08-17T13:28:57.801578Z",
@@ -250081,6 +251020,18 @@
                     ],
                     "id": "01FCNDV6P870EA6S7TK1DSYDG0",
                     "kind": "team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    },
                     "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
                     "updated_at": "2021-08-17T13:28:57.801578Z",
                     "version": 3
@@ -250578,7 +251529,19 @@
                         "id": "production"
                       }
                     ],
-                    "id": "page-owning-team"
+                    "id": "page-owning-team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    }
                   }
                 ],
                 "expressions": [
@@ -250698,6 +251661,18 @@
                     "root_reference": "incident.status"
                   }
                 ],
+                "message_template": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123",
+                      "reference": "incident.severity"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123",
+                    "reference": "incident.severity"
+                  }
+                },
                 "version": 4
               },
               "schema": {
@@ -251035,7 +252010,19 @@
                             "id": "production"
                           }
                         ],
-                        "id": "page-owning-team"
+                        "id": "page-owning-team",
+                        "message_template": {
+                          "array_value": [
+                            {
+                              "literal": "SEV123",
+                              "reference": "incident.severity"
+                            }
+                          ],
+                          "value": {
+                            "literal": "SEV123",
+                            "reference": "incident.severity"
+                          }
+                        }
                       }
                     ],
                     "created_at": "2021-08-17T13:28:57.801578Z",
@@ -251158,6 +252145,18 @@
                     ],
                     "id": "01FCNDV6P870EA6S7TK1DSYDG0",
                     "kind": "team",
+                    "message_template": {
+                      "array_value": [
+                        {
+                          "literal": "SEV123",
+                          "reference": "incident.severity"
+                        }
+                      ],
+                      "value": {
+                        "literal": "SEV123",
+                        "reference": "incident.severity"
+                      }
+                    },
                     "team_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
                     "updated_at": "2021-08-17T13:28:57.801578Z",
                     "version": 3
@@ -256576,7 +257575,7 @@
     },
     "/v3/catalog_entries/actions/bulk_archive": {
       "post": {
-        "description": "Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.\n\nEntries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.",
+        "description": "Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.\n\nEntries that don't exist, are already archived, or belong to a different catalog type are skipped and don't fail the request. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.",
         "operationId": "Catalog V3#BulkArchiveEntries",
         "requestBody": {
           "content": {
@@ -256596,23 +257595,8 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "example": {
-                  "archived_entry_ids": [
-                    "01GW2G3V0S59R238FAHPDS1R67"
-                  ],
-                  "not_found_entry_ids": [
-                    "01GW2G3V0S59R238FAHPDS1R68"
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/CatalogBulkArchiveEntriesResultV3"
-                }
-              }
-            },
-            "description": "OK response."
+          "204": {
+            "description": "No Content response."
           },
           "400": {
             "content": {
@@ -259214,6 +260198,806 @@
         "x-docs-resource-type": "CatalogTypeV3",
         "x-rbac-scopes": [
           "catalog_types.update"
+        ]
+      }
+    },
+    "/v3/escalations": {
+      "get": {
+        "description": "List all escalations for your account.\n\nThis endpoint supports a number of filters, which can help find escalations matching certain\ncriteria.\n\nNote that:\n- Filters may be used together, and the result will be escalations that match all filters.\n- All query parameters must be URI encoded.\n\nTo use this API, you will need an API key with the \"View data\" or \"Create and manage on-call resources\" permission.\n\n### By escalation_path\n\nFind all escalations that escalated to escalation path with id=ABC:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'escalation_path[one_of]=ABC'\n\n### By status\n\nFind all escalations with a current status of \"triggered\":\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'status[one_of]=triggered'\n\nPossible values are \"pending\", \"triggered\", \"acked\", \"resolved\", \"expired\" and \"cancelled\".\nEscalations are in \"pending\" when they are in a grace period when the related alert has\nbeen grouped in an incident.\n\n### By urgency\n\nFind all escalations that page at the escalation urgency with id=ABC:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'urgency[one_of]=ABC'\n\nUse \"not_in\" to find escalations at any other urgency.\n\n### By alert\n\nFind all escalations that were created by alert with id=ABC:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'alert[one_of]=ABC'\n\n### By incident\n\nFind all escalations related to incident with id=ABC:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'incident[one_of]=ABC'\n\nAn escalation is related to an incident if it is linked to that incident directly, if it is\nattached to one of the incident's alerts, or if it triggered one of those alerts (which is\nwhat happens when someone pages by calling in, and that call raises the alert).\n\nTo find everything that is not related to an incident, use \"not_in\":\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'incident[not_in]=ABC'\n\n### By created_at and updated_at\nFind all escalations that follow specified date parameters for created_at and updated_at fields.\nPossible values are \"gte\" (greater than or equal to), \"lte\" (less than or equal to), and\n\"date_range\" (between two dates).\nFor example, to find all escalations updated after 2025-01-01:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'updated_at[gte]=2025-01-01'\n\nTo find all escalations created between 2025-01-01 and 2025-01-31:\n\n\t\tcurl --get 'https://api.incident.io/v3/escalations' \\\n\t\t\t--data 'created_at[date_range]=2025-01-01~2025-01-31'\n",
+        "operationId": "Escalations V3#List",
+        "parameters": [
+          {
+            "allowEmptyValue": true,
+            "description": "Number of escalations to return per page",
+            "example": 25,
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "default": 25,
+              "description": "Number of escalations to return per page",
+              "example": 25,
+              "format": "int64",
+              "maximum": 50,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "An escalation's ID. This endpoint will return a list of escalations after this ID in relation to the API response order.",
+            "example": "01FDAG4SAP5TYPT98WGR2N7W91",
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "description": "An escalation's ID. This endpoint will return a list of escalations after this ID in relation to the API response order.",
+              "example": "01FDAG4SAP5TYPT98WGR2N7W91",
+              "type": "string"
+            }
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the escalation path for which the escalation was triggered. Accepted operators are 'one_of' and 'not_in'.",
+            "example": {
+              "one_of": [
+                "01J479052SSQAA4531ASFPR3BF"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "escalation_path",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the escalation path for which the escalation was triggered. Accepted operators are 'one_of' and 'not_in'.",
+              "example": {
+                "one_of": [
+                  "01J479052SSQAA4531ASFPR3BF"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the status of the escalation. Accepted operators are 'one_of' and 'not_in'.",
+            "example": {
+              "one_of": [
+                "triggered"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the status of the escalation. Accepted operators are 'one_of' and 'not_in'.",
+              "example": {
+                "one_of": [
+                  "triggered"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the escalation's urgency, by escalation urgency ID. Accepted operators are 'one_of' and 'not_in'.",
+            "example": {
+              "one_of": [
+                "01J479052SSQAA4531ASFPR3BF"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "urgency",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the escalation's urgency, by escalation urgency ID. Accepted operators are 'one_of' and 'not_in'.",
+              "example": {
+                "one_of": [
+                  "01J479052SSQAA4531ASFPR3BF"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the alert that created an escalation. Accepted operators are 'one_of' and 'not_in'.",
+            "example": {
+              "one_of": [
+                "01J479052SSQAA4531ASFPR3BF"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "alert",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the alert that created an escalation. Accepted operators are 'one_of' and 'not_in'.",
+              "example": {
+                "one_of": [
+                  "01J479052SSQAA4531ASFPR3BF"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the incident that the escalation is connected to. Accepted operators are 'one_of' and 'not_in'.",
+            "example": {
+              "one_of": [
+                "01J479052SSQAA4531ASFPR3BF"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "incident",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the incident that the escalation is connected to. Accepted operators are 'one_of' and 'not_in'.",
+              "example": {
+                "one_of": [
+                  "01J479052SSQAA4531ASFPR3BF"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the created_at timestamp of the escalation. Accepted operators are 'gte', 'lte' and 'date_range'.",
+            "example": {
+              "gte": [
+                "2021-08-17"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "created_at",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the created_at timestamp of the escalation. Accepted operators are 'gte', 'lte' and 'date_range'.",
+              "example": {
+                "gte": [
+                  "2021-08-17"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the updated_at timestamp of the escalation. Accepted operators are 'gte', 'lte' and 'date_range'.",
+            "example": {
+              "gte": [
+                "2021-08-17"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "updated_at",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the updated_at timestamp of the escalation. Accepted operators are 'gte', 'lte' and 'date_range'.",
+              "example": {
+                "gte": [
+                  "2021-08-17"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "Filter on the idempotency key of the escalation. This is the key set when creating escalations via the API, and is distinct from alert deduplication keys. Accepted operators are 'is' for exact matches and 'starts_with' for prefix matching.",
+            "example": {
+              "starts_with": [
+                "team-a:"
+              ]
+            },
+            "explode": true,
+            "in": "query",
+            "name": "idempotency_key",
+            "schema": {
+              "additionalProperties": {
+                "example": [
+                  "some_value"
+                ],
+                "items": {
+                  "example": "some_value",
+                  "pattern": "^[^\u0000]*$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": "Filter on the idempotency key of the escalation. This is the key set when creating escalations via the API, and is distinct from alert deduplication keys. Accepted operators are 'is' for exact matches and 'starts_with' for prefix matching.",
+              "example": {
+                "starts_with": [
+                  "team-a:"
+                ]
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "escalations": [
+                    {
+                      "created_at": "2021-08-17T13:28:57.801578Z",
+                      "creator": {
+                        "alert": {
+                          "id": "01GW2G3V0S59R238FAHPDS1R66",
+                          "title": "*errors.withMessage: PG::Error failed to connect"
+                        },
+                        "user": {
+                          "email": "lisa@incident.io",
+                          "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                          "name": "Lisa Karlin Curtis",
+                          "role": "owner",
+                          "slack_user_id": "U02AYNF2XJM"
+                        },
+                        "workflow": {
+                          "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                          "name": "My little workflow"
+                        }
+                      },
+                      "description": "Database CPU has been above 90% for 5 minutes",
+                      "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                      "events": [
+                        {
+                          "channels": [
+                            {
+                              "microsoft_teams_channel_id": "abc123",
+                              "microsoft_teams_team_id": "abc123",
+                              "slack_channel_id": "abc123",
+                              "slack_team_id": "abc123"
+                            }
+                          ],
+                          "event": "entered_grace_period",
+                          "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                          "interruption_level": "high",
+                          "occurred_at": "2021-08-17T13:28:57.801578Z",
+                          "users": [
+                            {
+                              "email": "lisa@incident.io",
+                              "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                              "name": "Lisa Karlin Curtis",
+                              "role": "owner",
+                              "slack_user_id": "U02AYNF2XJM"
+                            }
+                          ]
+                        }
+                      ],
+                      "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                      "related_alerts": [
+                        {
+                          "alert_group_ids": [
+                            "01GW2G3V0S59R238FAHPDS1R66"
+                          ],
+                          "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                          "created_at": "2021-08-17T13:28:57.801578Z",
+                          "deduplication_key": "4293868629",
+                          "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                          "id": "01GW2G3V0S59R238FAHPDS1R66",
+                          "resolved_at": "2021-08-17T14:28:57.801578Z",
+                          "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                          "status": "firing",
+                          "title": "*errors.withMessage: PG::Error failed to connect",
+                          "updated_at": "2021-08-17T13:28:57.801578Z"
+                        }
+                      ],
+                      "related_incidents": [
+                        {
+                          "external_id": 123,
+                          "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                          "name": "Our database is sad",
+                          "reference": "INC-123",
+                          "status_category": "triage",
+                          "summary": "Our database is really really sad, and we don't know why yet.",
+                          "visibility": "public"
+                        }
+                      ],
+                      "status": "pending",
+                      "title": "Database CPU is high",
+                      "updated_at": "2021-08-17T13:28:57.801578Z",
+                      "urgency": {
+                        "id": "01GW2G3V0S59R238FAHPDS1R66",
+                        "name": "Urgent"
+                      }
+                    }
+                  ],
+                  "pagination_meta": {
+                    "after": "01FCNDV6P870EA6S7TK1DSYDG0",
+                    "page_size": 25
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationsListResultV3"
+                }
+              }
+            },
+            "description": "OK response."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "invalid_request_error: There was a problem with the request, like a missing header or querying a resource that doesn't exist."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "authentication_error: Authentication failed."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "resource_forbidden: Access to this resource is forbidden for the authenticated user."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_found: The referenced resource could not be found."
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "method_not_allowed: The endpoint does not support this operation for the specified resource."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_acceptable: Requested a media type this endpoint does not support."
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "request_timeout: The request took too long to process.\n\nclient_timeout: The request was cancelled by the client."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "conflict: Request conflicted with current state of the resource, likely a concurrent update."
+          },
+          "412": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "precondition_failed: A required condition hasn't been met."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "payload_too_large: The request payload is too large."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "validation_error: A required field was not provided, or the provided data was invalid."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "too_many_requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\n\nrate_limit_reached: The rate limit associated with this resource or API key has been exceeded. Try again later."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "api_error: Something went wrong and has been reported internally."
+          }
+        },
+        "summary": "List Escalations V3",
+        "tags": [
+          "Escalations V3"
+        ],
+        "x-docs-display-name": "List",
+        "x-docs-group-name": "Escalations V3",
+        "x-docs-resource-type": "EscalationV3",
+        "x-rbac-scopes": [
+          "escalations.view"
+        ]
+      }
+    },
+    "/v3/escalations/{id}": {
+      "get": {
+        "description": "Show a specific escalation.",
+        "operationId": "Escalations V3#Show",
+        "parameters": [
+          {
+            "description": "Unique ID of the escalation",
+            "example": "01G0J1EXE7AXZ2C93K61WBPYEH",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "description": "Unique ID of the escalation",
+              "example": "01G0J1EXE7AXZ2C93K61WBPYEH",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "escalation": {
+                    "created_at": "2021-08-17T13:28:57.801578Z",
+                    "creator": {
+                      "alert": {
+                        "id": "01GW2G3V0S59R238FAHPDS1R66",
+                        "title": "*errors.withMessage: PG::Error failed to connect"
+                      },
+                      "user": {
+                        "email": "lisa@incident.io",
+                        "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                        "name": "Lisa Karlin Curtis",
+                        "role": "owner",
+                        "slack_user_id": "U02AYNF2XJM"
+                      },
+                      "workflow": {
+                        "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                        "name": "My little workflow"
+                      }
+                    },
+                    "description": "Database CPU has been above 90% for 5 minutes",
+                    "escalation_path_id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                    "events": [
+                      {
+                        "channels": [
+                          {
+                            "microsoft_teams_channel_id": "abc123",
+                            "microsoft_teams_team_id": "abc123",
+                            "slack_channel_id": "abc123",
+                            "slack_team_id": "abc123"
+                          }
+                        ],
+                        "event": "entered_grace_period",
+                        "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                        "interruption_level": "high",
+                        "occurred_at": "2021-08-17T13:28:57.801578Z",
+                        "users": [
+                          {
+                            "email": "lisa@incident.io",
+                            "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                            "name": "Lisa Karlin Curtis",
+                            "role": "owner",
+                            "slack_user_id": "U02AYNF2XJM"
+                          }
+                        ]
+                      }
+                    ],
+                    "id": "01G0J1EXE7AXZ2C93K61WBPYEH",
+                    "related_alerts": [
+                      {
+                        "alert_group_ids": [
+                          "01GW2G3V0S59R238FAHPDS1R66"
+                        ],
+                        "alert_source_id": "01GW2G3V0S59R238FAHPDS1R66",
+                        "created_at": "2021-08-17T13:28:57.801578Z",
+                        "deduplication_key": "4293868629",
+                        "description": "CPU on the payments service has exceeded 75 percent for 5 minutes",
+                        "id": "01GW2G3V0S59R238FAHPDS1R66",
+                        "resolved_at": "2021-08-17T14:28:57.801578Z",
+                        "source_url": "https://www.my-alerting-platform.com/alerts/my-alert-123",
+                        "status": "firing",
+                        "title": "*errors.withMessage: PG::Error failed to connect",
+                        "updated_at": "2021-08-17T13:28:57.801578Z"
+                      }
+                    ],
+                    "related_incidents": [
+                      {
+                        "external_id": 123,
+                        "id": "01FDAG4SAP5TYPT98WGR2N7W91",
+                        "name": "Our database is sad",
+                        "reference": "INC-123",
+                        "status_category": "triage",
+                        "summary": "Our database is really really sad, and we don't know why yet.",
+                        "visibility": "public"
+                      }
+                    ],
+                    "status": "pending",
+                    "title": "Database CPU is high",
+                    "updated_at": "2021-08-17T13:28:57.801578Z",
+                    "urgency": {
+                      "id": "01GW2G3V0S59R238FAHPDS1R66",
+                      "name": "Urgent"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationsShowResultV3"
+                }
+              }
+            },
+            "description": "OK response."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "invalid_request_error: There was a problem with the request, like a missing header or querying a resource that doesn't exist."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "authentication_error: Authentication failed."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "resource_forbidden: Access to this resource is forbidden for the authenticated user."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_found: The referenced resource could not be found."
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "method_not_allowed: The endpoint does not support this operation for the specified resource."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_acceptable: Requested a media type this endpoint does not support."
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "request_timeout: The request took too long to process.\n\nclient_timeout: The request was cancelled by the client."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "conflict: Request conflicted with current state of the resource, likely a concurrent update."
+          },
+          "412": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "precondition_failed: A required condition hasn't been met."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "payload_too_large: The request payload is too large."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "validation_error: A required field was not provided, or the provided data was invalid."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "too_many_requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\n\nrate_limit_reached: The rate limit associated with this resource or API key has been exceeded. Try again later."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "api_error: Something went wrong and has been reported internally."
+          }
+        },
+        "summary": "Show Escalations V3",
+        "tags": [
+          "Escalations V3"
+        ],
+        "x-docs-display-name": "Show",
+        "x-docs-group-name": "Escalations V3",
+        "x-docs-resource-type": "EscalationV3",
+        "x-rbac-scopes": [
+          "escalations.view"
         ]
       }
     },
@@ -267811,6 +269595,10 @@
     {
       "description": "Create, list, filter and respond to escalations.\n",
       "name": "Escalations V2"
+    },
+    {
+      "description": "Create, list, filter and respond to escalations.\n\nEach escalation pages at an escalation urgency, which V3 returns as urgency.\n",
+      "name": "Escalations V3"
     },
     {
       "description": "Manage incident follow-ups.\n\nThese endpoints have been deprecated in favour of Follow-ups V3, which returns the same\nfollow-up payload, and will be removed on 31 December 2026. The V3 List endpoint is\npaginated and supports filtering by created_at and updated_at, so use it instead of\nre-fetching the full list.\n\nIncidents can have follow-ups associated with them, which track work that should be done\nafter an incident (e.g. improving some documentation, or upgrading a dependency). They can\nalso be exported to external issue trackers.\n\nYou can manage follow-ups in the incident Slack channel with <code>/incident follow-ups</code>, or on\nthe incident homepage.\n",

@@ -32,10 +32,10 @@ type EntriesClient struct {
 	// as the payloads. If it is nil, or returns an error that satisfies client.IsNotFound (an
 	// API without the endpoint), we fall back to calling Create for each entry.
 	BulkCreate func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]client.CatalogEntryV3, error)
-	// BulkArchive archives entries, returning one error (nil on success) per entry in the
-	// same order. If it is nil, or returns an error that satisfies client.IsNotFound, we fall
-	// back to calling Delete for each entry.
-	BulkArchive func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error)
+	// BulkArchive archives every entry, or none of them, skipping any that are already gone.
+	// If it is nil, or returns an error that satisfies client.IsNotFound, we fall back to
+	// calling Delete for each entry.
+	BulkArchive func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) error
 }
 
 // EntriesClientFromClient wraps a real client with hooks that can create, update and delete
@@ -101,32 +101,19 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 
 			return result.JSON201.CatalogEntries, nil
 		},
-		BulkArchive: func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
-			entryIDs := lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })
+		BulkArchive: func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) error {
 			result, err := cl.CatalogV3BulkArchiveEntriesWithResponse(ctx, client.CatalogBulkArchiveEntriesPayloadV3{
 				CatalogTypeId: catalogTypeID,
-				EntryIds:      entryIDs,
+				EntryIds:      lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id }),
 			})
 			if err != nil {
-				return nil, err
+				return err
 			}
-			if result.JSON200 == nil {
-				return nil, errors.Errorf("unexpected nil 200 response. Status Code: %d", result.HTTPResponse.StatusCode)
+			if result.StatusCode() != http.StatusNoContent {
+				return errors.Errorf("unexpected response. Status Code: %d", result.StatusCode())
 			}
 
-			archived := lo.Keyify(result.JSON200.ArchivedEntryIds)
-			notFound := lo.Keyify(result.JSON200.NotFoundEntryIds)
-
-			return lo.Map(entryIDs, func(entryID string, _ int) error {
-				switch {
-				case lo.HasKey(archived, entryID):
-					return nil
-				case lo.HasKey(notFound, entryID):
-					return errors.New("entry not found, or already archived")
-				default:
-					return errors.New("entry missing from bulk archive response")
-				}
-			}), nil
+			return nil
 		},
 	}
 }
@@ -338,7 +325,7 @@ func deleteEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, 
 		batch := entries[start:min(start+bulkArchiveBatchSize, len(entries))]
 
 		logger.Log("msg", fmt.Sprintf("bulk archiving %d catalog entries", len(batch)))
-		results, err := cl.BulkArchive(ctx, catalogTypeID, batch)
+		err := cl.BulkArchive(ctx, catalogTypeID, batch)
 		if client.IsNotFound(err) {
 			logger.Log("msg", "bulk archive endpoint not found, falling back to deleting entries one at a time")
 			errs = append(errs, deleteEntriesOneByOne(ctx, logger, cl, entries[start:], onProgress))
@@ -351,18 +338,10 @@ func deleteEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, 
 			errs = append(errs, deleteEntriesOneByOne(ctx, logger, cl, batch, onProgress))
 			continue
 		}
-		if err == nil && len(results) != len(batch) {
-			err = errors.Errorf("expected %d results, got %d", len(batch), len(results))
-		}
 
-		for idx, entry := range batch {
-			entryErr := err
-			if entryErr == nil {
-				entryErr = results[idx]
-			}
-
-			if entryErr != nil {
-				errs = append(errs, errors.Wrap(entryErr, fmt.Sprintf("unable to destroy catalog entry with id=%s, got error", entry.Id)))
+		for _, entry := range batch {
+			if err != nil {
+				errs = append(errs, errors.Wrap(err, fmt.Sprintf("unable to destroy catalog entry with id=%s, got error", entry.Id)))
 			} else {
 				logger.Log("msg", "destroyed catalog entry", "catalog_entry_id", entry.Id)
 			}

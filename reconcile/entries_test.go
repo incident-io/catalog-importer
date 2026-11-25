@@ -659,19 +659,19 @@ var _ = Describe("Entries", func() {
 					return client.CatalogEntryV3{Id: "entry-" + *payload.ExternalId}
 				}), nil
 			}
-			mockClient.BulkArchive = func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
+			mockClient.BulkArchive = func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) error {
 				if bulkArchiveErr != nil {
-					return nil, bulkArchiveErr
+					return bulkArchiveErr
 				}
 
 				bulkArchiveBatches = append(bulkArchiveBatches, lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id }))
 				for _, entry := range entries {
 					if failEntryIDs[entry.Id] {
-						return nil, &client.HTTPError{StatusCode: 403, Body: `{"errors":[{"code":"restricted_attribute","message":"restricted"}]}`}
+						return &client.HTTPError{StatusCode: 403, Body: `{"errors":[{"code":"restricted_attribute","message":"restricted"}]}`}
 					}
 				}
 
-				return make([]error, len(entries)), nil
+				return nil
 			}
 
 			catalogType = &client.CatalogTypeV3{Id: "type-123", TypeName: "Test Type"}
