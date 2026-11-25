@@ -661,9 +661,15 @@ var _ = Describe("Entries", func() {
 				}
 
 				bulkArchiveBatches = append(bulkArchiveBatches, lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id }))
-				return lo.Map(entries, func(entry client.CatalogEntryV3, _ int) error {
+				for _, entry := range entries {
 					if failEntryIDs[entry.Id] {
-						return fmt.Errorf("not allowed")
+						return nil, &client.HTTPError{StatusCode: 403, Body: `{"errors":[{"code":"restricted_attribute","message":"restricted"}]}`}
+					}
+				}
+
+				return lo.Map(entries, func(entry client.CatalogEntryV3, _ int) error {
+					if entry.Id == "entry-old-299" {
+						return fmt.Errorf("entry not found, or already archived")
 					}
 					return nil
 				}), nil
@@ -731,16 +737,23 @@ var _ = Describe("Entries", func() {
 			})
 		})
 
-		When("some archives fail", func() {
+		It("reports entries the bulk archive didn't archive", func() {
+			err := reconcile()
+			Expect(err).To(MatchError(ContainSubstring("unable to destroy catalog entry with id=entry-old-299, got error: entry not found, or already archived")))
+			Expect(bulkUpsertBatches).To(BeEmpty())
+		})
+
+		When("a batch has entries with restricted attributes", func() {
 			BeforeEach(func() {
 				failEntryIDs["entry-old-7"] = true
 			})
 
-			It("reports each failed entry and does not create", func() {
-				err := reconcile()
-				Expect(err).To(MatchError(ContainSubstring("unable to destroy catalog entry with id=entry-old-7, got error: not allowed")))
+			It("deletes that batch one entry at a time", func() {
+				_ = reconcile()
+				Expect(deletedEntries).To(HaveLen(250))
+				Expect(deletedEntries).To(ContainElement("entry-old-7"))
 				Expect(bulkArchiveBatches).To(HaveLen(2))
-				Expect(bulkUpsertBatches).To(BeEmpty())
+				Expect(bulkArchiveBatches[1]).To(HaveLen(50))
 			})
 		})
 

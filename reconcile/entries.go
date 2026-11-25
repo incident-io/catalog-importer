@@ -134,7 +134,6 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 
 			archived := lo.Keyify(result.JSON200.ArchivedEntryIds)
 			notFound := lo.Keyify(result.JSON200.NotFoundEntryIds)
-			notAllowed := lo.Keyify(result.JSON200.NotAllowedEntryIds)
 
 			return lo.Map(entryIDs, func(entryID string, _ int) error {
 				switch {
@@ -142,8 +141,6 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 					return nil
 				case lo.HasKey(notFound, entryID):
 					return errors.New("entry not found, or already archived")
-				case lo.HasKey(notAllowed, entryID):
-					return errors.New("not allowed to archive entry, as it sets attributes you don't have permission to clear")
 				default:
 					return errors.New("entry missing from bulk archive response")
 				}
@@ -365,6 +362,13 @@ func deleteEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, 
 			logger.Log("msg", "bulk archive endpoint not found, falling back to deleting entries one at a time")
 			errs = append(errs, deleteEntriesOneByOne(ctx, logger, cl, entries[start:], onProgress))
 			break
+		}
+		// The whole batch fails if any entry sets an attribute we can't clear, so retry it
+		// one entry at a time to archive the others and report the ones we can't.
+		if client.HasErrorCode(err, "restricted_attribute") {
+			logger.Log("msg", "bulk archive includes entries with restricted attributes, deleting this batch one at a time")
+			errs = append(errs, deleteEntriesOneByOne(ctx, logger, cl, batch, onProgress))
+			continue
 		}
 		if err == nil && len(results) != len(batch) {
 			err = errors.Errorf("expected %d results, got %d", len(batch), len(results))

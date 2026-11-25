@@ -17969,17 +17969,12 @@ type CatalogBulkArchiveEntriesPayloadV3 struct {
 	EntryIds []string `json:"entry_ids"`
 }
 
-// CatalogBulkArchiveEntriesResultV3 Example: {"archived_entry_ids":["01GW2G3V0S59R238FAHPDS1R67"],"not_allowed_entry_ids":[],"not_found_entry_ids":["01GW2G3V0S59R238FAHPDS1R68"]}
+// CatalogBulkArchiveEntriesResultV3 Example: {"archived_entry_ids":["01GW2G3V0S59R238FAHPDS1R67"],"not_found_entry_ids":["01GW2G3V0S59R238FAHPDS1R68"]}
 type CatalogBulkArchiveEntriesResultV3 struct {
 	// ArchivedEntryIds The IDs of the entries that this request archived
 	//
 	// Example: ["01GW2G3V0S59R238FAHPDS1R67"]
 	ArchivedEntryIds []string `json:"archived_entry_ids"`
-
-	// NotAllowedEntryIds The IDs of entries that you aren't allowed to archive, because they set attributes you don't have permission to clear
-	//
-	// Example: []
-	NotAllowedEntryIds []string `json:"not_allowed_entry_ids"`
 
 	// NotFoundEntryIds The IDs of entries that don't exist, are already archived, or belong to a different catalog type
 	//
@@ -41616,7 +41611,7 @@ type ClientInterface interface {
 	//
 	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
-	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+	// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -41627,7 +41622,7 @@ type ClientInterface interface {
 	//
 	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
-	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+	// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -53198,7 +53193,7 @@ func (c *Client) CatalogV3CreateEntry(ctx context.Context, body CatalogV3CreateE
 //
 // Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
-// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 //
 // Takes any type of body and a specified content type.
 //
@@ -53219,7 +53214,7 @@ func (c *Client) CatalogV3BulkArchiveEntriesWithBody(ctx context.Context, conten
 //
 // Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
-// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -79842,7 +79837,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
-	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+	// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -79853,7 +79848,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 	//
-	// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+	// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -143105,7 +143100,7 @@ func (c *ClientWithResponses) CatalogV3CreateEntryWithResponse(ctx context.Conte
 //
 // Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
-// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -143122,7 +143117,7 @@ func (c *ClientWithResponses) CatalogV3BulkArchiveEntriesWithBodyWithResponse(ct
 //
 // Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.
 //
-// Entries that can't be archived don't fail the request. They're returned in `not_found_entry_ids` if they don't exist, are already archived, or belong to a different catalog type, and in `not_allowed_entry_ids` if they set attributes that you don't have permission to clear.
+// Entries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	stderrors "errors"
 	"fmt"
 	"io"
@@ -15,6 +16,7 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/oapi-codegen/oapi-codegen/v2/pkg/securityprovider"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 const (
@@ -163,6 +165,21 @@ func (e *HTTPError) Error() string {
 func IsNotFound(err error) bool {
 	var httpErr *HTTPError
 	return stderrors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound
+}
+
+// HasErrorCode returns true if the API responded with an error carrying the given code.
+func HasErrorCode(err error, code string) bool {
+	var httpErr *HTTPError
+	if !stderrors.As(err, &httpErr) {
+		return false
+	}
+
+	var resp ErrorResponse
+	if json.Unmarshal([]byte(httpErr.Body), &resp) != nil {
+		return false
+	}
+
+	return lo.ContainsBy(resp.Errors, func(e ErrorSingle) bool { return e.Code == code })
 }
 
 // WithReadOnly restricts the client to GET requests only, useful when creating a client

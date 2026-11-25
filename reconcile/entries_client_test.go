@@ -42,28 +42,26 @@ var _ = Describe("EntriesClientFromClient", func() {
 
 				w.Header().Set("Content-Type", "application/json")
 				Expect(json.NewEncoder(w).Encode(client.CatalogBulkArchiveEntriesResultV3{
-					ArchivedEntryIds:   []string{"a"},
-					NotFoundEntryIds:   []string{"b"},
-					NotAllowedEntryIds: []string{"c"},
+					ArchivedEntryIds: []string{"a"},
+					NotFoundEntryIds: []string{"b"},
 				})).To(Succeed())
 			}
 		})
 
 		It("returns an error for each entry that wasn't archived", func() {
 			errs, err := entries.BulkArchive(context.Background(), "type-123", []client.CatalogEntryV3{
-				{Id: "a"}, {Id: "b"}, {Id: "c"}, {Id: "d"},
+				{Id: "a"}, {Id: "b"}, {Id: "c"},
 			})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(requested).To(Equal(client.CatalogBulkArchiveEntriesPayloadV3{
 				CatalogTypeId: "type-123",
-				EntryIds:      []string{"a", "b", "c", "d"},
+				EntryIds:      []string{"a", "b", "c"},
 			}))
 
-			Expect(errs).To(HaveLen(4))
+			Expect(errs).To(HaveLen(3))
 			Expect(errs[0]).NotTo(HaveOccurred())
 			Expect(errs[1]).To(MatchError(ContainSubstring("not found")))
-			Expect(errs[2]).To(MatchError(ContainSubstring("not allowed")))
-			Expect(errs[3]).To(MatchError(ContainSubstring("missing from bulk archive response")))
+			Expect(errs[2]).To(MatchError(ContainSubstring("missing from bulk archive response")))
 		})
 
 		When("the endpoint doesn't exist", func() {
