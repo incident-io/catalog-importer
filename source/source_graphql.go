@@ -116,8 +116,8 @@ func (s SourceGraphQL) Load(ctx context.Context, logger kitlog.Logger, client *h
 			result = resp.Get(s.Result.String).Data()
 		}
 
-		if reflect.TypeOf(result).Kind() != reflect.Slice {
-			return nil, errors.Wrap(err, "result is not a slice of values")
+		if result == nil || reflect.TypeOf(result).Kind() != reflect.Slice {
+			return nil, fmt.Errorf("result is not a slice of values (got %T)", result)
 		}
 
 		content, err := json.Marshal(result)
