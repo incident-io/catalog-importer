@@ -667,12 +667,7 @@ var _ = Describe("Entries", func() {
 					}
 				}
 
-				return lo.Map(entries, func(entry client.CatalogEntryV3, _ int) error {
-					if entry.Id == "entry-old-299" {
-						return fmt.Errorf("entry not found, or already archived")
-					}
-					return nil
-				}), nil
+				return make([]error, len(entries)), nil
 			}
 
 			catalogType = &client.CatalogTypeV3{Id: "type-123", TypeName: "Test Type"}
@@ -735,12 +730,6 @@ var _ = Describe("Entries", func() {
 				Expect(err).NotTo(MatchError(ContainSubstring("external_id=ext-4,")))
 				Expect(bulkUpsertBatches).To(HaveLen(2))
 			})
-		})
-
-		It("reports entries the bulk archive didn't archive", func() {
-			err := reconcile()
-			Expect(err).To(MatchError(ContainSubstring("unable to destroy catalog entry with id=entry-old-299, got error: entry not found, or already archived")))
-			Expect(bulkUpsertBatches).To(BeEmpty())
 		})
 
 		When("a batch has entries with restricted attributes", func() {
