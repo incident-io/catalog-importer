@@ -34,18 +34,20 @@ var _ = Describe("Entries", func() {
 		payload client.CatalogUpdateEntryPayloadV3
 	}
 	var (
-		mockClient      reconcile.EntriesClient
-		existingEntries []client.CatalogEntryV3
-		createdEntries  []client.CatalogCreateEntryPayloadV3
-		updatedEntries  []updatedEntry
-		deletedEntries  []string
-		mu              sync.Mutex // Protect concurrent writes to slices
+		mockClient           reconcile.EntriesClient
+		existingEntries      []client.CatalogEntryV3
+		createdEntries       []client.CatalogCreateEntryPayloadV3
+		updatedEntries       []updatedEntry
+		bulkUpdateBatchSizes []int
+		deletedEntries       []string
+		mu                   sync.Mutex // Protect concurrent writes to slices
 	)
 	BeforeEach(func() {
 		// Reset
 		existingEntries = []client.CatalogEntryV3{}
 		createdEntries = []client.CatalogCreateEntryPayloadV3{}
 		updatedEntries = []updatedEntry{}
+		bulkUpdateBatchSizes = nil
 		deletedEntries = []string{}
 
 		attrValuesFromPayload := func(payload map[string]client.CatalogEngineParamBindingPayloadV3) map[string]client.CatalogEntryEngineParamBindingV3 {
@@ -104,6 +106,7 @@ var _ = Describe("Entries", func() {
 			BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
 				mu.Lock()
 				defer mu.Unlock()
+				bulkUpdateBatchSizes = append(bulkUpdateBatchSizes, len(entries))
 				for _, partialEntry := range entries {
 					// Convert PartialEntryPayloadV3 to CatalogUpdateEntryPayloadV3 for test tracking
 					payload := client.CatalogUpdateEntryPayloadV3{
@@ -522,7 +525,7 @@ var _ = Describe("Entries", func() {
 		})
 	})
 
-	When("updating more than 100 entries", func() {
+	When("updating more than 250 entries", func() {
 		BeforeEach(func() {
 			catalogType = &client.CatalogTypeV3{
 				Id:       "type-123",
@@ -535,11 +538,11 @@ var _ = Describe("Entries", func() {
 				},
 			}
 
-			// Create 250 existing entries and models (to test chunking into 3 batches: 100, 100, 50)
+			// Create 300 existing entries and models (to test chunking into 2 batches: 250, 50)
 			existingEntries = []client.CatalogEntryV3{}
 			entryModels = []*output.CatalogEntryModel{}
 
-			for i := 0; i < 250; i++ {
+			for i := 0; i < 300; i++ {
 				externalID := fmt.Sprintf("ext-%d", i)
 				existingEntries = append(existingEntries, client.CatalogEntryV3{
 					Id:         fmt.Sprintf("entry-%d", i),
@@ -570,15 +573,15 @@ var _ = Describe("Entries", func() {
 			}
 		})
 
-		It("batches updates into groups of 100", func() {
+		It("batches updates into groups of 250", func() {
 			mustReconcile()
 
-			// Verify all 250 entries were updated
-			Expect(updatedEntries).To(HaveLen(250))
+			Expect(updatedEntries).To(HaveLen(300))
+			Expect(bulkUpdateBatchSizes).To(Equal([]int{250, 50}))
 
 			// Verify entries were processed (checking a sample)
 			Expect(updatedEntries[0].payload.Name).To(Equal("Entry 0 Updated"))
-			Expect(updatedEntries[249].payload.Name).To(Equal("Entry 249 Updated"))
+			Expect(updatedEntries[299].payload.Name).To(Equal("Entry 299 Updated"))
 		})
 	})
 

@@ -19,6 +19,7 @@ import (
 const (
 	bulkCreateBatchSize  = 250
 	bulkArchiveBatchSize = 250
+	bulkUpdateBatchSize  = 250
 )
 
 type EntriesClient struct {
@@ -296,8 +297,7 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 			onStart(len(toUpdate))
 		}
 
-		// Chunk into batches of 100
-		batches := lo.Chunk(toUpdate, 100)
+		batches := lo.Chunk(toUpdate, bulkUpdateBatchSize)
 
 		// Compute updateAttributes once (same for all batches)
 		updateAttributes := lo.ToPtr(lo.Map(attributesToUpdate, func(attr *output.Attribute, _ int) string { return attr.ID }))
