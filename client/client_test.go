@@ -11,6 +11,7 @@ import (
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
+	"github.com/pkg/errors"
 	"github.com/samber/lo"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -165,3 +166,15 @@ func (c *countingConn) Close() error {
 	})
 	return c.Conn.Close()
 }
+
+var _ = Describe("IsNotFound", func() {
+	It("matches a wrapped 404", func() {
+		err := errors.Wrap(&client.HTTPError{StatusCode: http.StatusNotFound}, "bulk archiving")
+		Expect(client.IsNotFound(err)).To(BeTrue())
+	})
+
+	It("does not match other statuses", func() {
+		Expect(client.IsNotFound(&client.HTTPError{StatusCode: http.StatusUnprocessableEntity})).To(BeFalse())
+		Expect(client.IsNotFound(errors.New("status 404"))).To(BeFalse())
+	})
+})

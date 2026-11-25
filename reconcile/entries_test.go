@@ -16,6 +16,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// The suite shadows the package name with a reconcile function.
+
 var _ = Describe("Entries", func() {
 	var (
 		ctx    context.Context
@@ -32,18 +34,20 @@ var _ = Describe("Entries", func() {
 		payload client.CatalogUpdateEntryPayloadV3
 	}
 	var (
-		mockClient      reconcile.EntriesClient
-		existingEntries []client.CatalogEntryV3
-		createdEntries  []client.CatalogCreateEntryPayloadV3
-		updatedEntries  []updatedEntry
-		deletedEntries  []string
-		mu              sync.Mutex // Protect concurrent writes to slices
+		mockClient           reconcile.EntriesClient
+		existingEntries      []client.CatalogEntryV3
+		createdEntries       []client.CatalogCreateEntryPayloadV3
+		updatedEntries       []updatedEntry
+		bulkUpdateBatchSizes []int
+		deletedEntries       []string
+		mu                   sync.Mutex // Protect concurrent writes to slices
 	)
 	BeforeEach(func() {
 		// Reset
 		existingEntries = []client.CatalogEntryV3{}
 		createdEntries = []client.CatalogCreateEntryPayloadV3{}
 		updatedEntries = []updatedEntry{}
+		bulkUpdateBatchSizes = nil
 		deletedEntries = []string{}
 
 		attrValuesFromPayload := func(payload map[string]client.CatalogEngineParamBindingPayloadV3) map[string]client.CatalogEntryEngineParamBindingV3 {
@@ -102,6 +106,7 @@ var _ = Describe("Entries", func() {
 			BulkUpdate: func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error {
 				mu.Lock()
 				defer mu.Unlock()
+				bulkUpdateBatchSizes = append(bulkUpdateBatchSizes, len(entries))
 				for _, partialEntry := range entries {
 					// Convert PartialEntryPayloadV3 to CatalogUpdateEntryPayloadV3 for test tracking
 					payload := client.CatalogUpdateEntryPayloadV3{
@@ -520,7 +525,7 @@ var _ = Describe("Entries", func() {
 		})
 	})
 
-	When("updating more than 100 entries", func() {
+	When("updating more than 250 entries", func() {
 		BeforeEach(func() {
 			catalogType = &client.CatalogTypeV3{
 				Id:       "type-123",
@@ -533,11 +538,11 @@ var _ = Describe("Entries", func() {
 				},
 			}
 
-			// Create 250 existing entries and models (to test chunking into 3 batches: 100, 100, 50)
+			// Create 300 existing entries and models (to test chunking into 2 batches: 250, 50)
 			existingEntries = []client.CatalogEntryV3{}
 			entryModels = []*output.CatalogEntryModel{}
 
-			for i := 0; i < 250; i++ {
+			for i := 0; i < 300; i++ {
 				externalID := fmt.Sprintf("ext-%d", i)
 				existingEntries = append(existingEntries, client.CatalogEntryV3{
 					Id:         fmt.Sprintf("entry-%d", i),
@@ -568,15 +573,15 @@ var _ = Describe("Entries", func() {
 			}
 		})
 
-		It("batches updates into groups of 100", func() {
+		It("batches updates into groups of 250", func() {
 			mustReconcile()
 
-			// Verify all 250 entries were updated
-			Expect(updatedEntries).To(HaveLen(250))
+			Expect(updatedEntries).To(HaveLen(300))
+			Expect(bulkUpdateBatchSizes).To(Equal([]int{250, 50}))
 
 			// Verify entries were processed (checking a sample)
 			Expect(updatedEntries[0].payload.Name).To(Equal("Entry 0 Updated"))
-			Expect(updatedEntries[249].payload.Name).To(Equal("Entry 249 Updated"))
+			Expect(updatedEntries[299].payload.Name).To(Equal("Entry 299 Updated"))
 		})
 	})
 
@@ -618,6 +623,167 @@ var _ = Describe("Entries", func() {
 		It("does not trigger an update", func() {
 			mustReconcile()
 			Expect(updatedEntries).To(HaveLen(0))
+		})
+	})
+
+	Describe("bulk endpoints", func() {
+		var (
+			bulkCreateBatches  [][]client.CatalogCreateEntryPayloadV3
+			bulkArchiveBatches [][]string
+			failExternalIDs    map[string]bool
+			failEntryIDs       map[string]bool
+			bulkCreateErr      error
+			bulkArchiveErr     error
+		)
+		BeforeEach(func() {
+			bulkCreateBatches = nil
+			bulkArchiveBatches = nil
+			failExternalIDs = map[string]bool{}
+			failEntryIDs = map[string]bool{}
+			bulkCreateErr = nil
+			bulkArchiveErr = nil
+
+			mockClient.BulkCreate = func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]client.CatalogEntryV3, error) {
+				if bulkCreateErr != nil {
+					return nil, bulkCreateErr
+				}
+
+				bulkCreateBatches = append(bulkCreateBatches, payloads)
+				for _, payload := range payloads {
+					if failExternalIDs[*payload.ExternalId] {
+						return nil, &client.HTTPError{StatusCode: 422, Body: `{"errors":[{"code":"invalid_value","message":"an entry with this external ID already exists"}]}`}
+					}
+				}
+
+				return lo.Map(payloads, func(payload client.CatalogCreateEntryPayloadV3, _ int) client.CatalogEntryV3 {
+					return client.CatalogEntryV3{Id: "entry-" + *payload.ExternalId}
+				}), nil
+			}
+			mockClient.BulkArchive = func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) error {
+				if bulkArchiveErr != nil {
+					return bulkArchiveErr
+				}
+
+				bulkArchiveBatches = append(bulkArchiveBatches, lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id }))
+				for _, entry := range entries {
+					if failEntryIDs[entry.Id] {
+						return &client.HTTPError{StatusCode: 403, Body: `{"errors":[{"code":"restricted_attribute","message":"restricted"}]}`}
+					}
+				}
+
+				return nil
+			}
+
+			catalogType = &client.CatalogTypeV3{Id: "type-123", TypeName: "Test Type"}
+			outputType = &output.Output{}
+
+			existingEntries = []client.CatalogEntryV3{}
+			for i := range 300 {
+				existingEntries = append(existingEntries, client.CatalogEntryV3{
+					Id:         fmt.Sprintf("entry-old-%d", i),
+					ExternalId: lo.ToPtr(fmt.Sprintf("old-%d", i)),
+				})
+			}
+
+			entryModels = []*output.CatalogEntryModel{}
+			for i := range 300 {
+				entryModels = append(entryModels, &output.CatalogEntryModel{
+					Name:       fmt.Sprintf("Entry %d", i),
+					ExternalID: fmt.Sprintf("ext-%d", i),
+					Rank:       int32(i),
+					Aliases:    []string{},
+				})
+			}
+		})
+
+		It("creates entries in batches of 250", func() {
+			mustReconcile()
+
+			Expect(createdEntries).To(BeEmpty())
+			Expect(bulkCreateBatches).To(HaveLen(2))
+			Expect(bulkCreateBatches[0]).To(HaveLen(250))
+			Expect(bulkCreateBatches[1]).To(HaveLen(50))
+			Expect(bulkCreateBatches[0][0]).To(Equal(client.CatalogCreateEntryPayloadV3{
+				CatalogTypeId: "type-123",
+				Name:          "Entry 0",
+				Rank:          lo.ToPtr(int32(0)),
+				ExternalId:    lo.ToPtr("ext-0"),
+				Aliases:       lo.ToPtr([]string{}),
+			}))
+		})
+
+		It("archives entries in batches of 250", func() {
+			mustReconcile()
+
+			Expect(deletedEntries).To(BeEmpty())
+			Expect(bulkArchiveBatches).To(HaveLen(2))
+			Expect(bulkArchiveBatches[0]).To(HaveLen(250))
+			Expect(bulkArchiveBatches[1]).To(HaveLen(50))
+		})
+
+		When("a batch has an invalid entry", func() {
+			BeforeEach(func() {
+				failExternalIDs["ext-3"] = true
+
+				create := mockClient.Create
+				mockClient.Create = func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error) {
+					if *payload.ExternalId == "ext-3" {
+						return nil, fmt.Errorf("external ID conflict")
+					}
+
+					return create(ctx, payload)
+				}
+			})
+
+			It("creates that batch one entry at a time, reporting the invalid entry", func() {
+				err := reconcile()
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-3, got error: external ID conflict")))
+				Expect(err).NotTo(MatchError(ContainSubstring("external_id=ext-4,")))
+				Expect(createdEntries).To(HaveLen(249))
+				Expect(bulkCreateBatches).To(HaveLen(2))
+				Expect(bulkCreateBatches[1]).To(HaveLen(50))
+			})
+		})
+
+		When("a batch has entries with restricted attributes", func() {
+			BeforeEach(func() {
+				failEntryIDs["entry-old-7"] = true
+			})
+
+			It("deletes that batch one entry at a time", func() {
+				_ = reconcile()
+				Expect(deletedEntries).To(HaveLen(250))
+				Expect(deletedEntries).To(ContainElement("entry-old-7"))
+				Expect(bulkArchiveBatches).To(HaveLen(2))
+				Expect(bulkArchiveBatches[1]).To(HaveLen(50))
+			})
+		})
+
+		When("a whole batch fails", func() {
+			BeforeEach(func() {
+				bulkCreateErr = &client.HTTPError{StatusCode: 500, Body: "boom"}
+			})
+
+			It("reports a failure for every entry in the batch", func() {
+				err := reconcile()
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-0, got error: status 500: boom")))
+				Expect(err).To(MatchError(ContainSubstring("unable to create catalog entry with external_id=ext-299, got error: status 500: boom")))
+				Expect(createdEntries).To(BeEmpty())
+			})
+		})
+
+		When("the API doesn't have the bulk endpoints", func() {
+			BeforeEach(func() {
+				bulkCreateErr = &client.HTTPError{StatusCode: 404, Body: "not found"}
+				bulkArchiveErr = &client.HTTPError{StatusCode: 404, Body: "not found"}
+			})
+
+			It("falls back to single calls", func() {
+				mustReconcile()
+
+				Expect(deletedEntries).To(HaveLen(300))
+				Expect(createdEntries).To(HaveLen(300))
+			})
 		})
 	})
 })

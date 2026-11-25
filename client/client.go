@@ -2,11 +2,14 @@ package client
 
 import (
 	"context"
+	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"io"
 	"math"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -14,6 +17,7 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/oapi-codegen/oapi-codegen/v2/pkg/securityprovider"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 const (
@@ -71,6 +75,12 @@ func rateLimitBackoff(attemptNum int) time.Duration {
 
 // checkRetry determines if a request should be retried
 func checkRetry(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	// bulk_create returns a 409 while another writer holds the lock on one of its entries. It
+	// writes nothing in that case, so the whole request is safe to retry.
+	if err == nil && resp.StatusCode == http.StatusConflict && strings.HasSuffix(resp.Request.URL.Path, "/catalog_entries/actions/bulk_create") {
+		return true, nil
+	}
+
 	// Always use default retry logic - we'll handle 429s with longer backoff
 	// The increased maxRetries will give us more attempts overall
 	return retryablehttp.DefaultRetryPolicy(ctx, resp, err)
@@ -117,10 +127,10 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 		if resp.StatusCode > 299 {
 			data, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, fmt.Errorf("status %d: no response body", resp.StatusCode)
+				return nil, &HTTPError{StatusCode: resp.StatusCode}
 			}
 
-			return nil, fmt.Errorf("status %d: %s", resp.StatusCode, string(data))
+			return nil, &HTTPError{StatusCode: resp.StatusCode, Body: string(data)}
 		}
 
 		return resp, err
@@ -142,6 +152,46 @@ func New(ctx context.Context, apiKey, apiEndpoint, version string, logger kitlog
 	}
 
 	return client, nil
+}
+
+// HTTPError is returned for any response with a non-2xx status code.
+type HTTPError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *HTTPError) Error() string {
+	if e.Body == "" {
+		return fmt.Sprintf("status %d: no response body", e.StatusCode)
+	}
+
+	return fmt.Sprintf("status %d: %s", e.StatusCode, e.Body)
+}
+
+// HasStatus returns true if the API responded with the given HTTP status.
+func HasStatus(err error, status int) bool {
+	var httpErr *HTTPError
+	return stderrors.As(err, &httpErr) && httpErr.StatusCode == status
+}
+
+// IsNotFound returns true if the API responded with a 404.
+func IsNotFound(err error) bool {
+	return HasStatus(err, http.StatusNotFound)
+}
+
+// HasErrorCode returns true if the API responded with an error carrying the given code.
+func HasErrorCode(err error, code string) bool {
+	var httpErr *HTTPError
+	if !stderrors.As(err, &httpErr) {
+		return false
+	}
+
+	var resp ErrorResponse
+	if json.Unmarshal([]byte(httpErr.Body), &resp) != nil {
+		return false
+	}
+
+	return lo.ContainsBy(resp.Errors, func(e ErrorSingle) bool { return e.Code == code })
 }
 
 // WithReadOnly restricts the client to GET requests only, useful when creating a client
