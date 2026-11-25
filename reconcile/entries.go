@@ -10,6 +10,7 @@ import (
 	"github.com/incident-io/catalog-importer/v2/output"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
+	"golang.org/x/time/rate"
 
 	"github.com/sourcegraph/conc/pool"
 )
@@ -27,7 +28,7 @@ type EntriesClient struct {
 func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 	return EntriesClient{
 		GetEntries: func(ctx context.Context, catalogTypeID string, pageSize int) (*client.CatalogTypeV3, []client.CatalogEntryV3, error) {
-			return GetEntries(ctx, cl, catalogTypeID, pageSize)
+			return GetEntries(ctx, cl, catalogTypeID, pageSize, nil)
 		},
 		Delete: func(ctx context.Context, entry *client.CatalogEntryV3) error {
 			_, err := cl.CatalogV3DestroyEntryWithResponse(ctx, entry.Id)
@@ -301,13 +302,20 @@ func Entries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, output
 	return nil
 }
 
-// GetEntries paginates through all catalog entries for the given type.
-func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string, pageSize int) (catalogType *client.CatalogTypeV3, entries []client.CatalogEntryV3, err error) {
+// GetEntries paginates through all catalog entries for the given type. If limiter is set,
+// each page waits on it, so callers listing many types at once can share a request rate.
+func GetEntries(ctx context.Context, cl *client.ClientWithResponses, catalogTypeID string, pageSize int, limiter *rate.Limiter) (catalogType *client.CatalogTypeV3, entries []client.CatalogEntryV3, err error) {
 	var (
 		after *string
 	)
 
 	for {
+		if limiter != nil {
+			if err := limiter.Wait(ctx); err != nil {
+				return nil, nil, errors.Wrap(err, "listing entries")
+			}
+		}
+
 		result, err := cl.CatalogV3ListEntriesWithResponse(ctx, &client.CatalogV3ListEntriesParams{
 			CatalogTypeId: catalogTypeID,
 			PageSize:      int64(pageSize),
