@@ -110,6 +110,24 @@ var _ = Describe("EntriesClientFromClient", func() {
 			Expect(lo.Map(created, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })).To(Equal([]string{"entry-a", "entry-b"}))
 		})
 
+		It("retries the whole batch on a 409", func() {
+			inner := handler
+			requests := 0
+			handler = func(w http.ResponseWriter, r *http.Request) {
+				requests++
+				if requests == 1 {
+					w.WriteHeader(http.StatusConflict)
+					return
+				}
+				inner(w, r)
+			}
+
+			created, err := entries.BulkCreate(context.Background(), "type-123", []client.CatalogCreateEntryPayloadV3{{Name: "A", ExternalId: lo.ToPtr("a")}})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(requests).To(Equal(2))
+			Expect(created).To(HaveLen(2))
+		})
+
 		It("returns a 422 as an HTTPError", func() {
 			handler = func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusUnprocessableEntity)

@@ -9,6 +9,7 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	kitlog "github.com/go-kit/kit/log"
@@ -74,6 +75,12 @@ func rateLimitBackoff(attemptNum int) time.Duration {
 
 // checkRetry determines if a request should be retried
 func checkRetry(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	// bulk_create returns a 409 while another writer holds the lock on one of its entries. It
+	// writes nothing in that case, so the whole request is safe to retry.
+	if err == nil && resp.StatusCode == http.StatusConflict && strings.HasSuffix(resp.Request.URL.Path, "/catalog_entries/actions/bulk_create") {
+		return true, nil
+	}
+
 	// Always use default retry logic - we'll handle 429s with longer backoff
 	// The increased maxRetries will give us more attempts overall
 	return retryablehttp.DefaultRetryPolicy(ctx, resp, err)
