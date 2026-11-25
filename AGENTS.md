@@ -198,7 +198,7 @@ catalog-importer/
 
 **Performance considerations**:
 - The codebase uses bulk operations where possible (e.g., `BulkUpdateEntries` for updating up to 100 catalog entries per API call)
-- Entries are created through `BulkUpsertEntries` (250 per call) and pruned through `BulkArchiveEntries` (250 per call). If either endpoint returns 404 (an older API), reconcile falls back to one `CreateEntry`/`DestroyEntry` call per entry
+- Entries are created through `BulkCreateEntries` (250 per call, all or nothing: a batch that fails validation is retried one entry at a time) and pruned through `BulkArchiveEntries` (250 per call). If either endpoint returns 404 (an older API), reconcile falls back to one `CreateEntry`/`DestroyEntry` call per entry
 - Use `lo.Chunk(items, 100)` to batch items when calling bulk endpoints
 - Process batches **sequentially** (not in parallel) as bulk endpoints are heavily rate-limited
 - The HTTP client in `client/client.go` automatically handles 429 rate limit responses with exponential backoff:

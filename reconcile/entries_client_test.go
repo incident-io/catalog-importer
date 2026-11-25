@@ -78,45 +78,45 @@ var _ = Describe("EntriesClientFromClient", func() {
 		})
 	})
 
-	Describe("BulkUpsert", func() {
-		var requested client.CatalogBulkUpsertEntriesPayloadV3
+	Describe("BulkCreate", func() {
+		var requested client.CatalogBulkCreateEntriesPayloadV3
 		BeforeEach(func() {
 			handler = func(w http.ResponseWriter, r *http.Request) {
 				defer GinkgoRecover()
-				Expect(r.URL.Path).To(Equal("/v3/catalog_entries/actions/bulk_upsert"))
+				Expect(r.URL.Path).To(Equal("/v3/catalog_entries/actions/bulk_create"))
 				Expect(json.NewDecoder(r.Body).Decode(&requested)).To(Succeed())
 
 				w.Header().Set("Content-Type", "application/json")
-				Expect(json.NewEncoder(w).Encode(client.CatalogBulkUpsertEntriesResultV3{
-					Results: []client.BulkUpsertEntryResultV3{
-						{ExternalId: "a", Status: client.BulkUpsertEntryResultV3StatusCreated, CatalogEntryId: lo.ToPtr("entry-a")},
-						{ExternalId: "b", Status: client.BulkUpsertEntryResultV3StatusFailed, Errors: &[]client.BulkUpsertEntryErrorV3{
-							{Field: lo.ToPtr("aliases"), Message: "alias already in use"},
-							{Message: "something else"},
-						}},
-					},
+				w.WriteHeader(http.StatusCreated)
+				Expect(json.NewEncoder(w).Encode(client.CatalogBulkCreateEntriesResultV3{
+					CatalogEntries: []client.CatalogEntryV3{{Id: "entry-a"}, {Id: "entry-b"}},
 				})).To(Succeed())
 			}
 		})
 
-		It("returns a result for each entry", func() {
-			results, err := entries.BulkUpsert(context.Background(), "type-123", []client.CatalogCreateEntryPayloadV3{
+		It("returns the created entries", func() {
+			created, err := entries.BulkCreate(context.Background(), "type-123", []client.CatalogCreateEntryPayloadV3{
 				{CatalogTypeId: "type-123", Name: "A", ExternalId: lo.ToPtr("a"), Rank: lo.ToPtr(int32(3)), Aliases: lo.ToPtr([]string{"alias-a"})},
 				{CatalogTypeId: "type-123", Name: "B", ExternalId: lo.ToPtr("b")},
 			})
 			Expect(err).NotTo(HaveOccurred())
-			Expect(requested).To(Equal(client.CatalogBulkUpsertEntriesPayloadV3{
+			Expect(requested).To(Equal(client.CatalogBulkCreateEntriesPayloadV3{
 				CatalogTypeId: "type-123",
-				Entries: []client.BulkUpsertEntryPayloadV3{
+				Entries: []client.BulkCreateEntryPayloadV3{
 					{Name: "A", ExternalId: "a", Rank: lo.ToPtr(int32(3)), Aliases: lo.ToPtr([]string{"alias-a"})},
 					{Name: "B", ExternalId: "b"},
 				},
 			}))
+			Expect(lo.Map(created, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })).To(Equal([]string{"entry-a", "entry-b"}))
+		})
 
-			Expect(results).To(HaveLen(2))
-			Expect(results[0].Err).NotTo(HaveOccurred())
-			Expect(results[0].Entry.Id).To(Equal("entry-a"))
-			Expect(results[1].Err).To(MatchError("aliases: alias already in use; something else"))
+		It("returns a 422 as an HTTPError", func() {
+			handler = func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+			}
+
+			_, err := entries.BulkCreate(context.Background(), "type-123", []client.CatalogCreateEntryPayloadV3{{Name: "A", ExternalId: lo.ToPtr("a")}})
+			Expect(client.HasStatus(err, http.StatusUnprocessableEntity)).To(BeTrue())
 		})
 	})
 })

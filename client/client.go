@@ -161,10 +161,15 @@ func (e *HTTPError) Error() string {
 	return fmt.Sprintf("status %d: %s", e.StatusCode, e.Body)
 }
 
+// HasStatus returns true if the API responded with the given HTTP status.
+func HasStatus(err error, status int) bool {
+	var httpErr *HTTPError
+	return stderrors.As(err, &httpErr) && httpErr.StatusCode == status
+}
+
 // IsNotFound returns true if the API responded with a 404.
 func IsNotFound(err error) bool {
-	var httpErr *HTTPError
-	return stderrors.As(err, &httpErr) && httpErr.StatusCode == http.StatusNotFound
+	return HasStatus(err, http.StatusNotFound)
 }
 
 // HasErrorCode returns true if the API responded with an error carrying the given code.

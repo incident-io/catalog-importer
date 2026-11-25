@@ -4,8 +4,8 @@ import (
 	"context"
 	stderrors "errors"
 	"fmt"
+	"net/http"
 	"reflect"
-	"strings"
 
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/incident-io/catalog-importer/v2/client"
@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	bulkUpsertBatchSize  = 250
+	bulkCreateBatchSize  = 250
 	bulkArchiveBatchSize = 250
 )
 
@@ -27,20 +27,14 @@ type EntriesClient struct {
 	Create     func(ctx context.Context, payload client.CatalogCreateEntryPayloadV3) (*client.CatalogEntryV3, error)
 	BulkUpdate func(ctx context.Context, catalogTypeID string, entries []client.PartialEntryPayloadV3, updateAttributes *[]string) error
 
-	// BulkUpsert creates or updates entries by external ID, returning one result per payload
-	// in the same order. If it is nil, or returns an error that satisfies client.IsNotFound
-	// (an API without the endpoint), we fall back to calling Create for each entry.
-	BulkUpsert func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]BulkUpsertResult, error)
+	// BulkCreate creates every entry, or none of them, returning the entries in the same order
+	// as the payloads. If it is nil, or returns an error that satisfies client.IsNotFound (an
+	// API without the endpoint), we fall back to calling Create for each entry.
+	BulkCreate func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]client.CatalogEntryV3, error)
 	// BulkArchive archives entries, returning one error (nil on success) per entry in the
 	// same order. If it is nil, or returns an error that satisfies client.IsNotFound, we fall
 	// back to calling Delete for each entry.
 	BulkArchive func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error)
-}
-
-// BulkUpsertResult is the outcome for a single entry sent to BulkUpsert.
-type BulkUpsertResult struct {
-	Entry *client.CatalogEntryV3
-	Err   error
 }
 
 // EntriesClientFromClient wraps a real client with hooks that can create, update and delete
@@ -84,11 +78,11 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 			})
 			return err
 		},
-		BulkUpsert: func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]BulkUpsertResult, error) {
-			result, err := cl.CatalogV3BulkUpsertEntriesWithResponse(ctx, client.CatalogBulkUpsertEntriesPayloadV3{
+		BulkCreate: func(ctx context.Context, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3) ([]client.CatalogEntryV3, error) {
+			result, err := cl.CatalogV3BulkCreateEntriesWithResponse(ctx, client.CatalogBulkCreateEntriesPayloadV3{
 				CatalogTypeId: catalogTypeID,
-				Entries: lo.Map(payloads, func(payload client.CatalogCreateEntryPayloadV3, _ int) client.BulkUpsertEntryPayloadV3 {
-					return client.BulkUpsertEntryPayloadV3{
+				Entries: lo.Map(payloads, func(payload client.CatalogCreateEntryPayloadV3, _ int) client.BulkCreateEntryPayloadV3 {
+					return client.BulkCreateEntryPayloadV3{
 						ExternalId:      lo.FromPtr(payload.ExternalId),
 						Name:            payload.Name,
 						Rank:            payload.Rank,
@@ -100,24 +94,11 @@ func EntriesClientFromClient(cl *client.ClientWithResponses) EntriesClient {
 			if err != nil {
 				return nil, err
 			}
-			if result.JSON200 == nil {
-				return nil, errors.Errorf("unexpected nil 200 response. Status Code: %d", result.HTTPResponse.StatusCode)
+			if result.JSON201 == nil {
+				return nil, errors.Errorf("unexpected nil 201 response. Status Code: %d", result.HTTPResponse.StatusCode)
 			}
 
-			return lo.Map(result.JSON200.Results, func(entry client.BulkUpsertEntryResultV3, _ int) BulkUpsertResult {
-				if entry.Status == client.BulkUpsertEntryResultV3StatusFailed {
-					messages := lo.Map(lo.FromPtr(entry.Errors), func(entryErr client.BulkUpsertEntryErrorV3, _ int) string {
-						if entryErr.Field != nil {
-							return fmt.Sprintf("%s: %s", *entryErr.Field, entryErr.Message)
-						}
-						return entryErr.Message
-					})
-
-					return BulkUpsertResult{Err: errors.New(strings.Join(messages, "; "))}
-				}
-
-				return BulkUpsertResult{Entry: &client.CatalogEntryV3{Id: lo.FromPtr(entry.CatalogEntryId)}}
-			}), nil
+			return result.JSON201.CatalogEntries, nil
 		},
 		BulkArchive: func(ctx context.Context, catalogTypeID string, entries []client.CatalogEntryV3) ([]error, error) {
 			entryIDs := lo.Map(entries, func(entry client.CatalogEntryV3, _ int) string { return entry.Id })
@@ -418,39 +399,41 @@ func deleteEntriesOneByOne(ctx context.Context, logger kitlog.Logger, cl Entries
 	return p.Wait()
 }
 
-// createEntries creates entries in batches through BulkUpsert, falling back to one Create
-// per entry if the API doesn't support bulk upserting.
+// createEntries creates entries in batches through BulkCreate, falling back to one Create
+// per entry if the API doesn't support bulk creating.
 func createEntries(ctx context.Context, logger kitlog.Logger, cl EntriesClient, catalogTypeID string, payloads []client.CatalogCreateEntryPayloadV3, onProgress func()) error {
-	if cl.BulkUpsert == nil {
+	if cl.BulkCreate == nil {
 		return createEntriesOneByOne(ctx, logger, cl, payloads, onProgress)
 	}
 
 	errs := []error{}
-	for start := 0; start < len(payloads); start += bulkUpsertBatchSize {
-		batch := payloads[start:min(start+bulkUpsertBatchSize, len(payloads))]
+	for start := 0; start < len(payloads); start += bulkCreateBatchSize {
+		batch := payloads[start:min(start+bulkCreateBatchSize, len(payloads))]
 
-		logger.Log("msg", fmt.Sprintf("bulk upserting %d catalog entries", len(batch)))
-		results, err := cl.BulkUpsert(ctx, catalogTypeID, batch)
+		logger.Log("msg", fmt.Sprintf("bulk creating %d catalog entries", len(batch)))
+		entries, err := cl.BulkCreate(ctx, catalogTypeID, batch)
 		if client.IsNotFound(err) {
-			logger.Log("msg", "bulk upsert endpoint not found, falling back to creating entries one at a time")
+			logger.Log("msg", "bulk create endpoint not found, falling back to creating entries one at a time")
 			errs = append(errs, createEntriesOneByOne(ctx, logger, cl, payloads[start:], onProgress))
 			break
 		}
-		if err == nil && len(results) != len(batch) {
-			err = errors.Errorf("expected %d results, got %d", len(batch), len(results))
+		// A bulk create is all or nothing, so one invalid entry fails the whole batch. Create
+		// this batch one entry at a time instead, to create the others and report that entry.
+		if client.HasStatus(err, http.StatusUnprocessableEntity) {
+			logger.Log("msg", "bulk create failed validation, creating this batch one entry at a time", "error", err)
+			errs = append(errs, createEntriesOneByOne(ctx, logger, cl, batch, onProgress))
+			continue
+		}
+		if err == nil && len(entries) != len(batch) {
+			err = errors.Errorf("expected %d created entries, got %d", len(batch), len(entries))
 		}
 
 		for idx, payload := range batch {
-			entryErr := err
-			if entryErr == nil {
-				entryErr = results[idx].Err
-			}
-
 			externalID := lo.FromPtr(payload.ExternalId)
-			if entryErr != nil {
-				errs = append(errs, errors.Wrap(entryErr, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", externalID)))
+			if err != nil {
+				errs = append(errs, errors.Wrap(err, fmt.Sprintf("unable to create catalog entry with external_id=%s, got error", externalID)))
 			} else {
-				logger.Log("msg", "created catalog entry", "external_id", externalID, "entry_id", lo.FromPtr(results[idx].Entry).Id)
+				logger.Log("msg", "created catalog entry", "external_id", externalID, "entry_id", entries[idx].Id)
 			}
 
 			if onProgress != nil {

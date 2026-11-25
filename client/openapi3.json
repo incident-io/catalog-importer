@@ -80431,161 +80431,6 @@
         ],
         "type": "object"
       },
-      "BulkUpsertEntryErrorV3": {
-        "example": {
-          "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-          "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-        },
-        "properties": {
-          "field": {
-            "description": "The field of the entry the error is about, if it is about one",
-            "example": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-            "type": "string"
-          },
-          "message": {
-            "description": "What went wrong",
-            "example": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'",
-            "type": "string"
-          }
-        },
-        "required": [
-          "message"
-        ],
-        "type": "object"
-      },
-      "BulkUpsertEntryPayloadV3": {
-        "description": "An entry to create, or to update if an entry of the type already has its external_id",
-        "example": {
-          "aliases": [
-            "lawrence@incident.io",
-            "lawrence"
-          ],
-          "attribute_values": {
-            "abc123": {
-              "array_value": [
-                {
-                  "literal": "SEV123"
-                }
-              ],
-              "value": {
-                "literal": "SEV123"
-              }
-            }
-          },
-          "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-          "name": "Primary On-call",
-          "rank": 3
-        },
-        "properties": {
-          "aliases": {
-            "description": "Optional aliases that can be used to reference this entry",
-            "example": [
-              "lawrence@incident.io",
-              "lawrence"
-            ],
-            "items": {
-              "example": "abc123",
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "attribute_values": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/CatalogEngineParamBindingPayloadV3"
-            },
-            "description": "Values of this entry",
-            "example": {
-              "abc123": {
-                "array_value": [
-                  {
-                    "literal": "SEV123"
-                  }
-                ],
-                "value": {
-                  "literal": "SEV123"
-                }
-              }
-            },
-            "type": "object"
-          },
-          "external_id": {
-            "description": "The external ID used to match this entry to an existing one. Must be unique within the request.",
-            "example": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-            "minLength": 1,
-            "type": "string"
-          },
-          "name": {
-            "description": "Name is the human readable name of this entry",
-            "example": "Primary On-call",
-            "type": "string"
-          },
-          "rank": {
-            "description": "When catalog type is ranked, this is used to help order things",
-            "example": 3,
-            "format": "int32",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "external_id",
-          "name",
-          "attribute_values"
-        ],
-        "type": "object"
-      },
-      "BulkUpsertEntryResultV3": {
-        "example": {
-          "catalog_entry_id": "01FCNDV6P870EA6S7TK1DSYDG0",
-          "errors": [
-            {
-              "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-              "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-            }
-          ],
-          "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-          "status": "updated"
-        },
-        "properties": {
-          "catalog_entry_id": {
-            "description": "The ID of the entry that was created or updated. Not set when the entry failed.",
-            "example": "01FCNDV6P870EA6S7TK1DSYDG0",
-            "type": "string"
-          },
-          "errors": {
-            "description": "Why the entry failed. Only set when status is failed.",
-            "example": [
-              {
-                "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-                "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-              }
-            ],
-            "items": {
-              "$ref": "#/components/schemas/BulkUpsertEntryErrorV3"
-            },
-            "type": "array"
-          },
-          "external_id": {
-            "description": "The external ID of the entry in the request",
-            "example": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-            "type": "string"
-          },
-          "status": {
-            "enum": [
-              "created",
-              "updated",
-              "failed"
-            ],
-            "example": "updated",
-            "type": "string",
-            "x-public-api-version": "v3"
-          }
-        },
-        "required": [
-          "external_id",
-          "status"
-        ],
-        "type": "object"
-      },
       "CallRouteAllowedCallerV2": {
         "description": "A phone number allowed to reach a call route.",
         "example": {
@@ -82226,6 +82071,80 @@
         ],
         "type": "object"
       },
+      "CatalogBulkArchiveEntriesPayloadV3": {
+        "example": {
+          "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
+          "entry_ids": [
+            "01GW2G3V0S59R238FAHPDS1R67",
+            "01GW2G3V0S59R238FAHPDS1R68"
+          ]
+        },
+        "properties": {
+          "catalog_type_id": {
+            "description": "The ID of the catalog type that the entries belong to",
+            "example": "01GW2G3V0S59R238FAHPDS1R66",
+            "type": "string"
+          },
+          "entry_ids": {
+            "description": "The IDs of the entries to archive. Maximum 250 entries per request.",
+            "example": [
+              "01GW2G3V0S59R238FAHPDS1R67",
+              "01GW2G3V0S59R238FAHPDS1R68"
+            ],
+            "items": {
+              "example": "abc123",
+              "type": "string"
+            },
+            "maxItems": 250,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "catalog_type_id",
+          "entry_ids"
+        ],
+        "type": "object"
+      },
+      "CatalogBulkArchiveEntriesResultV3": {
+        "example": {
+          "archived_entry_ids": [
+            "01GW2G3V0S59R238FAHPDS1R67"
+          ],
+          "not_found_entry_ids": [
+            "01GW2G3V0S59R238FAHPDS1R68"
+          ]
+        },
+        "properties": {
+          "archived_entry_ids": {
+            "description": "The IDs of the entries that this request archived",
+            "example": [
+              "01GW2G3V0S59R238FAHPDS1R67"
+            ],
+            "items": {
+              "example": "abc123",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "not_found_entry_ids": {
+            "description": "The IDs of entries that don't exist, are already archived, or belong to a different catalog type",
+            "example": [
+              "01GW2G3V0S59R238FAHPDS1R68"
+            ],
+            "items": {
+              "example": "abc123",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "archived_entry_ids",
+          "not_found_entry_ids"
+        ],
+        "type": "object"
+      },
       "CatalogBulkUpdateEntriesPayloadV3": {
         "example": {
           "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
@@ -82365,163 +82284,6 @@
         "required": [
           "catalog_type_id",
           "entries"
-        ],
-        "type": "object"
-      },
-      "CatalogBulkUpsertEntriesPayloadV3": {
-        "example": {
-          "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
-          "entries": [
-            {
-              "aliases": [
-                "lawrence@incident.io",
-                "lawrence"
-              ],
-              "attribute_values": {
-                "abc123": {
-                  "array_value": [
-                    {
-                      "literal": "SEV123"
-                    }
-                  ],
-                  "value": {
-                    "literal": "SEV123"
-                  }
-                }
-              },
-              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-              "name": "Primary On-call",
-              "rank": 3
-            },
-            {
-              "aliases": [
-                "lawrence@incident.io",
-                "lawrence"
-              ],
-              "attribute_values": {
-                "abc123": {
-                  "array_value": [
-                    {
-                      "literal": "SEV123"
-                    }
-                  ],
-                  "value": {
-                    "literal": "SEV123"
-                  }
-                }
-              },
-              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-              "name": "Primary On-call",
-              "rank": 3
-            }
-          ]
-        },
-        "properties": {
-          "catalog_type_id": {
-            "description": "The unique identifier of the catalog type to upsert entries into",
-            "example": "01GW2G3V0S59R238FAHPDS1R66",
-            "type": "string"
-          },
-          "entries": {
-            "description": "The entries to create or update. Maximum 250 entries per request.",
-            "example": [
-              {
-                "aliases": [
-                  "lawrence@incident.io",
-                  "lawrence"
-                ],
-                "attribute_values": {
-                  "abc123": {
-                    "array_value": [
-                      {
-                        "literal": "SEV123"
-                      }
-                    ],
-                    "value": {
-                      "literal": "SEV123"
-                    }
-                  }
-                },
-                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                "name": "Primary On-call",
-                "rank": 3
-              },
-              {
-                "aliases": [
-                  "lawrence@incident.io",
-                  "lawrence"
-                ],
-                "attribute_values": {
-                  "abc123": {
-                    "array_value": [
-                      {
-                        "literal": "SEV123"
-                      }
-                    ],
-                    "value": {
-                      "literal": "SEV123"
-                    }
-                  }
-                },
-                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                "name": "Primary On-call",
-                "rank": 3
-              }
-            ],
-            "items": {
-              "$ref": "#/components/schemas/BulkUpsertEntryPayloadV3"
-            },
-            "maxItems": 250,
-            "minItems": 1,
-            "type": "array"
-          }
-        },
-        "required": [
-          "catalog_type_id",
-          "entries"
-        ],
-        "type": "object"
-      },
-      "CatalogBulkUpsertEntriesResultV3": {
-        "example": {
-          "results": [
-            {
-              "catalog_entry_id": "01FCNDV6P870EA6S7TK1DSYDG0",
-              "errors": [
-                {
-                  "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-                  "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-                }
-              ],
-              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-              "status": "updated"
-            }
-          ]
-        },
-        "properties": {
-          "results": {
-            "description": "One result per entry in the request, in the same order",
-            "example": [
-              {
-                "catalog_entry_id": "01FCNDV6P870EA6S7TK1DSYDG0",
-                "errors": [
-                  {
-                    "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-                    "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-                  }
-                ],
-                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                "status": "updated"
-              }
-            ],
-            "items": {
-              "$ref": "#/components/schemas/BulkUpsertEntryResultV3"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "results"
         ],
         "type": "object"
       },
@@ -157193,29 +156955,188 @@
         ],
         "type": "object"
       },
-      "CatalogBulkArchiveEntriesPayloadV3": {
+      "BulkCreateEntryPayloadV3": {
+        "description": "A new entry to create",
         "example": {
-          "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
-          "entry_ids": [
-            "01GW2G3V0S59R238FAHPDS1R67",
-            "01GW2G3V0S59R238FAHPDS1R68"
-          ]
+          "aliases": [
+            "lawrence@incident.io",
+            "lawrence"
+          ],
+          "attribute_values": {
+            "abc123": {
+              "array_value": [
+                {
+                  "literal": "SEV123"
+                }
+              ],
+              "value": {
+                "literal": "SEV123"
+              }
+            }
+          },
+          "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+          "name": "Primary On-call",
+          "rank": 3
         },
         "properties": {
-          "catalog_type_id": {
-            "description": "The ID of the catalog type that the entries belong to",
-            "example": "01GW2G3V0S59R238FAHPDS1R66",
-            "type": "string"
-          },
-          "entry_ids": {
-            "description": "The IDs of the entries to archive. Maximum 250 entries per request.",
+          "aliases": {
+            "description": "Optional aliases that can be used to reference this entry",
             "example": [
-              "01GW2G3V0S59R238FAHPDS1R67",
-              "01GW2G3V0S59R238FAHPDS1R68"
+              "lawrence@incident.io",
+              "lawrence"
             ],
             "items": {
               "example": "abc123",
               "type": "string"
+            },
+            "type": "array"
+          },
+          "attribute_values": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CatalogEngineParamBindingPayloadV3"
+            },
+            "description": "Values of this entry",
+            "example": {
+              "abc123": {
+                "array_value": [
+                  {
+                    "literal": "SEV123"
+                  }
+                ],
+                "value": {
+                  "literal": "SEV123"
+                }
+              }
+            },
+            "type": "object"
+          },
+          "external_id": {
+            "description": "An ID for this entry that no other entry of the type has. Must be unique within the request.",
+            "example": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+            "minLength": 1,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name is the human readable name of this entry",
+            "example": "Primary On-call",
+            "type": "string"
+          },
+          "rank": {
+            "description": "When catalog type is ranked, this is used to help order things",
+            "example": 3,
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "external_id",
+          "name",
+          "attribute_values"
+        ],
+        "type": "object"
+      },
+      "CatalogBulkCreateEntriesPayloadV3": {
+        "example": {
+          "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
+          "entries": [
+            {
+              "aliases": [
+                "lawrence@incident.io",
+                "lawrence"
+              ],
+              "attribute_values": {
+                "abc123": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123"
+                  }
+                }
+              },
+              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+              "name": "Primary On-call",
+              "rank": 3
+            },
+            {
+              "aliases": [
+                "lawrence@incident.io",
+                "lawrence"
+              ],
+              "attribute_values": {
+                "abc123": {
+                  "array_value": [
+                    {
+                      "literal": "SEV123"
+                    }
+                  ],
+                  "value": {
+                    "literal": "SEV123"
+                  }
+                }
+              },
+              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+              "name": "Primary On-call",
+              "rank": 3
+            }
+          ]
+        },
+        "properties": {
+          "catalog_type_id": {
+            "description": "The unique identifier of the catalog type to create entries in",
+            "example": "01GW2G3V0S59R238FAHPDS1R66",
+            "type": "string"
+          },
+          "entries": {
+            "description": "The entries to create. Maximum 250 entries per request.",
+            "example": [
+              {
+                "aliases": [
+                  "lawrence@incident.io",
+                  "lawrence"
+                ],
+                "attribute_values": {
+                  "abc123": {
+                    "array_value": [
+                      {
+                        "literal": "SEV123"
+                      }
+                    ],
+                    "value": {
+                      "literal": "SEV123"
+                    }
+                  }
+                },
+                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                "name": "Primary On-call",
+                "rank": 3
+              },
+              {
+                "aliases": [
+                  "lawrence@incident.io",
+                  "lawrence"
+                ],
+                "attribute_values": {
+                  "abc123": {
+                    "array_value": [
+                      {
+                        "literal": "SEV123"
+                      }
+                    ],
+                    "value": {
+                      "literal": "SEV123"
+                    }
+                  }
+                },
+                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                "name": "Primary On-call",
+                "rank": 3
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/BulkCreateEntryPayloadV3"
             },
             "maxItems": 250,
             "minItems": 1,
@@ -157224,46 +157145,90 @@
         },
         "required": [
           "catalog_type_id",
-          "entry_ids"
+          "entries"
         ],
         "type": "object"
       },
-      "CatalogBulkArchiveEntriesResultV3": {
+      "CatalogBulkCreateEntriesResultV3": {
         "example": {
-          "archived_entry_ids": [
-            "01GW2G3V0S59R238FAHPDS1R67"
-          ],
-          "not_found_entry_ids": [
-            "01GW2G3V0S59R238FAHPDS1R68"
+          "catalog_entries": [
+            {
+              "aliases": [
+                "lawrence@incident.io",
+                "lawrence"
+              ],
+              "archived_at": "2021-08-17T14:28:57.801578Z",
+              "attribute_values": {
+                "abc123": {
+                  "array_value": [
+                    {
+                      "label": "Lawrence Jones",
+                      "literal": "SEV123"
+                    }
+                  ],
+                  "value": {
+                    "label": "Lawrence Jones",
+                    "literal": "SEV123"
+                  }
+                }
+              },
+              "catalog_type_id": "01FCNDV6P870EA6S7TK1DSYDG0",
+              "created_at": "2021-08-17T13:28:57.801578Z",
+              "custom_aliases": [
+                "primary-on-call"
+              ],
+              "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+              "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+              "name": "Primary On-call",
+              "rank": 3,
+              "updated_at": "2021-08-17T13:28:57.801578Z"
+            }
           ]
         },
         "properties": {
-          "archived_entry_ids": {
-            "description": "The IDs of the entries that this request archived",
+          "catalog_entries": {
+            "description": "The created entries, in the same order as in the request",
             "example": [
-              "01GW2G3V0S59R238FAHPDS1R67"
+              {
+                "aliases": [
+                  "lawrence@incident.io",
+                  "lawrence"
+                ],
+                "archived_at": "2021-08-17T14:28:57.801578Z",
+                "attribute_values": {
+                  "abc123": {
+                    "array_value": [
+                      {
+                        "label": "Lawrence Jones",
+                        "literal": "SEV123"
+                      }
+                    ],
+                    "value": {
+                      "label": "Lawrence Jones",
+                      "literal": "SEV123"
+                    }
+                  }
+                },
+                "catalog_type_id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                "created_at": "2021-08-17T13:28:57.801578Z",
+                "custom_aliases": [
+                  "primary-on-call"
+                ],
+                "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                "name": "Primary On-call",
+                "rank": 3,
+                "updated_at": "2021-08-17T13:28:57.801578Z"
+              }
             ],
             "items": {
-              "example": "abc123",
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "not_found_entry_ids": {
-            "description": "The IDs of entries that don't exist, are already archived, or belong to a different catalog type",
-            "example": [
-              "01GW2G3V0S59R238FAHPDS1R68"
-            ],
-            "items": {
-              "example": "abc123",
-              "type": "string"
+              "$ref": "#/components/schemas/CatalogEntryV3"
             },
             "type": "array"
           }
         },
         "required": [
-          "archived_entry_ids",
-          "not_found_entry_ids"
+          "catalog_entries"
         ],
         "type": "object"
       }
@@ -256609,6 +256574,189 @@
         ]
       }
     },
+    "/v3/catalog_entries/actions/bulk_archive": {
+      "post": {
+        "description": "Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.\n\nEntries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.",
+        "operationId": "Catalog V3#BulkArchiveEntries",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
+                "entry_ids": [
+                  "01GW2G3V0S59R238FAHPDS1R67",
+                  "01GW2G3V0S59R238FAHPDS1R68"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/CatalogBulkArchiveEntriesPayloadV3"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "archived_entry_ids": [
+                    "01GW2G3V0S59R238FAHPDS1R67"
+                  ],
+                  "not_found_entry_ids": [
+                    "01GW2G3V0S59R238FAHPDS1R68"
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogBulkArchiveEntriesResultV3"
+                }
+              }
+            },
+            "description": "OK response."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "invalid_request_error: There was a problem with the request, like a missing header or querying a resource that doesn't exist."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "authentication_error: Authentication failed."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "resource_forbidden: Access to this resource is forbidden for the authenticated user."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_found: The referenced resource could not be found."
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "method_not_allowed: The endpoint does not support this operation for the specified resource."
+          },
+          "406": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "not_acceptable: Requested a media type this endpoint does not support."
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "request_timeout: The request took too long to process.\n\nclient_timeout: The request was cancelled by the client."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "conflict: Request conflicted with current state of the resource, likely a concurrent update."
+          },
+          "412": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "precondition_failed: A required condition hasn't been met."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "payload_too_large: The request payload is too large."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "validation_error: A required field was not provided, or the provided data was invalid."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "too_many_requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\n\nrate_limit_reached: The rate limit associated with this resource or API key has been exceeded. Try again later."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "api_error: Something went wrong and has been reported internally."
+          }
+        },
+        "summary": "BulkArchiveEntries Catalog V3",
+        "tags": [
+          "Catalog V3"
+        ],
+        "x-docs-display-name": "Bulk Archive Entries",
+        "x-docs-group-name": "Catalog Entries V3",
+        "x-docs-resource-type": "CatalogEntryV3",
+        "x-rbac-scopes": [
+          "catalog_entries.destroy"
+        ]
+      }
+    },
     "/v3/catalog_entries/actions/bulk_update": {
       "post": {
         "description": "Update multiple catalog entries in a single operation. You can update up to 250 entries at once. This operation is atomic - either all entries are updated successfully, or none are updated.",
@@ -256823,237 +256971,6 @@
         "x-docs-group-name": "Catalog Entries V3",
         "x-docs-resource-type": "CatalogEntryV3",
         "x-rbac-scopes": [
-          "catalog_entries.update"
-        ]
-      }
-    },
-    "/v3/catalog_entries/actions/bulk_upsert": {
-      "post": {
-        "description": "Create or update up to 250 entries of one catalog type in a single request, matching each entry to an existing one by its external_id.\n\nAn entry whose external_id matches an existing entry of the type updates it, and any other entry is created. When updating, omitted aliases and rank keep their existing values, and attribute IDs that don't exist on the type are ignored, as in UpdateEntry. Entries are written independently: one that fails (for example because it sets an attribute you can't change, or its values are too large) is reported in its result, and the others are still written.\n\nResults are returned in the same order as the entries in the request.",
-        "operationId": "Catalog V3#BulkUpsertEntries",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "example": {
-                "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
-                "entries": [
-                  {
-                    "aliases": [
-                      "lawrence@incident.io",
-                      "lawrence"
-                    ],
-                    "attribute_values": {
-                      "abc123": {
-                        "array_value": [
-                          {
-                            "literal": "SEV123"
-                          }
-                        ],
-                        "value": {
-                          "literal": "SEV123"
-                        }
-                      }
-                    },
-                    "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                    "name": "Primary On-call",
-                    "rank": 3
-                  },
-                  {
-                    "aliases": [
-                      "lawrence@incident.io",
-                      "lawrence"
-                    ],
-                    "attribute_values": {
-                      "abc123": {
-                        "array_value": [
-                          {
-                            "literal": "SEV123"
-                          }
-                        ],
-                        "value": {
-                          "literal": "SEV123"
-                        }
-                      }
-                    },
-                    "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                    "name": "Primary On-call",
-                    "rank": 3
-                  }
-                ]
-              },
-              "schema": {
-                "$ref": "#/components/schemas/CatalogBulkUpsertEntriesPayloadV3"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "example": {
-                  "results": [
-                    {
-                      "catalog_entry_id": "01FCNDV6P870EA6S7TK1DSYDG0",
-                      "errors": [
-                        {
-                          "field": "attribute_values.01GW2G3V0S59R238FAHPDS1R67",
-                          "message": "unknown attribute '01GW2G3V0S59R238FAHPDS1R67' for catalog type 'Service'"
-                        }
-                      ],
-                      "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
-                      "status": "updated"
-                    }
-                  ]
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/CatalogBulkUpsertEntriesResultV3"
-                }
-              }
-            },
-            "description": "OK response."
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "invalid_request_error: There was a problem with the request, like a missing header or querying a resource that doesn't exist."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "authentication_error: Authentication failed."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "resource_forbidden: Access to this resource is forbidden for the authenticated user."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "not_found: The referenced resource could not be found."
-          },
-          "405": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "method_not_allowed: The endpoint does not support this operation for the specified resource."
-          },
-          "406": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "not_acceptable: Requested a media type this endpoint does not support."
-          },
-          "408": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "request_timeout: The request took too long to process.\n\nclient_timeout: The request was cancelled by the client."
-          },
-          "409": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "conflict: Request conflicted with current state of the resource, likely a concurrent update."
-          },
-          "412": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "precondition_failed: A required condition hasn't been met."
-          },
-          "413": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "payload_too_large: The request payload is too large."
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "validation_error: A required field was not provided, or the provided data was invalid."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "too_many_requests: Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\n\nrate_limit_reached: The rate limit associated with this resource or API key has been exceeded. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "api_error: Something went wrong and has been reported internally."
-          }
-        },
-        "summary": "BulkUpsertEntries Catalog V3",
-        "tags": [
-          "Catalog V3"
-        ],
-        "x-docs-display-name": "Bulk Upsert Entries",
-        "x-docs-group-name": "Catalog Entries V3",
-        "x-docs-resource-type": "CatalogEntryV3",
-        "x-rbac-scopes": [
-          "catalog_entries.create",
           "catalog_entries.update"
         ]
       }
@@ -267514,45 +267431,112 @@
         ]
       }
     },
-    "/v3/catalog_entries/actions/bulk_archive": {
+    "/v3/catalog_entries/actions/bulk_create": {
       "post": {
-        "description": "Archive up to 250 entries of one catalog type in a single request. This has the same effect as deleting each entry individually. This operation is atomic: if the request fails, no entries are archived.\n\nEntries that don't exist, are already archived, or belong to a different catalog type don't fail the request: they're returned in `not_found_entry_ids`. If any of the entries set attributes that you don't have permission to clear, the request fails with a 403 that lists those entries, and no entries are archived.",
-        "operationId": "Catalog V3#BulkArchiveEntries",
+        "description": "Create up to 250 new entries of one catalog type in a single request.\n\nEither every entry is created, or none are. Each entry needs an external_id that no entry of the type has yet: this endpoint never updates an existing entry, so use BulkUpdateEntries for those.\n\nIf any entry can't be created, for example because its external_id is already in use or it sets an attribute you can't change, the request fails with a validation error that names the entry by its index and external_id.\n\nEntries are returned in the same order as in the request.",
+        "operationId": "Catalog V3#BulkCreateEntries",
         "requestBody": {
           "content": {
             "application/json": {
               "example": {
                 "catalog_type_id": "01GW2G3V0S59R238FAHPDS1R66",
-                "entry_ids": [
-                  "01GW2G3V0S59R238FAHPDS1R67",
-                  "01GW2G3V0S59R238FAHPDS1R68"
+                "entries": [
+                  {
+                    "aliases": [
+                      "lawrence@incident.io",
+                      "lawrence"
+                    ],
+                    "attribute_values": {
+                      "abc123": {
+                        "array_value": [
+                          {
+                            "literal": "SEV123"
+                          }
+                        ],
+                        "value": {
+                          "literal": "SEV123"
+                        }
+                      }
+                    },
+                    "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                    "name": "Primary On-call",
+                    "rank": 3
+                  },
+                  {
+                    "aliases": [
+                      "lawrence@incident.io",
+                      "lawrence"
+                    ],
+                    "attribute_values": {
+                      "abc123": {
+                        "array_value": [
+                          {
+                            "literal": "SEV123"
+                          }
+                        ],
+                        "value": {
+                          "literal": "SEV123"
+                        }
+                      }
+                    },
+                    "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                    "name": "Primary On-call",
+                    "rank": 3
+                  }
                 ]
               },
               "schema": {
-                "$ref": "#/components/schemas/CatalogBulkArchiveEntriesPayloadV3"
+                "$ref": "#/components/schemas/CatalogBulkCreateEntriesPayloadV3"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "content": {
               "application/json": {
                 "example": {
-                  "archived_entry_ids": [
-                    "01GW2G3V0S59R238FAHPDS1R67"
-                  ],
-                  "not_found_entry_ids": [
-                    "01GW2G3V0S59R238FAHPDS1R68"
+                  "catalog_entries": [
+                    {
+                      "aliases": [
+                        "lawrence@incident.io",
+                        "lawrence"
+                      ],
+                      "archived_at": "2021-08-17T14:28:57.801578Z",
+                      "attribute_values": {
+                        "abc123": {
+                          "array_value": [
+                            {
+                              "label": "Lawrence Jones",
+                              "literal": "SEV123"
+                            }
+                          ],
+                          "value": {
+                            "label": "Lawrence Jones",
+                            "literal": "SEV123"
+                          }
+                        }
+                      },
+                      "catalog_type_id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                      "created_at": "2021-08-17T13:28:57.801578Z",
+                      "custom_aliases": [
+                        "primary-on-call"
+                      ],
+                      "external_id": "761722cd-d1d7-477b-ac7e-90f9e079dc33",
+                      "id": "01FCNDV6P870EA6S7TK1DSYDG0",
+                      "name": "Primary On-call",
+                      "rank": 3,
+                      "updated_at": "2021-08-17T13:28:57.801578Z"
+                    }
                   ]
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/CatalogBulkArchiveEntriesResultV3"
+                  "$ref": "#/components/schemas/CatalogBulkCreateEntriesResultV3"
                 }
               }
             },
-            "description": "OK response."
+            "description": "Created response."
           },
           "400": {
             "content": {
@@ -267685,15 +267669,15 @@
             "description": "api_error: Something went wrong and has been reported internally."
           }
         },
-        "summary": "BulkArchiveEntries Catalog V3",
+        "summary": "BulkCreateEntries Catalog V3",
         "tags": [
           "Catalog V3"
         ],
-        "x-docs-display-name": "Bulk Archive Entries",
+        "x-docs-display-name": "Bulk Create Entries",
         "x-docs-group-name": "Catalog Entries V3",
         "x-docs-resource-type": "CatalogEntryV3",
         "x-rbac-scopes": [
-          "catalog_entries.destroy"
+          "catalog_entries.create"
         ]
       }
     }
